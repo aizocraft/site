@@ -116,7 +116,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section - SunSea style (full viewport width & height) */}
-      <section className="relative w-full min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)] flex items-center overflow-hidden bg-[#f8f9fa] dark:bg-[#0a0e1a]">
+      <section className="relative w-full min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)] flex items-center overflow-hidden bg-page-alt">
         <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
           <div className="absolute inset-0" style={{
             backgroundImage: `
@@ -137,9 +137,9 @@ export default function HomePage() {
                 </span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold text-[#00255e] dark:text-white leading-[1.1]">
-                Powering Infrastructure Through{" "}
-                <span className="text-[#f9ad07]">Precision Engineering</span>
+<h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold text-[#00255e] dark:text-white leading-[1.1]">
+                {" "}
+                <span className="text-[#f9ad07]">Powering Infrastructure Through Precision Engineering</span>
               </h1>
 
               <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-xl">
@@ -167,7 +167,7 @@ export default function HomePage() {
             {/* Right Image - full size, no cropping */}
             <Reveal direction="left" delay={0.15}>
               <div className="relative">
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 bg-[#f8f9fa] dark:bg-[#0d1220]">
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-700 bg-surface">
                   <Image
                     src="/banner.png"
                     alt="Electrical engineering"
@@ -184,7 +184,7 @@ export default function HomePage() {
       </section>
 
       {/* About Section - Mission & Vision with poster.png (full height image right) */}
-      <section id="about" className="relative w-full bg-white dark:bg-[#0a0e1a] py-16 md:py-24 lg:py-28">
+      <section id="about" className="relative w-full bg-page py-16 md:py-24 lg:py-28">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[100rem] grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
             {/* Left - Mission & Vision Text */}
@@ -200,14 +200,14 @@ export default function HomePage() {
                 </p>
               </Reveal>
 
-              {/* Mission */}
+{/* Mission */}
               <Reveal direction="right" delay={0.1} className="mt-8">
                 <div className="card p-6 md:p-7 hover-lift border border-gray-100 dark:border-gray-800 flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-[#00255e]/10 dark:bg-[#1a4a8a]/30 rounded-xl flex items-center justify-center">
-                    <Target className="w-6 h-6 text-[#00255e] dark:text-white" />
+                  <div className="flex-shrink-0 w-12 h-12 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center">
+                    <Target className="w-6 h-6 text-[#f9ad07]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[#00255e] dark:text-white">Our Mission</h3>
+                    <h3 className="text-lg font-bold text-[#f9ad07] dark:text-[#f9ad07]">Our Mission</h3>
                     <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
                       To deliver reliable, innovative and sustainable electrical solutions that
                       empower homes, businesses and industries — ensuring safety, efficiency and
@@ -217,14 +217,14 @@ export default function HomePage() {
                 </div>
               </Reveal>
 
-              {/* Vision */}
+{/* Vision */}
               <Reveal direction="right" delay={0.2} className="mt-6">
                 <div className="card p-6 md:p-7 hover-lift border border-gray-100 dark:border-gray-800 flex gap-4">
                   <div className="flex-shrink-0 w-12 h-12 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center">
                     <Eye className="w-6 h-6 text-[#f9ad07]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[#00255e] dark:text-white">Our Vision</h3>
+                    <h3 className="text-lg font-bold text-[#f9ad07] dark:text-[#f9ad07]">Our Vision</h3>
                     <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
                       To be East Africa&apos;s most trusted electrical engineering partner —
                       leading the region&apos;s transition to smart, clean and resilient energy
@@ -243,7 +243,7 @@ export default function HomePage() {
                         <item.icon className="w-5 h-5 text-[#f9ad07]" />
                       </div>
                       <div>
-                        <p className="font-semibold text-[#00255e] dark:text-white text-sm">{item.title}</p>
+<p className="font-semibold text-[#f9ad07] dark:text-[#f9ad07] text-sm">{item.title}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">{item.desc}</p>
                       </div>
                     </div>
@@ -254,7 +254,7 @@ export default function HomePage() {
 
             {/* Right - Poster (full height & full size, no cropping) */}
             <Reveal direction="left" delay={0.15} className="h-full">
-              <div className="relative h-full min-h-[320px] sm:min-h-[420px] lg:min-h-[560px] rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 bg-[#f8f9fa] dark:bg-[#0d1220] p-3 sm:p-4 flex items-center justify-center">
+              <div className="relative h-full min-h-[320px] sm:min-h-[420px] lg:min-h-[560px] rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 bg-surface p-3 sm:p-4 flex items-center justify-center">
                 <Image
                   src="/poster.png"
                   alt="SunSea Electrical — Our Promise"
@@ -270,11 +270,11 @@ export default function HomePage() {
       </section>
 
       {/* Services Section - A complete electrical practice under one roof */}
-      <section id="services" className="section-padding bg-white dark:bg-[#0a0e1a]">
+      <section id="services" className="section-padding bg-page-alt">
         <div className="container-custom">
-          <Reveal className="text-center max-w-2xl mx-auto mb-12">
+<Reveal className="text-center max-w-2xl mx-auto mb-12">
             <h2 className="heading-lg text-[#00255e] dark:text-white">
-              A complete electrical practice under one roof.
+              Our Services
             </h2>
           </Reveal>
 
@@ -285,7 +285,7 @@ export default function HomePage() {
                   <div className="w-14 h-14 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#f9ad07] transition-colors duration-300">
                     <service.icon className="w-7 h-7 text-[#f9ad07] group-hover:text-[#00255e] transition-colors duration-300" />
                   </div>
-                  <h3 className="font-semibold text-[#00255e] dark:text-white text-lg">{service.title}</h3>
+<h3 className="font-semibold text-[#f9ad07] dark:text-[#f9ad07]text-lg">{service.title}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{service.desc}</p>
                 </div>
               </Reveal>
@@ -298,7 +298,7 @@ export default function HomePage() {
       <FeaturedProducts />
 
       {/* Process Section */}
-      <section id="process" className="section-padding bg-[#f8f9fa] dark:bg-[#0d1220]">
+      <section id="process" className="section-padding bg-page">
         <div className="container-custom">
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-accent">Our Process</span>
@@ -313,7 +313,7 @@ export default function HomePage() {
                   <div className="w-14 h-14 mx-auto bg-[#f9ad07] rounded-xl flex items-center justify-center text-[#00255e] font-bold text-xl mb-3 shadow-lg shadow-[#f9ad07]/20 group-hover:scale-110 transition-all duration-300">
                     {step.number}
                   </div>
-                  <p className="text-sm font-semibold text-[#00255e] dark:text-white">{step.title}</p>
+<p className="text-sm font-semibold text-[#f9ad07] dark:text-[#f9ad07] ">{step.title}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{step.desc}</p>
                 </div>
               </Reveal>
@@ -323,7 +323,7 @@ export default function HomePage() {
       </section>
 
       {/* Industries Section */}
-      <section className="section-padding bg-white dark:bg-[#0a0e1a]">
+      <section className="section-padding bg-page-alt">
         <div className="container-custom">
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-primary">Industries</span>
@@ -336,7 +336,7 @@ export default function HomePage() {
                   <div className="w-14 h-14 mx-auto mb-3 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center group-hover:bg-[#f9ad07] transition-colors duration-300">
                     <industry.icon className="w-7 h-7 text-[#f9ad07] group-hover:text-[#00255e] transition-colors duration-300" />
                   </div>
-                  <p className="font-medium text-[#00255e] dark:text-white text-sm">{industry.title}</p>
+<p className="font-medium text-[#f9ad07] dark:text-[#f9ad07] text-sm">{industry.title}</p>
                 </div>
               </Reveal>
             ))}
@@ -345,7 +345,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Projects */}
-      <section id="gallery" className="section-padding bg-[#f8f9fa] dark:bg-[#0d1220]">
+      <section id="gallery" className="section-padding bg-page">
         <div className="container-custom">
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-accent">Portfolio</span>
@@ -367,7 +367,7 @@ export default function HomePage() {
                   </div>
                   <div className="p-5">
                     <span className="badge badge-accent text-xs">{project.category}</span>
-                    <h3 className="font-bold text-[#00255e] dark:text-white mt-2 group-hover:text-[#f9ad07] transition-colors">
+<h3 className="font-bold text-[#f9ad07] dark:text-[#f9ad07] mt-2 group-hover:text-[#f9ad07] transition-colors">
                       {project.title}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{project.location}</p>

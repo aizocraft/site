@@ -138,7 +138,7 @@ const whyChooseUs = [
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0e1a]">
+    <div className="min-h-screen bg-page">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#00255e] text-white">
         <div className="absolute inset-0 opacity-10">
@@ -209,7 +209,7 @@ export default function ServicesPage() {
                       <div className="w-12 h-12 rounded-xl bg-[#f9ad07]/10 flex items-center justify-center flex-shrink-0">
                         <service.icon className="w-6 h-6 text-[#f9ad07]" />
                       </div>
-                      <h3 className="text-2xl font-bold text-[#00255e] dark:text-white">
+<h3 className="text-2xl font-bold text-[#f9ad07] dark:text-white">
                         {service.title}
                       </h3>
                     </div>
@@ -242,7 +242,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Industries Section */}
-      <section className="section-padding bg-gray-50 dark:bg-[#0d1220]">
+      <section className="section-padding bg-page-alt">
         <div className="container-custom">
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-accent">Industries</span>
@@ -261,7 +261,7 @@ export default function ServicesPage() {
                   <div className="w-14 h-14 mx-auto mb-3 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center group-hover:bg-[#f9ad07] transition-colors duration-300">
                     <industry.icon className="w-7 h-7 text-[#f9ad07] group-hover:text-[#00255e] transition-colors duration-300" />
                   </div>
-                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm">{industry.title}</h3>
+<h3 className="font-semibold text-[#f9ad07] dark:text-white text-sm">{industry.title}</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{industry.desc}</p>
                 </div>
               </Reveal>
@@ -290,7 +290,7 @@ export default function ServicesPage() {
                   <div className="w-16 h-16 mx-auto mb-4 bg-[#f9ad07]/10 rounded-2xl flex items-center justify-center group-hover:bg-[#f9ad07] transition-colors duration-300">
                     <item.icon className="w-8 h-8 text-[#f9ad07] group-hover:text-[#00255e] transition-colors duration-300" />
                   </div>
-                  <h3 className="font-bold text-[#00255e] dark:text-white text-lg">{item.title}</h3>
+<h3 className="font-bold text-[#f9ad07] dark:text-white text-lg">{item.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{item.desc}</p>
                 </div>
               </Reveal>

@@ -181,7 +181,7 @@ export default function ShopPage() {
                     <Star className="w-3.5 h-3.5 fill-current" />
                     <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">({product.reviews})</span>
                   </div>
-                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
+<h3 className="font-semibold text-[#f9ad07] dark:text-white text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
                     {product.name}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{product.sku}</p>
@@ -225,7 +225,7 @@ export default function ShopPage() {
                   <div className="w-14 h-14 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center mx-auto mb-4 transition-all duration-300 group-hover:bg-[#f9ad07]">
                     <item.icon className="w-7 h-7 text-[#f9ad07] transition-colors duration-300 group-hover:text-[#00255e]" />
                   </div>
-                  <h3 className="font-semibold text-[#00255e] dark:text-white">{item.title}</h3>
+<h3 className="font-semibold text-[#f9ad07] dark:text-white">{item.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{item.desc}</p>
                 </div>
               </Reveal>

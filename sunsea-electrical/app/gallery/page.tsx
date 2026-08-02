@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Expand, 
@@ -148,6 +148,14 @@ function Lightbox({
   const [touchStartY, setTouchStartY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
+  const goTo = useCallback(
+    (delta: number) => {
+      setLocalIndex((prev) => (prev + delta + slides.length) % slides.length);
+      setIsZoomed(false);
+    },
+    [slides.length]
+  );
+
   useEffect(() => {
     if (index !== null && index !== localIndex) {
       setLocalIndex(index);
@@ -155,25 +163,16 @@ function Lightbox({
     }
   }, [index, localIndex]);
 
-  if (index === null || index < 0 || index >= slides.length) return null;
-
-  const current = slides[localIndex];
-
-  const goTo = (delta: number) => {
-    setLocalIndex((prev) => (prev + delta + slides.length) % slides.length);
-    setIsZoomed(false);
-  };
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       if (e.key === "ArrowLeft") goTo(-1);
       if (e.key === "ArrowRight") goTo(1);
-      if (e.key === "f" || e.key === "F") setIsZoomed(!isZoomed);
+      if (e.key === "f" || e.key === "F") setIsZoomed((z) => !z);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [slides.length, onClose, isZoomed]);
+  }, [onClose, goTo]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.touches[0].clientX);
@@ -194,6 +193,10 @@ function Lightbox({
       else goTo(-1);
     }
   };
+
+  if (index === null || index < 0 || index >= slides.length) return null;
+
+  const current = slides[localIndex];
 
   return (
     <motion.div
@@ -378,7 +381,7 @@ export default function GalleryPage() {
       </section>
 
       {/* Gallery Grid */}
-      <section className="section-padding bg-[#f8f9fa] dark:bg-[#0d1220]">
+      <section className="section-padding bg-page-alt">
         <div className="container-custom">
           {/* Search and Filters */}
           <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">

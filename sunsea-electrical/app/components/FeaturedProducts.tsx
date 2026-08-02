@@ -42,7 +42,7 @@ const products = [
 
 export default function FeaturedProducts() {
   return (
-    <section id="shop" className="section-padding bg-white dark:bg-[#0a0e1a]">
+    <section id="shop" className="section-padding bg-page">
       <div className="container-custom">
         <Reveal>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -54,7 +54,7 @@ export default function FeaturedProducts() {
               href="/shop"
               className="inline-flex items-center gap-2 text-[#f9ad07] hover:text-[#00255e] dark:hover:text-white transition-all duration-300 font-semibold hover:scale-[1.05] active:scale-95 self-start sm:self-auto"
             >
-              View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+              View All <ArrowRight className="w-4 h-4 transition-transform duration-300" />
             </Link>
           </div>
         </Reveal>
@@ -83,7 +83,7 @@ export default function FeaturedProducts() {
                     <Star className="w-3 h-3 fill-current" />
                     <Star className="w-3 h-3 fill-current" />
                   </div>
-                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
+<h3 className="font-semibold text-[#f9ad07] dark:text-[#f9ad07] text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
                     {product.name}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{product.sku}</p>

@@ -5,15 +5,14 @@ import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react";
 import Reveal from "./Reveal";
 
 const contactItems = [
-  { icon: MapPin, title: "Office", content: "Nairobi, Kenya\nMombasa Road" },
-  { icon: Clock, title: "Working Hours", content: "Mon-Fri: 8AM - 6PM\nSat: 9AM - 2PM" },
-  { icon: Phone, title: "Phone", content: "24/7: +254 700 123 456" },
+  { icon: MapPin, title: "Embu, Kenya", content: "Kianjokoma Town" },
+  { icon: Phone, title: "Phone", content: "+2547 8490 9466" },
   { icon: Mail, title: "Email", content: "sunseaelectrical@gmail.com" },
 ];
 
 export default function Contact() {
   return (
-    <section id="contact" className="section-padding bg-[#f8f9fa] dark:bg-[#0d1220]">
+    <section id="contact" className="section-padding bg-page-alt">
       <div className="container-custom">
         <Reveal className="text-center max-w-2xl mx-auto mb-12">
           <span className="badge badge-primary">Contact</span>
@@ -50,7 +49,7 @@ export default function Contact() {
             <div className="space-y-4">
               {contactItems.map((item) => (
                 <div key={item.title} className="card p-6 hover-lift border border-gray-100 dark:border-gray-800 transition-all duration-300 hover:border-[#f9ad07]">
-                  <h3 className="font-bold text-[#00255e] dark:text-white flex items-center gap-2">
+                  <h3 className="font-bold text-[#f9ad07] dark:text-[#f9ad07]  flex items-center gap-2">
                     <item.icon className="w-5 h-5 text-[#f9ad07] transition-transform duration-300 group-hover:scale-110" />
                     {item.title}
                   </h3>

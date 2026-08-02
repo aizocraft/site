@@ -114,7 +114,7 @@ export default function DashboardLayout({
   const { theme } = useTheme();
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-[#0a0e1a]">
+    <div className="min-h-screen flex bg-page-alt">
       {/* Sidebar */}
       <Suspense fallback={null}>
         <DashboardSidebar />

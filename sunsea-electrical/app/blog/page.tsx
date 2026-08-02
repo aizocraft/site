@@ -98,7 +98,7 @@ export default function BlogPage() {
                         {post.readTime}
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold text-[#00255e] dark:text-white group-hover:text-[#f9ad07] transition-colors duration-300 line-clamp-2">
+                    <h3 className="text-lg font-bold text-[#f9ad07] dark:text-[#f9ad07]  group-hover:text-[#f9ad07] transition-colors duration-300 line-clamp-2">
                       {post.title}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2 leading-relaxed">

@@ -405,6 +405,19 @@ section[id] {
   background-color: var(--color-section-alt);
 }
 
+/* Semantic background utilities - theme aware (light & dark) */
+.bg-page {
+  background-color: var(--color-background);
+}
+
+.bg-page-alt {
+  background-color: var(--color-section-alt);
+}
+
+.bg-surface {
+  background-color: var(--color-card-bg);
+}
+
 /* Theme-aware input field */
 .input-field {
   width: 100%;

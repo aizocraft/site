@@ -173,7 +173,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Title - enhanced dark mode */}
           <Reveal delay={0.15}>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#00255e] dark:text-white mb-4 leading-tight">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#f9ad07] dark:text-[#f9ad07]  mb-4 leading-tight">
               {post.title}
             </h1>
           </Reveal>
