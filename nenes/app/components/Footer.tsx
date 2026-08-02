@@ -5,22 +5,30 @@ import { Mail, Phone, MapPin, Clock, Facebook, Twitter, Linkedin, Instagram } fr
 export default function Footer() {
   return (
     <footer className="bg-[#0f172a] dark:bg-[#050a15] text-white border-t border-gray-800/50">
-      <div className="container-custom pt-20 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          {/* Company Info */}
-          <div>
-            <Link href="/" className="flex items-center gap-3 mb-4">
-              <div className="relative w-12 h-12">
+      <div className="container-custom pt-12 md:pt-20 pb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+          {/* Company Info - Full width on mobile */}
+          <div className="sm:col-span-2 lg:col-span-1">
+            <Link href="/" className="flex items-center gap-1 mb-4">
+              <div className="relative w-16 h-16 md:w-20 md:h-20 flex-shrink-0">
                 <Image
-                  src="/logo.png"
+                  src="/favicon.png"
                   alt="Nenes Construction"
-                  width={48}
-                  height={48}
+                  fill
                   className="object-contain"
+                  priority
                 />
               </div>
+              <div className="flex flex-col">
+                <span className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                  Nenes
+                </span>
+                <span className="text-[10px] md:text-xs font-medium text-gray-400 tracking-widest uppercase">
+                  Construction
+                </span>
+              </div>
             </Link>
-            <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
+            <p className="text-sm text-gray-400 leading-relaxed max-w-xs mt-2">
               Building Kenya&apos;s future with reliable construction solutions since 2010.
               Excellence in every structure.
             </p>
@@ -43,8 +51,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
+          {/* Quick Links - Hidden on mobile, visible on tablet+ */}
+          <div className="hidden sm:block lg:block">
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Quick Links
             </h4>
@@ -68,8 +76,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Services */}
-          <div>
+          {/* Services - Hidden on mobile, hidden on tablet, visible on desktop */}
+          <div className="hidden lg:block">
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Our Services
             </h4>
@@ -93,7 +101,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info - Side by side with Quick Links on mobile */}
           <div>
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Contact Us
@@ -101,26 +109,26 @@ export default function Footer() {
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#16a34a] dark:text-[#22c55e] flex-shrink-0 mt-0.5" />
-                <span className="text-gray-400">Nairobi, Kenya<br />Mombasa Road</span>
+                <span className="text-gray-400">Nairobi, Kenya</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#16a34a] dark:text-[#22c55e] flex-shrink-0" />
-                <span className="text-gray-400">+254 700 123 456</span>
+                <span className="text-gray-400">+254 717 780 056</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#16a34a] dark:text-[#22c55e] flex-shrink-0" />
-                <span className="text-gray-400">info@nenes.co.ke</span>
+                <span className="text-gray-400">nenesconstruction@gmail.com</span>
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-[#16a34a] dark:text-[#22c55e] flex-shrink-0 mt-0.5" />
-                <span className="text-gray-400">Mon-Fri: 8AM - 6PM<br />Sat: 9AM - 2PM</span>
+                <span className="text-gray-400">Mon-Sat: 8AM - 6PM</span>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+        <div className="border-t border-gray-800 mt-10 md:mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
           <p>&copy; {new Date().getFullYear()} Nenes Construction. All rights reserved.</p>
           <div className="flex gap-6 mt-2 md:mt-0">
             <Link href="/privacy" className="hover:text-gray-300 transition-colors">
@@ -135,4 +143,3 @@ export default function Footer() {
     </footer>
   );
 }
-

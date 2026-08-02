@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-[var(--color-background)] text-[var(--color-foreground)] transition-colors duration-300">
         <ThemeProvider>
           <Navbar />
-          <main className="flex-1 pt-16 md:pt-20">{children}</main>
+          <main className="flex-1">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

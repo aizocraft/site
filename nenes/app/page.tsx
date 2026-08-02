@@ -2,285 +2,429 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowRight,
-  CheckCircle,
+  ArrowDown,
+  Check,
+  HardHat,
   Building,
   Home,
   Factory,
-  HardHat,
-  PencilRuler,
   Hammer,
-  Paintbrush,
-  ClipboardCheck,
+  PencilRuler,
   DraftingCompass,
-  ShieldCheck,
-  ThumbsUp,
-  Shield,
-  Clock,
-  DollarSign,
-  Award,
+  ClipboardCheck,
+  Paintbrush,
   Headphones,
-  Hotel,
-  Heart,
-  GraduationCap,
-  Landmark,
-  Star,
-  ChevronLeft,
-  ChevronRight,
-  MapPin,
-  Phone,
-  Mail,
-  TrendingUp,
-  Leaf,
-  Users,
-  Truck,
   FileCheck,
+  ThumbsUp,
+  Minus,
+  Plus
 } from "lucide-react";
+import { PORTFOLIO_PROJECTS } from "./portfolio/data";
+import Testimonials from "./components/Testimonials";
+import Contact from "./components/Contact";
 
-const services = [
-  { icon: Building, title: "General Contracting", desc: "End-to-end construction management from foundation to finishing, delivered on schedule and budget." },
-  { icon: Home, title: "Residential Construction", desc: "Custom homes and apartments built to your exact specifications with premium materials." },
-  { icon: Factory, title: "Commercial Buildings", desc: "Offices, retail spaces, warehouses, and industrial facilities engineered for business." },
-  { icon: Hammer, title: "Renovation & Remodeling", desc: "Transform existing spaces with structural upgrades, extensions, and modern finishes." },
-  { icon: PencilRuler, title: "Architectural Design", desc: "Innovative architectural plans and structural engineering tailored to your vision." },
-  { icon: DraftingCompass, title: "Project Management", desc: "Expert supervision, budgeting, and quality control from concept to handover." },
-  { icon: ClipboardCheck, title: "Structural Inspection", desc: "Comprehensive structural assessments, compliance audits, and safety certifications." },
-  { icon: Paintbrush, title: "Interior & Exterior Finishing", desc: "Flooring, painting, tiling, ceilings, and landscaping for a flawless finish." },
+// Types
+interface Service {
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+  details: string[];
+}
+
+interface ServiceDetailProps {
+  service: Service;
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+interface ProcessStepProps {
+  number: number;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  isActive: boolean;
+}
+
+// Data
+const services: Service[] = [
+  {
+    icon: Building,
+    title: "General Contracting",
+    desc: "End-to-end construction management from foundation to finishing, delivered on schedule and budget.",
+    details: [
+      "Complete project lifecycle management",
+      "Budget planning and cost control",
+      "Quality assurance at every stage",
+      "Regulatory compliance and permits",
+    ],
+  },
+  {
+    icon: Home,
+    title: "Residential Construction",
+    desc: "Custom homes and apartments built to your exact specifications with premium materials.",
+    details: [
+      "Custom home design and build",
+      "Apartment complexes",
+      "Estate developments",
+      "High-end finishes and fixtures",
+    ],
+  },
+  {
+    icon: Factory,
+    title: "Commercial Buildings",
+    desc: "Offices, retail spaces, warehouses, and industrial facilities engineered for business.",
+    details: [
+      "Office buildings and corporate HQ",
+      "Retail and shopping centers",
+      "Warehouses and logistics hubs",
+      "Industrial manufacturing plants",
+    ],
+  },
+  {
+    icon: Hammer,
+    title: "Renovation & Remodeling",
+    desc: "Transform existing spaces with structural upgrades, extensions, and modern finishes.",
+    details: [
+      "Structural renovations",
+      "Space extensions",
+      "Modern interior upgrades",
+      "Building refurbishment",
+    ],
+  },
+  {
+    icon: PencilRuler,
+    title: "Architectural Design",
+    desc: "Innovative architectural plans and structural engineering tailored to your vision.",
+    details: [
+      "3D architectural modeling",
+      "Structural engineering",
+      "Sustainable design solutions",
+      "Interior design planning",
+    ],
+  },
+  {
+    icon: DraftingCompass,
+    title: "Project Management",
+    desc: "Expert supervision, budgeting, and quality control from concept to handover.",
+    details: [
+      "Project scheduling and planning",
+      "Budget management",
+      "Quality control inspections",
+      "Stakeholder communication",
+    ],
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Structural Inspection",
+    desc: "Comprehensive structural assessments, compliance audits, and safety certifications.",
+    details: [
+      "Structural integrity assessments",
+      "Safety compliance audits",
+      "Material quality testing",
+      "Certification and documentation",
+    ],
+  },
+  {
+    icon: Paintbrush,
+    title: "Interior & Exterior Finishing",
+    desc: "Flooring, painting, tiling, ceilings, and landscaping for a flawless finish.",
+    details: [
+      "Premium flooring solutions",
+      "Interior painting and finishing",
+      "Tiling and stonework",
+      "Landscaping and exteriors",
+    ],
+  },
 ];
 
-const whyChoose = [
-  { icon: ShieldCheck, title: "Certified Contractors", desc: "Licensed and insured builders with decades of combined construction experience." },
-  { icon: ThumbsUp, title: "Quality Guaranteed", desc: "We use premium materials and follow strict quality control at every stage." },
-  { icon: Shield, title: "Safety First", desc: "Comprehensive safety protocols and regular training for all our site teams." },
-  { icon: Clock, title: "On-Time Delivery", desc: "Reliable project scheduling with transparent milestones and timely completion." },
-  { icon: DollarSign, title: "Transparent Pricing", desc: "Clear, itemized quotations with no hidden fees and flexible payment plans." },
-  { icon: Award, title: "Award-Winning Builds", desc: "Recognized for construction excellence across East Africa." },
-  { icon: Headphones, title: "Dedicated Support", desc: "Responsive client liaison team available throughout your project and beyond." },
-  { icon: Leaf, title: "Sustainable Building", desc: "Eco-friendly materials and energy-efficient designs that reduce environmental impact." },
-];
+// Service Detail Component
+function ServiceDetail({ service, isOpen, onToggle }: ServiceDetailProps) {
+  return (
+    <div className="border border-[var(--color-nav-border)] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[var(--color-accent)]/20">
+      <button
+        onClick={onToggle}
+        className="w-full px-6 py-5 flex items-start gap-4 hover:bg-[var(--color-nav-toggle-bg)] transition-colors duration-200 text-left"
+      >
+        <div className="w-12 h-12 bg-[var(--color-primary-icon-bg)] rounded-xl flex items-center justify-center flex-shrink-0">
+          <service.icon className="w-6 h-6 text-[var(--color-primary)]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="font-semibold text-[var(--color-foreground)]">{service.title}</h3>
+              <p className="text-sm text-[var(--color-muted)] mt-0.5">{service.desc}</p>
+            </div>
+            <div className="flex-shrink-0">
+              {isOpen ? (
+                <Minus className="w-5 h-5 text-[var(--color-muted)]" />
+              ) : (
+                <Plus className="w-5 h-5 text-[var(--color-muted)]" />
+              )}
+            </div>
+          </div>
+        </div>
+      </button>
+      <div
+        className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-96 pb-6" : "max-h-0"
+        }`}
+      >
+        <div className="border-t border-[var(--color-nav-border)] pt-4">
+          <ul className="space-y-2">
+            {service.details.map((detail, idx) => (
+              <li key={idx} className="flex items-start gap-3 text-sm text-[var(--color-foreground)]">
+                <Check className="w-4 h-4 text-[var(--color-accent)] mt-0.5 flex-shrink-0" />
+                <span>{detail}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-const industries = [
-  { icon: Home, title: "Residential" },
-  { icon: Hotel, title: "Hospitality" },
-  { icon: Heart, title: "Healthcare" },
-  { icon: Building, title: "Commercial" },
-  { icon: Factory, title: "Industrial" },
-  { icon: GraduationCap, title: "Education" },
-  { icon: Landmark, title: "Government" },
-  { icon: Leaf, title: "Eco Projects" },
-];
+// Process Step Component
+function ProcessStep({ number, title, description, icon: Icon, isActive }: ProcessStepProps) {
+  return (
+    <div
+      className={`relative p-6 rounded-2xl border transition-all duration-300 ${
+        isActive
+          ? "border-[var(--color-accent)] bg-[var(--color-accent-soft)] shadow-lg scale-105"
+          : "border-[var(--color-nav-border)] bg-[var(--color-card-bg)] hover:shadow-md hover:border-[var(--color-accent)]/20"
+      }`}
+    >
+      <div className="flex flex-col items-center text-center">
+        <div
+          className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all duration-300 ${
+            isActive
+              ? "bg-[var(--color-accent)] text-white shadow-lg shadow-[var(--color-accent-soft)]"
+              : "bg-[var(--color-primary-icon-bg)] text-[var(--color-primary)]"
+          }`}
+        >
+          <Icon className="w-7 h-7" />
+        </div>
+        <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-[var(--color-accent)] text-white flex items-center justify-center text-sm font-bold shadow-lg">
+          {number}
+        </div>
+        <h4 className="font-bold text-[var(--color-foreground)]">{title}</h4>
+        <p className="text-sm text-[var(--color-muted)] mt-1">{description}</p>
+      </div>
+    </div>
+  );
+}
 
-const projects = [
-  {
-    title: "Greenpark Residential Estate",
-    location: "Nairobi",
-    category: "Residential",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Westside Commercial Tower",
-    location: "Mombasa",
-    category: "Commercial",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    title: "Eldoret Industrial Warehouse",
-    location: "Eldoret",
-    category: "Industrial",
-    image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-  },
-];
+// Scroll Reveal Hook
+function useScrollReveal() {
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+    );
 
-const testimonials = [
-  {
-    name: "James Mwangi",
-    company: "Greenpark Developers",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
-    quote: "Nenes Construction delivered our residential estate ahead of schedule. Exceptional craftsmanship, professional team, and flawless attention to detail. Highly recommended.",
-  },
-  {
-    name: "Grace Akinyi",
-    company: "Westside Properties",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
-    quote: "The commercial tower project exceeded our expectations. Nenes's engineers demonstrated incredible expertise and commitment to quality construction.",
-  },
-  {
-    name: "Peter Kamau",
-    company: "Eldoret Industries",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
-    quote: "Our industrial warehouse was completed flawlessly. Nenes's project management and structural expertise have significantly improved our operations.",
-  },
-];
+    document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+}
 
 export default function HomePage() {
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [openServiceIndex, setOpenServiceIndex] = useState<number | null>(null);
+  const [activeProcess, setActiveProcess] = useState(0);
 
-  const nextTestimonial = () => setTestimonialIndex((i) => (i + 1) % testimonials.length);
-  const prevTestimonial = () => setTestimonialIndex((i) => (i - 1 + testimonials.length) % testimonials.length);
+  useScrollReveal();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveProcess((prev) => (prev + 1) % 6);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const toggleService = (index: number) => {
+    setOpenServiceIndex(openServiceIndex === index ? null : index);
+  };
+
+  const scrollDown = () => {
+    const aboutSection = document.getElementById("about");
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const processSteps = [
+    { number: 1, title: "Consultation", description: "We discuss your vision, requirements, and budget", icon: Headphones },
+    { number: 2, title: "Design", description: "Architectural plans and structural engineering", icon: DraftingCompass },
+    { number: 3, title: "Planning", description: "Detailed project roadmap and resource allocation", icon: FileCheck },
+    { number: 4, title: "Construction", description: "Quality building with regular inspections", icon: Hammer },
+    { number: 5, title: "Inspection", description: "Rigorous quality and safety checks", icon: ClipboardCheck },
+    { number: 6, title: "Handover", description: "Final walkthrough and project completion", icon: ThumbsUp },
+  ];
+
+  const featuredProjects = PORTFOLIO_PROJECTS.slice(0, 3);
 
   return (
     <>
-      {/* Hero Section - solid green-tinted background, no gradient */}
-      <section className="hero-section relative min-h-[85vh] flex items-center overflow-hidden">
-        <div className="hero-pattern absolute inset-0" />
+      {/* Hero Section - Construction Themed */}
+      <section className="relative overflow-hidden bg-[var(--color-hero-bg)]">
+        {/* Construction Pattern Overlay */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.1) 80px, rgba(255,255,255,0.1) 81px),
+              repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.1) 80px, rgba(255,255,255,0.1) 81px)
+            `
+          }} />
+        </div>
+        
+        {/* Glowing Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--color-accent)]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[var(--color-accent)]/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--color-accent)]/3 rounded-full blur-2xl"></div>
 
-        <div className="container-custom relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-            <div className="space-y-10">
+        <div className="container-custom relative z-10 pt-28 md:pt-36 pb-14 md:pb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Hero Content */}
+            <div className="space-y-7 reveal">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-hero-chip-bg)] border border-[var(--color-hero-chip-border)] rounded-full text-sm text-[var(--color-hero-text)]">
                   <HardHat className="w-4 h-4 text-[var(--color-hero-highlight)]" />
-                  Building Excellence Since 2010
+                  NICA Certified
                 </span>
-                <span className="px-3 py-1.5 bg-[var(--color-highlight)] text-white rounded-full text-xs font-bold uppercase tracking-wider">
+                <span className="px-3 py-1.5 bg-[var(--color-hero-highlight)] text-white rounded-full text-xs font-bold uppercase tracking-wider shadow-lg shadow-[var(--color-accent)]/30">
                   Trusted Builder
                 </span>
               </div>
-
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-[var(--color-hero-text)] leading-[1.08] tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[var(--color-hero-text)] leading-[1.1] tracking-tight">
                 We Build{" "}
-                <span className="text-[var(--color-hero-highlight)]">Dreams</span>{" "}
-                <span className="opacity-40">&</span>{" "}
+                <span className="text-[var(--color-hero-highlight)] relative">
+                  Dreams
+                  <span className="absolute -bottom-2 left-0 w-full h-1 bg-[var(--color-hero-highlight)] opacity-30 rounded-full" />
+                </span>{" "}
+                <span className="text-[var(--color-hero-muted)]">&</span>{" "}
                 <span className="text-[var(--color-hero-highlight-2)]">Structures</span>
               </h1>
-
-              <p className="text-lg md:text-xl text-[var(--color-hero-muted)] leading-relaxed max-w-xl tracking-wide">
-                Professional construction services — residential, commercial, and
-                industrial building across Kenya. From design to handover.
+              <p className="text-lg md:text-xl text-[var(--color-hero-muted)] leading-relaxed max-w-xl">
+                Professional construction services — residential, commercial, and industrial building across Kenya. From design to handover.
               </p>
-
               <div className="flex flex-wrap gap-4">
                 <Link
                   href="/#contact"
-                  className="btn-accent text-base py-3.5 px-8 shadow-2xl shadow-[#14532d]/25 hover:shadow-[#14532d]/40"
+                  className="inline-flex items-center px-8 py-3.5 bg-[var(--color-hero-highlight)] text-white rounded-xl font-semibold text-base shadow-2xl shadow-[var(--color-accent)]/40 hover:shadow-[var(--color-accent)]/60 hover:-translate-y-1 transition-all duration-300 group"
                 >
-                  Request Quote <ArrowRight className="ml-2 w-5 h-5" />
+                  Request Quote
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   href="/#services"
-                  className="inline-flex items-center px-8 py-3.5 bg-[var(--color-hero-chip-bg)] text-[var(--color-hero-text)] border border-[var(--color-hero-chip-border)] rounded-xl hover:border-[var(--color-hero-highlight)] hover:-translate-y-0.5 transition-all duration-300 font-semibold text-base"
+                  className="inline-flex items-center px-8 py-3.5 bg-[var(--color-hero-chip-bg)] text-[var(--color-hero-text)] border border-[var(--color-hero-chip-border)] rounded-xl hover:border-[var(--color-accent)] hover:-translate-y-1 transition-all duration-300 font-semibold text-base"
                 >
                   Our Services
                 </Link>
               </div>
-
-              <div className="flex items-center gap-10 pt-6 border-t border-[var(--color-hero-chip-border)]">
+              <div className="flex items-center gap-8 pt-6 border-t border-[var(--color-hero-chip-border)]">
                 {[
                   { value: "15+", label: "Years Experience" },
                   { value: "300+", label: "Projects Built" },
                   { value: "250+", label: "Happy Clients" },
                 ].map((stat) => (
-                  <div key={stat.label}>
-                    <span className="text-4xl md:text-5xl font-bold text-[var(--color-hero-highlight)]">{stat.value}</span>
+                  <div key={stat.label} className="group">
+                    <span className="text-3xl md:text-4xl font-bold text-[var(--color-hero-highlight)] group-hover:scale-105 transition-transform inline-block">
+                      {stat.value}
+                    </span>
                     <span className="block text-sm text-[var(--color-hero-muted)] mt-1">{stat.label}</span>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div className="relative lg:max-w-2xl lg:ml-auto">
-              <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-[var(--color-hero-chip-border)]">
+            {/* Hero Image */}
+            <div className="relative w-full reveal animation-delay-300">
+              <div className="relative w-full h-auto rounded-3xl overflow-hidden shadow-2xl border border-[var(--color-hero-chip-border)]">
                 <Image
-                  src="/banner.png"
+                  src="/aboutbanner1.png"
                   alt="Construction engineers at work"
-                  width={1400}
-                  height={1050}
-                  className="w-full h-full object-cover"
+                  width={1920}
+                  height={1080}
+                  className="w-full h-auto"
                   priority
+                  quality={100}
+                  sizes="100vw"
                 />
-              </div>
-
-              <div className="absolute -top-5 -left-3 sm:-left-5 bg-[var(--color-card-bg)] rounded-2xl p-3.5 sm:p-4 shadow-2xl flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-11 sm:h-11 bg-[var(--color-highlight-soft)] rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Award className="w-5 h-5 text-[var(--color-highlight)]" />
-                </div>
-                <div>
-                  <p className="font-bold text-sm text-[var(--color-foreground)]">15+ Years</p>
-                  <p className="text-xs text-[var(--color-muted)]">of Excellence</p>
-                </div>
-              </div>
-
-              <div className="absolute -bottom-6 -right-3 sm:-right-6 bg-[var(--color-card-bg)] rounded-2xl p-4 sm:p-5 shadow-2xl">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 bg-[var(--color-primary)] rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Shield className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm sm:text-base text-[var(--color-foreground)]">Certified & Insured</p>
-                    <p className="text-xs sm:text-sm text-[var(--color-muted)]">Licensed Contractors</p>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
               </div>
             </div>
           </div>
         </div>
+        {/* Scroll Down */}
+        <button
+          onClick={scrollDown}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce-slow text-[var(--color-hero-muted)] hover:text-[var(--color-hero-highlight)] transition-colors duration-300 group"
+          aria-label="Scroll down"
+        >
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-xs uppercase tracking-widest font-medium opacity-60 group-hover:opacity-100 transition-opacity">Scroll</span>
+            <ArrowDown className="w-6 h-6 group-hover:translate-y-1 transition-transform" />
+          </div>
+        </button>
       </section>
 
       {/* About Section */}
       <section id="about" className="section-padding bg-[var(--color-card-bg)]">
         <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="reveal">
               <span className="badge badge-primary">About Us</span>
               <h2 className="heading-lg text-[var(--color-primary)] mt-2 mb-4">
                 Building Kenya&apos;s Future with Reliable Construction
               </h2>
               <p className="text-[var(--color-muted)] leading-relaxed mb-4">
-                Nenes Construction is a premier construction company dedicated
-                to delivering high-quality residential, commercial, and industrial buildings.
+                Nenes Construction is a premier construction company dedicated to delivering high-quality residential, commercial, and industrial buildings.
               </p>
               <p className="text-[var(--color-muted)] leading-relaxed mb-6">
-                With a team of certified engineers, architects, and skilled builders,
-                we serve clients across Kenya — from single-family homes to large-scale
-                commercial developments.
+                With a team of certified engineers, architects, and skilled builders, we serve clients across Kenya — from single-family homes to large-scale commercial developments.
               </p>
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { icon: Truck, title: "Modern Fleet", desc: "Fully equipped site machinery" },
-                  { icon: Users, title: "120+ Workforce", desc: "Skilled engineers & builders" },
-                ].map((item) => (
-                  <div key={item.title} className="card p-4 flex items-center gap-3 hover-lift">
-                    <div className="w-11 h-11 bg-[var(--color-primary-icon-bg)] rounded-xl flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-5 h-5 text-[var(--color-primary)]" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-sm text-[var(--color-foreground)]">{item.title}</h3>
-                      <p className="text-xs text-[var(--color-muted)]">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-4">
-              {[
-                {
-                  icon: DraftingCompass,
-                  title: "Our Mission",
-                  desc: "To deliver safe, sustainable, and high-quality structures that power progress for communities and businesses.",
-                },
-                {
-                  icon: TrendingUp,
-                  title: "Our Vision",
-                  desc: "To be East Africa's most trusted construction and building partner.",
-                },
-                {
-                  icon: Users,
-                  title: "Core Values",
-                  desc: "Safety, Integrity, Quality, Innovation, Client Focus, Sustainability.",
-                },
-              ].map((item) => (
-                <div key={item.title} className="card p-6 flex items-start gap-4 hover-lift">
-                  <div className="w-12 h-12 bg-[var(--color-primary-icon-bg)] rounded-xl flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-6 h-6 text-[var(--color-primary)]" />
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 group">
+                  <div className="w-8 h-8 bg-[var(--color-accent-soft)] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-[var(--color-accent)] transition-colors duration-300">
+                    <Check className="w-4 h-4 text-[var(--color-accent)] group-hover:text-white transition-colors duration-300" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[var(--color-foreground)]">{item.title}</h3>
-                    <p className="text-sm text-[var(--color-muted)] mt-1">{item.desc}</p>
+                    <h4 className="font-semibold text-[var(--color-foreground)]">Our Mission</h4>
+                    <p className="text-sm text-[var(--color-muted)]">To deliver safe, sustainable, and high-quality structures that power progress.</p>
                   </div>
                 </div>
-              ))}
+                <div className="flex items-start gap-3 group">
+                  <div className="w-8 h-8 bg-[var(--color-accent-soft)] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-[var(--color-accent)] transition-colors duration-300">
+                    <Check className="w-4 h-4 text-[var(--color-accent)] group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-[var(--color-foreground)]">Our Vision</h4>
+                    <p className="text-sm text-[var(--color-muted)]">To be East Africa&apos;s most trusted construction and building partner.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="relative w-full reveal animation-delay-300">
+              <div className="relative w-full h-auto rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/nenesposter1.png"
+                  alt="Nenes Construction - Building Kenya's Future"
+                  width={1920}
+                  height={1080}
+                  className="w-full h-auto"
+                  quality={100}
+                  sizes="100vw"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -289,101 +433,94 @@ export default function HomePage() {
       {/* Services Section */}
       <section id="services" className="section-padding section-alt">
         <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="badge badge-accent">Our Services</span>
-            <h2 className="heading-lg text-[var(--color-primary)] mt-2">
-              Comprehensive Construction Services
-            </h2>
-            <p className="text-[var(--color-muted)] mt-3">
-              From design to handover, we provide end-to-end construction services
-              tailored to your needs.
-            </p>
+          <div className="text-center max-w-2xl mx-auto mb-12 reveal">
+            <span className="badge badge-primary">What We Offer</span>
+            <h2 className="heading-lg text-[var(--color-primary)] mt-2">Our Services</h2>
+            <p className="text-[var(--color-muted)] mt-3">Comprehensive construction solutions tailored to your needs</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {services.map((service, index) => (
-              <div key={index} className="card p-6 card-hover group">
-                <div className="w-14 h-14 bg-[var(--color-primary-icon-bg)] rounded-xl flex items-center justify-center mb-4 group-hover:bg-[var(--color-primary)] transition-colors duration-300">
-                  <service.icon className="w-7 h-7 text-[var(--color-primary)] group-hover:text-white transition-colors duration-300" />
-                </div>
-                <h3 className="font-semibold text-[var(--color-foreground)]">{service.title}</h3>
-                <p className="text-sm text-[var(--color-muted)] mt-1">{service.desc}</p>
+              <div key={index} className="reveal" style={{ animationDelay: `${index * 100}ms` }}>
+                <ServiceDetail
+                  service={service}
+                  isOpen={openServiceIndex === index}
+                  onToggle={() => toggleService(index)}
+                />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section id="why-choose" className="section-padding bg-[var(--color-card-bg)]">
+      {/* Process Section */}
+      <section id="process" className="section-padding bg-[var(--color-card-bg)]">
         <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="badge badge-highlight">Why Choose Us</span>
-            <h2 className="heading-lg text-[var(--color-primary)] mt-2">The Nenes Difference</h2>
+          <div className="text-center max-w-2xl mx-auto mb-12 reveal">
+            <span className="badge badge-primary">How We Work</span>
+            <h2 className="heading-lg text-[var(--color-primary)] mt-2">Our Process</h2>
+            <p className="text-[var(--color-muted)] mt-3">A streamlined approach to bring your vision to life</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {whyChoose.map((item, index) => (
-              <div key={index} className="card p-6 text-center card-hover">
-                <div className="w-14 h-14 bg-[var(--color-highlight-soft)] rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-7 h-7 text-[var(--color-highlight)]" />
-                </div>
-                <h3 className="font-semibold text-[var(--color-foreground)]">{item.title}</h3>
-                <p className="text-sm text-[var(--color-muted)] mt-1">{item.desc}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {processSteps.map((step, index) => (
+              <div key={index} className="reveal" style={{ animationDelay: `${index * 150}ms` }}>
+                <ProcessStep
+                  number={step.number}
+                  title={step.title}
+                  description={step.description}
+                  icon={step.icon}
+                  isActive={activeProcess === index}
+                />
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Industries */}
-      <section id="industries" className="section-padding section-alt">
-        <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="badge badge-primary">Industries</span>
-            <h2 className="heading-lg text-[var(--color-primary)] mt-2">Serving Diverse Sectors</h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {industries.map((industry, index) => (
-              <div key={index} className="card p-6 text-center card-hover group">
-                <div className="w-14 h-14 mx-auto mb-3 bg-[var(--color-accent-soft)] rounded-xl flex items-center justify-center transition-colors duration-300 group-hover:bg-[var(--color-accent)]">
-                  <industry.icon className="w-7 h-7 text-[var(--color-accent)] group-hover:text-white transition-colors duration-300" />
-                </div>
-                <p className="font-medium text-[var(--color-foreground)] text-sm">{industry.title}</p>
-              </div>
+          <div className="flex justify-center gap-2 mt-8">
+            {processSteps.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveProcess(index)}
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  activeProcess === index ? "w-8 bg-[var(--color-accent)]" : "w-2 bg-[var(--color-nav-border)] hover:bg-[var(--color-muted)]"
+                }`}
+                aria-label={`Go to step ${index + 1}`}
+              />
             ))}
           </div>
         </div>
       </section>
 
       {/* Featured Projects */}
-      <section id="gallery" className="section-padding bg-[var(--color-card-bg)]">
+      <section id="gallery" className="section-padding section-alt">
         <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="badge badge-accent">Portfolio</span>
+          <div className="text-center max-w-2xl mx-auto mb-12 reveal">
+            <span className="badge badge-primary">Portfolio</span>
             <h2 className="heading-lg text-[var(--color-primary)] mt-2">Featured Projects</h2>
-            <p className="text-[var(--color-muted)] mt-3">
-              Explore some of our recent construction projects across Kenya.
-            </p>
+            <p className="text-[var(--color-muted)] mt-3">Explore some of our recent construction projects across Kenya</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {projects.map((project, index) => (
-              <div key={index} className="card overflow-hidden group hover-lift">
-                <div className="aspect-[4/3] overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {featuredProjects.map((project, index) => (
+              <div
+                key={project.slug}
+                className="card overflow-hidden group hover-lift reveal"
+                style={{ animationDelay: `${index * 200}ms` }}
+              >
+                <div className="aspect-[4/3] overflow-hidden relative">
                   <Image
                     src={project.image}
                     alt={project.title}
                     width={800}
                     height={600}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <span className="badge bg-white/20 text-white border-white/30 backdrop-blur-sm">{project.category}</span>
+                  </div>
                 </div>
-                <div className="p-5">
-                  <span className="badge badge-accent text-xs">{project.category}</span>
-                  <h3 className="font-bold text-[var(--color-foreground)] mt-2 group-hover:text-[var(--color-accent)] transition-colors">
-                    {project.title}
-                  </h3>
+                <div className="p-6">
+                  <h3 className="font-bold text-[var(--color-foreground)] group-hover:text-[var(--color-accent)] transition-colors">{project.title}</h3>
                   <p className="text-sm text-[var(--color-muted)]">{project.location}</p>
                   <Link
-                    href={`/${project.title.toLowerCase().replace(/\s+/g, '-')}`}
+                    href={`/portfolio/${project.slug}`}
                     className="inline-flex items-center mt-3 text-sm font-medium text-[var(--color-accent)] hover:text-[var(--color-primary)] transition-colors group/link"
                   >
                     View Details
@@ -393,7 +530,7 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <div className="text-center mt-10">
+          <div className="text-center mt-10 reveal">
             <Link href="/portfolio" className="btn-primary">
               View All Projects <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
@@ -401,153 +538,31 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section id="testimonials" className="section-padding bg-[var(--color-cta-bg)] text-white">
-        <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="badge bg-white/10 text-white border-white/20">
-              Testimonials
-            </span>
-            <h2 className="heading-lg text-white mt-2">What Our Clients Say</h2>
-          </div>
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-10 relative">
-              <div className="flex items-center gap-4 mb-6">
-                <Image
-                  src={testimonials[testimonialIndex].image}
-                  alt={testimonials[testimonialIndex].name}
-                  width={64}
-                  height={64}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
-                />
-                <div>
-                  <p className="font-bold text-white">{testimonials[testimonialIndex].name}</p>
-                  <p className="text-sm text-white/60">{testimonials[testimonialIndex].company}</p>
-                  <div className="flex text-[var(--color-highlight)]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <p className="text-white/90 text-lg leading-relaxed">
-                "{testimonials[testimonialIndex].quote}"
-              </p>
-              <div className="flex justify-end mt-6 gap-2">
-                <button
-                  onClick={prevTestimonial}
-                  className="p-2 rounded-xl border border-white/20 hover:bg-white/10 hover:scale-105 transition-all"
-                  aria-label="Previous testimonial"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={nextTestimonial}
-                  className="p-2 rounded-xl border border-white/20 hover:bg-white/10 hover:scale-105 transition-all"
-                  aria-label="Next testimonial"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Testimonials Component */}
+      <Testimonials />
 
-      {/* Process */}
-      <section id="process" className="section-padding bg-[var(--color-card-bg)]">
-        <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="badge badge-highlight">Our Process</span>
-            <h2 className="heading-lg text-[var(--color-primary)] mt-2">How We Build</h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {["Consultation", "Design", "Planning", "Construction", "Inspection", "Handover"].map(
-              (step, i) => (
-                <div key={i} className="text-center group">
-                  <div className="w-16 h-16 mx-auto bg-[var(--color-primary)] rounded-2xl flex items-center justify-center text-white font-bold text-xl mb-3 shadow-lg shadow-[var(--color-primary-soft)] group-hover:scale-110 group-hover:bg-[var(--color-accent)] transition-all duration-300">
-                    {i + 1}
-                  </div>
-                  <p className="text-sm font-medium text-[var(--color-foreground)]">{step}</p>
-                </div>
-              )
-            )}
-          </div>
-        </div>
-      </section>
+      {/* Contact Component */}
+      <Contact />
 
-      {/* CTA */}
-      <section className="section-padding bg-[var(--color-cta-bg)] text-white">
-        <div className="container-custom text-center">
-          <h2 className="heading-lg">Need Reliable Builders?</h2>
-          <p className="text-white/80 mt-3 text-lg">Request a Free Site Visit Today</p>
-          <Link href="/#contact" className="btn-accent mt-6 inline-block">
-            Get Quote
-          </Link>
-        </div>
-      </section>
-
-      {/* Contact */}
-      <section id="contact" className="section-padding section-alt">
-        <div className="container-custom">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="badge badge-primary">Contact</span>
-            <h2 className="heading-lg text-[var(--color-primary)] mt-2">Get In Touch</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <form className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input type="text" placeholder="Full Name" className="input-field" />
-                  <input type="tel" placeholder="Phone Number" className="input-field" />
-                </div>
-                <input type="email" placeholder="Email Address" className="input-field" />
-                <select className="input-field">
-                  <option>Select Service</option>
-                  <option>General Contracting</option>
-                  <option>Residential Construction</option>
-                  <option>Commercial Building</option>
-                  <option>Renovation</option>
-                  <option>Other</option>
-                </select>
-                <textarea rows={4} placeholder="Message" className="input-field" />
-                <button type="submit" className="btn-primary w-full justify-center">
-                  Send Message
-                </button>
-              </form>
-            </div>
-            <div className="space-y-4">
-              {[
-                { icon: MapPin, title: "Office", content: "Nairobi, Kenya\nMombasa Road" },
-                { icon: Clock, title: "Working Hours", content: "Mon-Fri: 8AM - 6PM\nSat: 9AM - 2PM" },
-                { icon: Phone, title: "Phone", content: "24/7: +254 700 123 456" },
-                { icon: Mail, title: "Email", content: "info@nenes.co.ke" },
-              ].map((item) => (
-                <div key={item.title} className="card p-6 hover-lift">
-                  <h3 className="font-bold text-[var(--color-foreground)] flex items-center gap-2">
-                    <item.icon className="w-5 h-5 text-[var(--color-accent)]" />
-                    {item.title}
-                  </h3>
-                  <p className="text-[var(--color-muted)] text-sm mt-1 whitespace-pre-line">
-                    {item.content}
-                  </p>
-                </div>
-              ))}
-              <div className="card overflow-hidden p-0">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.35853743783!2d36.68219671406249!3d-1.3028611!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2s!4v1620000000000"
-                  width="100%"
-                  height="200"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  title="Nenes Construction Location"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <style jsx global>{`
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.revealed { opacity: 1; transform: translateY(0); }
+        .reveal.animation-delay-200 { transition-delay: 0.2s; }
+        .reveal.animation-delay-300 { transition-delay: 0.3s; }
+        .reveal.animation-delay-400 { transition-delay: 0.4s; }
+        .reveal.animation-delay-500 { transition-delay: 0.5s; }
+        .reveal.animation-delay-600 { transition-delay: 0.6s; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
+        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-bounce-slow { animation: bounce-slow 2.5s ease-in-out infinite; }
+        .delay-1000 { animation-delay: 1s; }
+        .hover-lift { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
+        html { scroll-behavior: smooth; }
+        *:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+        ::selection { background: var(--color-accent); color: white; }
+      `}</style>
     </>
   );
 }

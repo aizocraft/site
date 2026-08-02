@@ -97,20 +97,21 @@ const projects = [
 ];
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function ProjectDetailPage({ params }: ProjectPageProps) {
-  const project = projects.find((p) => p.slug === params.slug);
+export default async function ProjectDetailPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
     notFound();
   }
 
   return (
-    <div className="section-padding section-alt">
+    <div className="pt-32 md:pt-40 pb-16 md:pb-24 section-alt">
       <div className="container-custom">
         <Link
           href="/portfolio"

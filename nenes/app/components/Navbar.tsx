@@ -10,8 +10,7 @@ const navLinks = [
   { name: "Home", href: "/" },
   { name: "About", href: "/#about" },
   { name: "Services", href: "/#services" },
-  { name: "Portfolio", href: "/portfolio" },
-  { name: "Dashboard", href: "/dashboard" },
+  { name: "Gallery", href: "/gallery" },
   { name: "Blog", href: "/blog" },
   { name: "Contact", href: "/#contact" },
 ];
@@ -90,13 +89,6 @@ export default function Navbar() {
               )}
             </button>
 
-            <Link
-              href="/#services"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-white bg-[var(--color-highlight)] rounded-xl hover:bg-[var(--color-highlight-hover)] transition-all duration-300 text-sm font-semibold"
-            >
-              <HardHat className="w-4 h-4" />
-              Our Services
-            </Link>
             <Link href="/#contact" className="btn-primary text-sm py-2.5 px-6">
               Get Quote
             </Link>
@@ -153,4 +145,3 @@ export default function Navbar() {
     </nav>
   );
 }
-
