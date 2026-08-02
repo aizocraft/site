@@ -1,135 +1,238 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ShoppingBag, Bell, CheckCircle, Truck, Shield, Clock, Sun, Battery, Zap, Cpu } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { 
+  ArrowLeft, 
+  ShoppingBag, 
+  Bell, 
+  CheckCircle, 
+  Truck, 
+  Shield, 
+  Clock, 
+  Sun, 
+  Battery, 
+  Zap, 
+  Cpu,
+  Search,
+  Filter,
+  Star,
+  Heart,
+  ChevronDown
+} from "lucide-react";
+import Reveal from "../components/Reveal";
+
+const products = [
+  {
+    id: 1,
+    name: "MGB 3-Phase Series 9",
+    category: "Switchgear",
+    price: 4280,
+    sku: "SSE-MCB-893",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    rating: 4.8,
+    reviews: 24,
+  },
+  {
+    id: 2,
+    name: "Solar Inverter 5kW Hybrid",
+    category: "Solar",
+    price: 84500,
+    sku: "SSE-SOL-5000",
+    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    rating: 4.9,
+    reviews: 18,
+  },
+  {
+    id: 3,
+    name: "Industrial LED Highbay 150W",
+    category: "Lighting",
+    price: 6920,
+    sku: "SSE-LED-150",
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    rating: 4.7,
+    reviews: 31,
+  },
+  {
+    id: 4,
+    name: "Modular Control Panel",
+    category: "Panels",
+    price: 1420000,
+    sku: "SSE-PNL-MCP",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    rating: 4.6,
+    reviews: 12,
+  },
+  {
+    id: 5,
+    name: "Solar Battery 200Ah Gel",
+    category: "Solar",
+    price: 42000,
+    sku: "SSE-BAT-200",
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    rating: 4.8,
+    reviews: 15,
+  },
+  {
+    id: 6,
+    name: "Distribution Board 12-Way",
+    category: "Panels",
+    price: 6500,
+    sku: "SSE-DB-12",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    rating: 4.5,
+    reviews: 8,
+  },
+];
+
+const categories = ["All", "Switchgear", "Solar", "Lighting", "Panels", "Batteries"];
 
 export default function ShopPage() {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredProducts = products.filter((p) => {
+    const matchesCategory = activeCategory === "All" || p.category === activeCategory;
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   return (
     <div className="section-padding section-alt min-h-screen">
       <div className="container-custom">
         {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
-          </Link>
-          <div className="flex items-center gap-4">
-            <h1 className="heading-lg text-[var(--color-primary)]">SunSea Store</h1>
-            <span className="badge badge-highlight text-sm">Coming Soon</span>
-          </div>
-          <p className="text-[var(--color-muted)] mt-2">
-            Premium electrical equipment and solar solutions delivered to your doorstep.
-          </p>
-        </div>
-
-        {/* Hero Banner */}
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] p-8 md:p-12 mb-12">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat" />
-          </div>
-          <div className="relative z-10 text-center text-white">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6">
-              <Bell className="w-4 h-4" />
-              <span className="text-sm font-medium">Get notified when we launch</span>
+        <Reveal>
+          <div className="mb-8">
+            <Link
+              href="/"
+              className="inline-flex items-center text-[var(--color-muted)] hover:text-[#f9ad07] transition-colors mb-4"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
+            </Link>
+            <div className="flex items-center gap-4">
+              <h1 className="heading-lg text-[#00255e] dark:text-white">SunSea Store</h1>
+              <span className="badge badge-highlight text-sm">Coming Soon</span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold">Your One-Stop Electrical Shop</h2>
-            <p className="text-white/80 mt-2 max-w-lg mx-auto">
-              From solar panels to smart home devices — we're bringing quality electrical
-              products directly to you.
+            <p className="text-gray-500 dark:text-gray-400 mt-2">
+              Premium electrical equipment and solar solutions delivered to your doorstep.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-6">
+          </div>
+        </Reveal>
+
+        {/* Search & Filter */}
+        <Reveal delay={0.08}>
+          <div className="flex flex-wrap items-center gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
+            <div className="flex-1 min-w-[200px] relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
-                type="email"
-                placeholder="Enter your email"
-                className="px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-[var(--color-highlight)] min-w-[250px]"
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input-field pl-10"
               />
-              <button className="px-6 py-3 bg-[var(--color-highlight)] text-[#00255e] rounded-xl font-medium hover:bg-[#e09c00] transition-colors">
-                Notify Me
-              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    activeCategory === cat
+                      ? "bg-[#f9ad07] text-[#00255e] shadow-lg shadow-[#f9ad07]/30"
+                      : "bg-white dark:bg-[#1a1f2e] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#f9ad07]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
-        </div>
+        </Reveal>
 
-        {/* Coming Soon Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {[
-            {
-              icon: Sun,
-              title: "Solar Panels",
-              desc: "High-efficiency panels for homes and businesses",
-              bg: "bg-[var(--color-highlight-soft)] text-[var(--color-highlight)]",
-            },
-            {
-              icon: Battery,
-              title: "Inverters & Batteries",
-              desc: "Reliable energy storage solutions",
-              bg: "bg-[var(--color-accent-soft)] text-[var(--color-accent)]",
-            },
-            {
-              icon: Zap,
-              title: "Wiring & Accessories",
-              desc: "Premium cables, switches, and fittings",
-              bg: "bg-[var(--color-primary-soft)] text-[var(--color-primary)]",
-            },
-            {
-              icon: Cpu,
-              title: "Smart Home Devices",
-              desc: "Automation and IoT solutions",
-              bg: "bg-[var(--color-primary-soft)] text-[var(--color-primary-light)]",
-            },
-          ].map((item) => (
-            <div key={item.title} className="card p-6 text-center card-hover group">
-              <div className={`w-16 h-16 ${item.bg} rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform duration-300 group-hover:scale-110`}>
-                <item.icon className="w-8 h-8" />
+        {/* Products Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.map((product, index) => (
+            <Reveal key={product.id} delay={index * 0.06}>
+              <div
+                className="card overflow-hidden hover-lift group border border-gray-100 dark:border-gray-800 h-full"
+              >
+                <div className="relative h-52 bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <span className="absolute top-3 right-3 px-2 py-1 bg-[#f9ad07] text-[#00255e] text-xs font-bold rounded-lg">
+                    {product.category}
+                  </span>
+                  <button className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/90 dark:bg-gray-800/90 hover:bg-[#f9ad07] transition-colors">
+                    <Heart className="w-4 h-4 text-gray-500 hover:text-white transition-colors" />
+                  </button>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-1 text-[#f9ad07] mb-1">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">({product.reviews})</span>
+                  </div>
+                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm line-clamp-2">
+                    {product.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{product.sku}</p>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                    <span className="text-lg font-bold text-[#f9ad07]">
+                      KES {product.price.toLocaleString()}
+                    </span>
+                    <button className="px-3 py-1.5 bg-[#f9ad07] text-[#00255e] rounded-lg text-xs font-semibold hover:bg-[#e09c00] transition-colors flex items-center gap-1">
+                      <ShoppingBag className="w-3.5 h-3.5" /> Add to Cart
+                    </button>
+                  </div>
+                </div>
               </div>
-              <h3 className="font-semibold text-[var(--color-foreground)]">{item.title}</h3>
-              <p className="text-sm text-[var(--color-muted)] mt-1">{item.desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
 
+        {filteredProducts.length === 0 && (
+          <Reveal>
+            <div className="text-center py-20">
+              <Search className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-[#00255e] dark:text-white">No products found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your search or filter.</p>
+            </div>
+          </Reveal>
+        )}
+
         {/* Why Shop With Us */}
-        <div className="mb-12">
-          <h2 className="heading-md text-[var(--color-primary)] text-center mb-8">Why Shop With SunSea</h2>
+        <div className="mt-16">
+          <Reveal>
+            <h2 className="heading-md text-[#00255e] dark:text-white text-center mb-8">Why Shop With SunSea</h2>
+          </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { icon: Shield, title: "Quality Guaranteed", desc: "All products are sourced from trusted manufacturers" },
               { icon: Truck, title: "Fast Delivery", desc: "Nationwide delivery with real-time tracking" },
               { icon: Clock, title: "Expert Support", desc: "Technical support available 7 days a week" },
-            ].map((item) => (
-              <div key={item.title} className="card p-6 text-center hover-lift">
-                <div className="w-14 h-14 bg-[var(--color-primary-icon-bg)] rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-7 h-7 text-[var(--color-primary)]" />
+            ].map((item, i) => (
+              <Reveal key={item.title} delay={i * 0.08}>
+                <div className="card p-6 text-center hover-lift border border-gray-100 dark:border-gray-800 h-full">
+                  <div className="w-14 h-14 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <item.icon className="w-7 h-7 text-[#f9ad07]" />
+                  </div>
+                  <h3 className="font-semibold text-[#00255e] dark:text-white">{item.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{item.desc}</p>
                 </div>
-                <h3 className="font-semibold text-[var(--color-foreground)]">{item.title}</h3>
-                <p className="text-sm text-[var(--color-muted)] mt-1">{item.desc}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
-        </div>
-
-        {/* Launch Countdown */}
-        <div className="card p-8 md:p-12 text-center border-2 border-[var(--color-highlight-soft)]">
-          <h3 className="text-xl font-bold text-[var(--color-primary)] mb-2">Launching Soon</h3>
-          <p className="text-[var(--color-muted)] mb-6">We're preparing something amazing for you</p>
-          <div className="flex justify-center gap-4">
-            {[
-              { value: "14", label: "Days" },
-              { value: "08", label: "Hours" },
-              { value: "45", label: "Minutes" },
-              { value: "30", label: "Seconds" },
-            ].map((time) => (
-              <div key={time.label} className="bg-[var(--color-section-alt)] rounded-xl p-4 min-w-[70px] border border-[var(--color-card-border)]">
-                <span className="text-2xl font-bold text-[var(--color-primary)]">{time.value}</span>
-                <p className="text-xs text-[var(--color-muted)]">{time.label}</p>
-              </div>
-            ))}
-          </div>
-          <button className="btn-primary mt-6">
-            Get Early Access
-          </button>
         </div>
       </div>
     </div>

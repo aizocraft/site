@@ -97,13 +97,14 @@ const projects = [
 ];
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function ProjectDetailPage({ params }: ProjectPageProps) {
-  const project = projects.find((p) => p.slug === params.slug);
+export default async function ProjectDetailPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
 
   if (!project) {
     notFound();
@@ -141,19 +142,19 @@ export default function ProjectDetailPage({ params }: ProjectPageProps) {
               </span>
             </div>
 
-            <h1 className="heading-lg text-[var(--color-primary)] mt-4">{project.title}</h1>
+            <h1 className="heading-lg text-[#00255e] dark:text-white mt-4">{project.title}</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
               {project.stats.map((stat) => (
                 <div key={stat.label} className="bg-[var(--color-section-alt)] rounded-xl p-4 text-center border border-[var(--color-card-border)]">
-                  <p className="text-lg font-bold text-[var(--color-primary)]">{stat.value}</p>
+                  <p className="text-lg font-bold text-[#00255e] dark:text-white">{stat.value}</p>
                   <p className="text-sm text-[var(--color-muted)]">{stat.label}</p>
                 </div>
               ))}
             </div>
 
             <div className="mt-8 pt-8 border-t border-[var(--color-card-border)]">
-              <h2 className="text-xl font-bold text-[var(--color-foreground)] mb-4">Project Overview</h2>
+              <h2 className="text-xl font-bold text-[#00255e] dark:text-white mb-4">Project Overview</h2>
               <p className="text-[var(--color-muted)] leading-relaxed">{project.description}</p>
               <p className="text-[var(--color-muted)] leading-relaxed mt-4">{project.details}</p>
             </div>
@@ -171,7 +172,7 @@ export default function ProjectDetailPage({ params }: ProjectPageProps) {
 
         {/* Related Projects */}
         <div className="mt-12">
-          <h2 className="text-xl font-bold text-[var(--color-foreground)] mb-6">Related Projects</h2>
+          <h2 className="text-xl font-bold text-[#00255e] dark:text-white mb-6">Related Projects</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {projects
               .filter((p) => p.slug !== project.slug && p.category === project.category)
@@ -193,7 +194,7 @@ export default function ProjectDetailPage({ params }: ProjectPageProps) {
                   </div>
                   <div className="p-4">
                     <span className="badge badge-accent text-xs">{related.category}</span>
-                    <h3 className="font-semibold text-[var(--color-foreground)] mt-1 group-hover:text-[var(--color-accent)] transition-colors">{related.title}</h3>
+                    <h3 className="font-semibold text-[#00255e] dark:text-white mt-1 group-hover:text-[var(--color-accent)] transition-colors">{related.title}</h3>
                     <p className="text-sm text-[var(--color-muted)]">{related.location}</p>
                   </div>
                 </Link>
