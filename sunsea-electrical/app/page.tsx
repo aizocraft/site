@@ -137,12 +137,12 @@ export default function HomePage() {
                 </span>
               </div>
 
-<h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold text-[#00255e] dark:text-white leading-[1.1]">
+<h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold text-[#00255e] dark:text-[#f9ad07] leading-[1.1]">
                 {" "}
-                <span className="text-[#f9ad07]">Powering Infrastructure Through Precision Engineering</span>
+                <span className="text-[#00255e] dark:text-[#f9ad07]">Powering Infrastructure Through Precision Engineering</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-xl">
+              <p className="text-lg md:text-xl text-[#008ad2] dark:text-gray-300 leading-relaxed max-w-xl">
                 A full-service electrical engineering practice — from substations to solar plants,
                 from the panel board to the cloud.
               </p>
@@ -207,8 +207,8 @@ export default function HomePage() {
                     <Target className="w-6 h-6 text-[#f9ad07]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[#f9ad07] dark:text-[#f9ad07]">Our Mission</h3>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
+                    <h3 className="text-lg font-bold text-[#00255e] dark:text-[#f9ad07]">Our Mission</h3>
+                    <p className="text-sm md:text-base text-[#008ad2] dark:text-gray-300 mt-1.5 leading-relaxed">
                       To deliver reliable, innovative and sustainable electrical solutions that
                       empower homes, businesses and industries — ensuring safety, efficiency and
                       uninterrupted power for every client we serve.
@@ -224,8 +224,8 @@ export default function HomePage() {
                     <Eye className="w-6 h-6 text-[#f9ad07]" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[#f9ad07] dark:text-[#f9ad07]">Our Vision</h3>
-                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
+                    <h3 className="text-lg font-bold text-[#00255e] dark:text-[#f9ad07]">Our Vision</h3>
+                    <p className="text-sm md:text-base text-[#008ad2] dark:text-gray-300 mt-1.5 leading-relaxed">
                       To be East Africa&apos;s most trusted electrical engineering partner —
                       leading the region&apos;s transition to smart, clean and resilient energy
                       infrastructure.
@@ -243,8 +243,8 @@ export default function HomePage() {
                         <item.icon className="w-5 h-5 text-[#f9ad07]" />
                       </div>
                       <div>
-<p className="font-semibold text-[#f9ad07] dark:text-[#f9ad07] text-sm">{item.title}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">{item.desc}</p>
+<p className="font-semibold text-[#00255e] dark:text-[#f9ad07] text-sm">{item.title}</p>
+                        <p className="text-xs text-[#008ad2] dark:text-gray-400 mt-0.5 leading-relaxed">{item.desc}</p>
                       </div>
                     </div>
                   </Reveal>
@@ -273,7 +273,7 @@ export default function HomePage() {
       <section id="services" className="section-padding bg-page-alt">
         <div className="container-custom">
 <Reveal className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="heading-lg text-[#00255e] dark:text-white">
+            <h2 className="heading-lg text-[#00255e] dark:text-[#f9ad07]">
               Our Services
             </h2>
           </Reveal>
@@ -285,8 +285,8 @@ export default function HomePage() {
                   <div className="w-14 h-14 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#f9ad07] transition-colors duration-300">
                     <service.icon className="w-7 h-7 text-[#f9ad07] group-hover:text-[#00255e] transition-colors duration-300" />
                   </div>
-<h3 className="font-semibold text-[#f9ad07] dark:text-[#f9ad07]text-lg">{service.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{service.desc}</p>
+<h3 className="font-semibold text-[#00255e] dark:text-[#f9ad07] text-lg">{service.title}</h3>
+                  <p className="text-sm text-[#008ad2] dark:text-gray-300 mt-1">{service.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -302,8 +302,8 @@ export default function HomePage() {
         <div className="container-custom">
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-accent">Our Process</span>
-            <h2 className="heading-lg text-[#00255e] dark:text-white mt-2">How We Work</h2>
-            <p className="text-gray-600 dark:text-gray-300 mt-3">A streamlined approach from consultation to completion</p>
+            <h2 className="heading-lg text-[#00255e] dark:text-[#f9ad07] mt-2">How We Work</h2>
+            <p className="text-[#008ad2] dark:text-gray-300 mt-3">A streamlined approach from consultation to completion</p>
           </Reveal>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -313,7 +313,7 @@ export default function HomePage() {
                   <div className="w-14 h-14 mx-auto bg-[#f9ad07] rounded-xl flex items-center justify-center text-[#00255e] font-bold text-xl mb-3 shadow-lg shadow-[#f9ad07]/20 group-hover:scale-110 transition-all duration-300">
                     {step.number}
                   </div>
-<p className="text-sm font-semibold text-[#f9ad07] dark:text-[#f9ad07] ">{step.title}</p>
+<p className="text-sm font-semibold text-[#00255e] dark:text-[#f9ad07] ">{step.title}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{step.desc}</p>
                 </div>
               </Reveal>
@@ -327,7 +327,7 @@ export default function HomePage() {
         <div className="container-custom">
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-primary">Industries</span>
-            <h2 className="heading-lg text-[#00255e] dark:text-white mt-2">Serving Diverse Sectors</h2>
+            <h2 className="heading-lg text-[#00255e] dark:text-[#f9ad07] mt-2">Serving Diverse Sectors</h2>
           </Reveal>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {industries.map((industry, index) => (
@@ -336,7 +336,7 @@ export default function HomePage() {
                   <div className="w-14 h-14 mx-auto mb-3 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center group-hover:bg-[#f9ad07] transition-colors duration-300">
                     <industry.icon className="w-7 h-7 text-[#f9ad07] group-hover:text-[#00255e] transition-colors duration-300" />
                   </div>
-<p className="font-medium text-[#f9ad07] dark:text-[#f9ad07] text-sm">{industry.title}</p>
+<p className="font-medium text-[#00255e] dark:text-[#f9ad07] text-sm">{industry.title}</p>
                 </div>
               </Reveal>
             ))}
@@ -349,8 +349,8 @@ export default function HomePage() {
         <div className="container-custom">
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-accent">Portfolio</span>
-            <h2 className="heading-lg text-[#00255e] dark:text-white mt-2">Featured Projects</h2>
-            <p className="text-gray-600 dark:text-gray-300 mt-3">Explore some of our recent electrical projects across Kenya</p>
+            <h2 className="heading-lg text-[#00255e] dark:text-[#f9ad07] mt-2">Featured Projects</h2>
+            <p className="text-[#008ad2] dark:text-gray-300 mt-3">Explore some of our recent electrical projects across Kenya</p>
           </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {projects.map((project, index) => (
@@ -367,7 +367,7 @@ export default function HomePage() {
                   </div>
                   <div className="p-5">
                     <span className="badge badge-accent text-xs">{project.category}</span>
-<h3 className="font-bold text-[#f9ad07] dark:text-[#f9ad07] mt-2 group-hover:text-[#f9ad07] transition-colors">
+<h3 className="font-bold text-[#00255e] dark:text-[#f9ad07] mt-2 group-hover:text-[#f9ad07] transition-colors">
                       {project.title}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">{project.location}</p>

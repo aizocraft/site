@@ -39,16 +39,16 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 overflow-x-hidden ${
         scrolled
           ? "bg-[var(--color-nav-bg-scrolled)] backdrop-blur-2xl shadow-lg border-b border-[var(--color-nav-border)]"
           : "bg-[var(--color-nav-bg)] backdrop-blur-xl border-b border-transparent"
       }`}
     >
-      <div className="container-custom">
-        <div className="flex items-center justify-between h-16 md:h-20">
+      <div className="container-custom w-full max-w-full">
+        <div className="flex items-center justify-between h-16 md:h-20 min-w-0">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 md:gap-3 group">
+          <Link href="/" className="flex items-center gap-2 md:gap-3 group min-w-0">
             <div className="relative w-8 h-8 md:w-10 md:h-10 transition-transform duration-300 group-hover:scale-105">
               <Image
                 src="/favicon.png"
@@ -110,7 +110,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Right */}
-          <div className="flex lg:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-1.5 min-w-0">
             <button
               onClick={toggleTheme}
               className="theme-toggle p-2 rounded-xl bg-[var(--color-nav-toggle-bg)] hover:bg-[var(--color-nav-toggle-hover)] text-[var(--color-nav-icon)] transition-all duration-300"
@@ -135,8 +135,8 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden bg-[var(--color-nav-bg-scrolled)] backdrop-blur-2xl border-t border-[var(--color-nav-border)] transition-all duration-300">
-          <div className="container-custom py-4 space-y-1">
+        <div className="lg:hidden bg-[var(--color-nav-bg-scrolled)] backdrop-blur-2xl border-t border-[var(--color-nav-border)] transition-all duration-300 overflow-x-hidden">
+          <div className="container-custom w-full max-w-full py-4 space-y-1 px-3 sm:px-4">
             {navLinks.map((link) => (
               <Link
                 key={link.name}

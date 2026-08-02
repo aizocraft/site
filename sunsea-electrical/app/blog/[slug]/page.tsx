@@ -19,7 +19,7 @@ function renderInline(text: string, keyPrefix: string) {
   const parts = text.split(/\*\*(.+?)\*\*/g);
   return parts.map((part, i) =>
     i % 2 === 1 ? (
-      <strong key={`${keyPrefix}-b-${i}`} className="font-bold text-[#00255e] dark:text-white">
+      <strong key={`${keyPrefix}-b-${i}`} className="font-bold text-[#00255e] dark:text-[#f9ad07]">
         {part}
       </strong>
     ) : (
@@ -173,7 +173,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
 
           {/* Title - enhanced dark mode */}
           <Reveal delay={0.15}>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#f9ad07] dark:text-[#f9ad07]  mb-4 leading-tight">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#00255e] dark:text-[#f9ad07] mb-4 leading-tight">
               {post.title}
             </h1>
           </Reveal>
@@ -196,7 +196,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           {/* Content - enhanced dark mode */}
           <Reveal delay={0.25}>
             <div className="bg-white dark:bg-[#1a1f2e] border border-gray-200 dark:border-gray-700 rounded-2xl p-6 md:p-10 shadow-sm transition-all duration-300 hover:shadow-md">
-              <div className="max-w-none prose-headings:text-[#00255e] dark:prose-headings:text-white">
+              <div className="max-w-none prose-headings:text-[#00255e] dark:prose-headings:text-[#f9ad07]">
                 {renderContent(post.content)}
               </div>
             </div>
@@ -206,7 +206,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           <Reveal delay={0.1}>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-[#00255e] dark:text-white">Share this article</span>
+                <span className="text-sm font-semibold text-[#00255e] dark:text-[#f9ad07]">Share this article</span>
                 <button className="p-2 rounded-xl bg-gray-100 dark:bg-[#1a1f2e] hover:bg-[#f9ad07]/10 text-gray-500 dark:text-gray-400 hover:text-[#f9ad07] transition-all duration-300 hover:scale-110 active:scale-95" aria-label="Share article">
                   <Share2 className="w-4 h-4" />
                 </button>
@@ -228,7 +228,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
         {relatedPosts.length > 0 && (
           <div className="mt-16">
             <Reveal>
-              <h2 className="text-2xl font-bold text-[#00255e] dark:text-white mb-6">
+              <h2 className="text-2xl font-bold text-[#00255e] dark:text-[#f9ad07] mb-6">
                 Related Articles
               </h2>
             </Reveal>
@@ -250,7 +250,7 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
                     </div>
                     <div className="p-4">
                       <span className="badge badge-accent text-[10px]">{related.category}</span>
-                      <h3 className="font-bold text-[#00255e] dark:text-white mt-2 text-sm group-hover:text-[#f9ad07] transition-colors duration-300 line-clamp-2">
+                      <h3 className="font-bold text-[#00255e] dark:text-[#f9ad07] mt-2 text-sm group-hover:text-[#f9ad07] transition-colors duration-300 line-clamp-2">
                         {related.title}
                       </h3>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">

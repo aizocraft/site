@@ -34,8 +34,8 @@ export default function BlogPage() {
             >
               <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
             </Link>
-            <h1 className="heading-lg text-[#00255e] dark:text-white">SunSea Blog</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">
+            <h1 className="heading-lg text-[#00255e] dark:text-[#f9ad07]">SunSea Blog</h1>
+            <p className="text-[#008ad2] dark:text-gray-400 mt-2 text-lg">
               Insights, guides, and news from Kenya&apos;s trusted electrical engineers.
             </p>
           </div>
@@ -98,10 +98,10 @@ export default function BlogPage() {
                         {post.readTime}
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold text-[#f9ad07] dark:text-[#f9ad07]  group-hover:text-[#f9ad07] transition-colors duration-300 line-clamp-2">
+                    <h3 className="text-lg font-bold text-[#00255e] dark:text-[#f9ad07] group-hover:text-[#f9ad07] transition-colors duration-300 line-clamp-2">
                       {post.title}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-2 leading-relaxed">
+                    <p className="text-sm text-[#008ad2] dark:text-gray-400 mt-2 line-clamp-2 leading-relaxed">
                       {post.excerpt}
                     </p>
                     <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--color-card-border)] mt-auto">

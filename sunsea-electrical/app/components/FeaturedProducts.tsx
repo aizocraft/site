@@ -48,7 +48,7 @@ export default function FeaturedProducts() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
               <span className="badge badge-highlight text-sm">Featured Products</span>
-              <h2 className="heading-lg text-[#00255e] dark:text-white mt-2">Shop Our Top Sellers</h2>
+              <h2 className="heading-lg text-[#00255e] dark:text-[#f9ad07] mt-2">Shop Our Top Sellers</h2>
             </div>
             <Link
               href="/shop"
@@ -83,7 +83,7 @@ export default function FeaturedProducts() {
                     <Star className="w-3 h-3 fill-current" />
                     <Star className="w-3 h-3 fill-current" />
                   </div>
-<h3 className="font-semibold text-[#f9ad07] dark:text-[#f9ad07] text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
+<h3 className="font-semibold text-[#00255e] dark:text-[#f9ad07] text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
                     {product.name}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{product.sku}</p>
