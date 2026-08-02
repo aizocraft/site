@@ -107,7 +107,7 @@ export default function ShopPage() {
           <div className="mb-8">
             <Link
               href="/"
-              className="inline-flex items-center text-[var(--color-muted)] hover:text-[#f9ad07] transition-colors mb-4"
+              className="inline-flex items-center text-gray-500 dark:text-gray-400 hover:text-[#f9ad07] transition-all duration-300 hover:scale-[1.05] active:scale-95 mb-4"
             >
               <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
             </Link>
@@ -125,13 +125,13 @@ export default function ShopPage() {
         <Reveal delay={0.08}>
           <div className="flex flex-wrap items-center gap-4 mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
             <div className="flex-1 min-w-[200px] relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-field pl-10"
+                className="input-field pl-10 transition-all duration-300 hover:border-[#f9ad07]/50"
               />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -139,7 +139,7 @@ export default function ShopPage() {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.05] active:scale-95 ${
                     activeCategory === cat
                       ? "bg-[#f9ad07] text-[#00255e] shadow-lg shadow-[#f9ad07]/30"
                       : "bg-white dark:bg-[#1a1f2e] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#f9ad07]"
@@ -156,9 +156,7 @@ export default function ShopPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product, index) => (
             <Reveal key={product.id} delay={index * 0.06}>
-              <div
-                className="card overflow-hidden hover-lift group border border-gray-100 dark:border-gray-800 h-full"
-              >
+              <div className="card overflow-hidden hover-lift group border border-gray-100 dark:border-gray-800 h-full transition-all duration-300 hover:border-[#f9ad07] product-card">
                 <div className="relative h-52 bg-gray-100 dark:bg-gray-800 overflow-hidden">
                   <Image
                     src={product.image}
@@ -167,11 +165,11 @@ export default function ShopPage() {
                     height={300}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span className="absolute top-3 right-3 px-2 py-1 bg-[#f9ad07] text-[#00255e] text-xs font-bold rounded-lg">
+                  <span className="absolute top-3 right-3 px-2 py-1 bg-[#f9ad07] text-[#00255e] text-xs font-bold rounded-lg transition-all duration-300 group-hover:scale-105">
                     {product.category}
                   </span>
-                  <button className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/90 dark:bg-gray-800/90 hover:bg-[#f9ad07] transition-colors">
-                    <Heart className="w-4 h-4 text-gray-500 hover:text-white transition-colors" />
+                  <button className="absolute top-3 left-3 p-1.5 rounded-lg bg-white/90 dark:bg-gray-800/90 hover:bg-[#f9ad07] transition-all duration-300 hover:scale-110 active:scale-90">
+                    <Heart className="w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-white transition-colors duration-300" />
                   </button>
                 </div>
                 <div className="p-4">
@@ -183,7 +181,7 @@ export default function ShopPage() {
                     <Star className="w-3.5 h-3.5 fill-current" />
                     <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">({product.reviews})</span>
                   </div>
-                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm line-clamp-2">
+                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
                     {product.name}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{product.sku}</p>
@@ -191,7 +189,7 @@ export default function ShopPage() {
                     <span className="text-lg font-bold text-[#f9ad07]">
                       KES {product.price.toLocaleString()}
                     </span>
-                    <button className="px-3 py-1.5 bg-[#f9ad07] text-[#00255e] rounded-lg text-xs font-semibold hover:bg-[#e09c00] transition-colors flex items-center gap-1">
+                    <button className="px-3 py-1.5 bg-[#f9ad07] text-[#00255e] rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-[#e09c00] hover:scale-[1.05] active:scale-95 flex items-center gap-1">
                       <ShoppingBag className="w-3.5 h-3.5" /> Add to Cart
                     </button>
                   </div>
@@ -204,7 +202,7 @@ export default function ShopPage() {
         {filteredProducts.length === 0 && (
           <Reveal>
             <div className="text-center py-20">
-              <Search className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <Search className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4 transition-all duration-300 hover:scale-110" />
               <h3 className="text-xl font-bold text-[#00255e] dark:text-white">No products found</h3>
               <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your search or filter.</p>
             </div>
@@ -223,9 +221,9 @@ export default function ShopPage() {
               { icon: Clock, title: "Expert Support", desc: "Technical support available 7 days a week" },
             ].map((item, i) => (
               <Reveal key={item.title} delay={i * 0.08}>
-                <div className="card p-6 text-center hover-lift border border-gray-100 dark:border-gray-800 h-full">
-                  <div className="w-14 h-14 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <item.icon className="w-7 h-7 text-[#f9ad07]" />
+                <div className="card p-6 text-center hover-lift border border-gray-100 dark:border-gray-800 h-full transition-all duration-300 hover:border-[#f9ad07]">
+                  <div className="w-14 h-14 bg-[#f9ad07]/10 rounded-xl flex items-center justify-center mx-auto mb-4 transition-all duration-300 group-hover:bg-[#f9ad07]">
+                    <item.icon className="w-7 h-7 text-[#f9ad07] transition-colors duration-300 group-hover:text-[#00255e]" />
                   </div>
                   <h3 className="font-semibold text-[#00255e] dark:text-white">{item.title}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{item.desc}</p>
@@ -238,4 +236,3 @@ export default function ShopPage() {
     </div>
   );
 }
-

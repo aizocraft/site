@@ -53,9 +53,9 @@ const services = [
     desc: "IoT-enabled lighting, security, and climate control for modern buildings."
   },
   {
-    icon: ClipboardCheck,
-    title: "Energy Audits",
-    desc: "Comprehensive energy assessments to optimize consumption and reduce costs."
+    icon: ShieldCheck,
+    title: "CCTV & Networking",
+    desc: "Comprehensive security systems and structured cabling for enterprise networks."
   },
   {
     icon: Settings,
@@ -115,7 +115,7 @@ const aboutHighlights = [
 export default function HomePage() {
   return (
     <>
-      {/* Hero Section - SunSea Style (full viewport width & height) */}
+      {/* Hero Section - SunSea style (full viewport width & height) */}
       <section className="relative w-full min-h-[calc(100vh-4rem)] md:min-h-[calc(100vh-5rem)] flex items-center overflow-hidden bg-[#f8f9fa] dark:bg-[#0a0e1a]">
         <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
           <div className="absolute inset-0" style={{
@@ -194,7 +194,7 @@ export default function HomePage() {
                 <h2 className="heading-lg text-[#00255e] dark:text-white mt-3">
                   Engineering Excellence, <span className="text-[#f9ad07]">Energizing Kenya</span>
                 </h2>
-                <p className="text-[var(--color-muted)] mt-4 text-lg leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 mt-4 text-lg leading-relaxed">
                   SunSea Electrical is a full-service electrical engineering company delivering
                   safe, efficient and future-ready power solutions across Kenya since 2010.
                 </p>
@@ -208,7 +208,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-[#00255e] dark:text-white">Our Mission</h3>
-                    <p className="text-sm md:text-base text-[var(--color-muted)] mt-1.5 leading-relaxed">
+                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
                       To deliver reliable, innovative and sustainable electrical solutions that
                       empower homes, businesses and industries — ensuring safety, efficiency and
                       uninterrupted power for every client we serve.
@@ -225,7 +225,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-[#00255e] dark:text-white">Our Vision</h3>
-                    <p className="text-sm md:text-base text-[var(--color-muted)] mt-1.5 leading-relaxed">
+                    <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1.5 leading-relaxed">
                       To be East Africa&apos;s most trusted electrical engineering partner —
                       leading the region&apos;s transition to smart, clean and resilient energy
                       infrastructure.
@@ -244,7 +244,7 @@ export default function HomePage() {
                       </div>
                       <div>
                         <p className="font-semibold text-[#00255e] dark:text-white text-sm">{item.title}</p>
-                        <p className="text-xs text-[var(--color-muted)] mt-0.5 leading-relaxed">{item.desc}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5 leading-relaxed">{item.desc}</p>
                       </div>
                     </div>
                   </Reveal>
@@ -286,7 +286,7 @@ export default function HomePage() {
                     <service.icon className="w-7 h-7 text-[#f9ad07] group-hover:text-[#00255e] transition-colors duration-300" />
                   </div>
                   <h3 className="font-semibold text-[#00255e] dark:text-white text-lg">{service.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{service.desc}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{service.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -303,7 +303,7 @@ export default function HomePage() {
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-accent">Our Process</span>
             <h2 className="heading-lg text-[#00255e] dark:text-white mt-2">How We Work</h2>
-            <p className="text-[var(--color-muted)] mt-3">A streamlined approach from consultation to completion</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-3">A streamlined approach from consultation to completion</p>
           </Reveal>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -350,7 +350,7 @@ export default function HomePage() {
           <Reveal className="text-center max-w-2xl mx-auto mb-12">
             <span className="badge badge-accent">Portfolio</span>
             <h2 className="heading-lg text-[#00255e] dark:text-white mt-2">Featured Projects</h2>
-            <p className="text-[var(--color-muted)] mt-3">Explore some of our recent electrical projects across Kenya</p>
+            <p className="text-gray-600 dark:text-gray-300 mt-3">Explore some of our recent electrical projects across Kenya</p>
           </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {projects.map((project, index) => (
@@ -392,4 +392,3 @@ export default function HomePage() {
     </>
   );
 }
-

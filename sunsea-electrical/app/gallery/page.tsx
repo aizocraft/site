@@ -241,14 +241,14 @@ function Lightbox({
                 e.stopPropagation();
                 setIsZoomed(!isZoomed);
               }}
-              className="rounded-full bg-black/50 backdrop-blur-sm p-2 text-white transition-colors hover:bg-black/70"
+              className="rounded-full bg-black/50 backdrop-blur-sm p-2 text-white transition-all duration-300 hover:bg-black/70 hover:scale-110 active:scale-95"
               aria-label="Toggle zoom"
             >
               {isZoomed ? <ZoomOut className="size-5" /> : <ZoomIn className="size-5" />}
             </button>
             <button
               onClick={onClose}
-              className="rounded-full bg-black/50 backdrop-blur-sm p-2 text-white transition-colors hover:bg-black/70"
+              className="rounded-full bg-black/50 backdrop-blur-sm p-2 text-white transition-all duration-300 hover:bg-black/70 hover:scale-110 active:scale-95"
               aria-label="Close lightbox"
             >
               <X className="size-5" />
@@ -263,7 +263,7 @@ function Lightbox({
                 e.stopPropagation();
                 goTo(-1);
               }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 backdrop-blur-sm p-3 text-white transition-all hover:bg-black/70 hover:scale-110"
+              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 backdrop-blur-sm p-3 text-white transition-all duration-300 hover:bg-black/70 hover:scale-110 active:scale-95"
               aria-label="Previous image"
             >
               <ArrowLeft className="size-6" />
@@ -273,7 +273,7 @@ function Lightbox({
                 e.stopPropagation();
                 goTo(1);
               }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 backdrop-blur-sm p-3 text-white transition-all hover:bg-black/70 hover:scale-110"
+              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 backdrop-blur-sm p-3 text-white transition-all duration-300 hover:bg-black/70 hover:scale-110 active:scale-95"
               aria-label="Next image"
             >
               <ArrowRight className="size-6" />
@@ -348,7 +348,7 @@ export default function GalleryPage() {
 
   return (
     <>
-      {/* Hero */}
+      {/* Hero - Reduced height for better mobile experience */}
       <section className="relative overflow-hidden bg-[#00255e] text-white">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -358,19 +358,19 @@ export default function GalleryPage() {
             `
           }} />
         </div>
-        <div className="container-custom relative z-10 pt-28 md:pt-36 pb-14 md:pb-20">
+        <div className="container-custom relative z-10 pt-20 md:pt-28 pb-10 md:pb-16">
           <Reveal direction="right">
-            <div className="flex items-center gap-2 text-sm text-white/60 mb-3">
-              <Link href="/" className="hover:text-[#f9ad07] transition-colors">
+            <div className="flex items-center gap-2 text-sm text-white/60 mb-2">
+              <Link href="/" className="hover:text-[#f9ad07] transition-colors duration-300">
                 Home
               </Link>
               <span className="text-white/40">/</span>
               <span className="text-white">Gallery</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mt-2">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold leading-tight mt-2">
               Our Electrical <span className="text-[#f9ad07]">Projects</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/70 mt-4 max-w-2xl">
+            <p className="text-base md:text-lg text-white/70 mt-3 max-w-2xl">
               Explore our portfolio of electrical installations, solar solutions, and industrial projects across Kenya.
             </p>
           </Reveal>
@@ -384,19 +384,19 @@ export default function GalleryPage() {
           <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               <div className="relative flex-1 md:flex-initial min-w-[200px]">
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search gallery..."
-                  className="h-11 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1f2e] pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-[#f9ad07] focus:outline-none focus:ring-2 focus:ring-[#f9ad07]/20 transition-all"
+                  className="h-11 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1f2e] pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-[#f9ad07] focus:outline-none focus:ring-2 focus:ring-[#f9ad07]/20 transition-all duration-300 hover:border-[#f9ad07]/50"
                 />
               </div>
               
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1f2e] text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#f9ad07] transition-all md:hidden"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1a1f2e] text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#f9ad07] transition-all duration-300 hover:scale-[1.02] active:scale-95 md:hidden"
               >
                 <Filter className="size-4" />
                 Categories
@@ -410,10 +410,10 @@ export default function GalleryPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all duration-300 hover:scale-[1.05] active:scale-95 ${
                       activeCategory === cat
                         ? "bg-[#f9ad07] text-[#00255e] shadow-lg shadow-[#f9ad07]/30"
-                        : "bg-white dark:bg-[#1a1f2e] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#f9ad07]"
+                        : "bg-white dark:bg-[#1a1f2e] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#f9ad07] hover:shadow-md"
                     }`}
                   >
                     {cat}
@@ -427,10 +427,10 @@ export default function GalleryPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-all duration-300 ${
                       activeCategory === cat
                         ? "bg-[#f9ad07] text-[#00255e] shadow-lg shadow-[#f9ad07]/30"
-                        : "bg-white dark:bg-[#1a1f2e] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+                        : "bg-white dark:bg-[#1a1f2e] text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-[#f9ad07]"
                     }`}
                   >
                     {cat}
@@ -444,7 +444,7 @@ export default function GalleryPage() {
                   <button
                     onClick={() => setViewMode("masonry")}
                     className={cn(
-                      "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                      "rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 hover:scale-[1.05] active:scale-95",
                       viewMode === "masonry"
                         ? "bg-[#f9ad07] text-[#00255e] shadow-lg shadow-[#f9ad07]/20"
                         : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
@@ -455,7 +455,7 @@ export default function GalleryPage() {
                   <button
                     onClick={() => setViewMode("grid")}
                     className={cn(
-                      "rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                      "rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 hover:scale-[1.05] active:scale-95",
                       viewMode === "grid"
                         ? "bg-[#f9ad07] text-[#00255e] shadow-lg shadow-[#f9ad07]/20"
                         : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
@@ -472,7 +472,7 @@ export default function GalleryPage() {
                 {(activeCategory !== "All" || searchQuery) && (
                   <button
                     onClick={clearFilters}
-                    className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-[#f9ad07] transition-colors"
+                    className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-[#f9ad07] transition-all duration-300 hover:scale-[1.05] active:scale-95"
                   >
                     <X className="size-3.5" />
                     Clear
@@ -485,8 +485,8 @@ export default function GalleryPage() {
           {/* Gallery Grid */}
           {filteredItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="mb-4 rounded-full bg-white dark:bg-[#1a1f2e] p-4 border border-gray-200 dark:border-gray-700">
-                <Search className="size-8 text-gray-400" />
+              <div className="mb-4 rounded-full bg-white dark:bg-[#1a1f2e] p-4 border border-gray-200 dark:border-gray-700 transition-all duration-300 hover:scale-105">
+                <Search className="size-8 text-gray-400 dark:text-gray-500" />
               </div>
               <h3 className="text-xl font-bold text-[#00255e] dark:text-white">No images found</h3>
               <p className="mt-2 text-gray-500 dark:text-gray-400 max-w-sm">
@@ -494,7 +494,7 @@ export default function GalleryPage() {
               </p>
               <button
                 onClick={clearFilters}
-                className="mt-6 rounded-xl bg-[#f9ad07] px-6 py-2.5 text-sm font-semibold text-[#00255e] transition-all hover:bg-[#e09c00]"
+                className="mt-6 rounded-xl bg-[#f9ad07] px-6 py-2.5 text-sm font-semibold text-[#00255e] transition-all duration-300 hover:bg-[#e09c00] hover:scale-[1.05] active:scale-95"
               >
                 Clear Filters
               </button>
@@ -543,13 +543,13 @@ export default function GalleryPage() {
                     </div>
                     
                     {/* Category Badge */}
-                    <span className="absolute top-3 left-3 rounded-full bg-[#f9ad07] px-2.5 py-0.5 text-[10px] font-bold text-[#00255e] opacity-0 transition-all duration-300 group-hover:opacity-100">
+                    <span className="absolute top-3 left-3 rounded-full bg-[#f9ad07] px-2.5 py-0.5 text-[10px] font-bold text-[#00255e] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 translate-y-2">
                       {item.category}
                     </span>
                     
                     {/* Expand Icon */}
-                    <span className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-white/90 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110">
-                      <Expand className="size-4 text-[#00255e]" />
+                    <span className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-white/90 dark:bg-[#1a1f2e]/90 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110 scale-90">
+                      <Expand className="size-4 text-[#00255e] dark:text-white" />
                     </span>
                     
                     {/* Info */}
@@ -591,17 +591,17 @@ export default function GalleryPage() {
         <div className="container-custom text-center">
           <Reveal>
             <div className="max-w-2xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Start Your Project?</h2>
-              <p className="text-white/80 text-lg mb-8">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">Ready to Start Your Project?</h2>
+              <p className="text-white/80 text-base md:text-lg mb-8">
                 Let's discuss your electrical engineering needs and bring your vision to life.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/#contact" className="btn-accent text-base py-3.5 px-8 bg-[#f9ad07] text-[#00255e] hover:bg-[#e09c00]">
+                <Link href="/#contact" className="btn-accent text-base py-3.5 px-8 hover:scale-[1.05] active:scale-95 transition-all duration-300">
                   Request a Quote
                 </Link>
                 <Link
                   href="/#services"
-                  className="inline-flex items-center px-8 py-3.5 bg-white/10 text-white border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300 font-semibold"
+                  className="inline-flex items-center px-8 py-3.5 bg-white/10 text-white border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-300 font-semibold hover:scale-[1.05] active:scale-95"
                 >
                   Our Services
                 </Link>

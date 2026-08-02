@@ -52,9 +52,9 @@ export default function FeaturedProducts() {
             </div>
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 text-[#f9ad07] hover:text-[#00255e] transition-colors font-semibold self-start sm:self-auto"
+              className="inline-flex items-center gap-2 text-[#f9ad07] hover:text-[#00255e] dark:hover:text-white transition-all duration-300 font-semibold hover:scale-[1.05] active:scale-95 self-start sm:self-auto"
             >
-              View All <ArrowRight className="w-4 h-4" />
+              View All <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </div>
         </Reveal>
@@ -62,7 +62,7 @@ export default function FeaturedProducts() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, index) => (
             <Reveal key={index} delay={index * 0.08}>
-              <div className="card overflow-hidden hover-lift group border border-gray-100 dark:border-gray-800 h-full">
+              <div className="card overflow-hidden hover-lift group border border-gray-100 dark:border-gray-800 h-full transition-all duration-300 hover:border-[#f9ad07] product-card">
                 <div className="relative h-48 bg-gray-100 dark:bg-gray-800 overflow-hidden">
                   <Image
                     src={product.image}
@@ -71,7 +71,7 @@ export default function FeaturedProducts() {
                     height={300}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span className="absolute top-3 right-3 px-2 py-1 bg-[#f9ad07] text-[#00255e] text-xs font-bold rounded-lg">
+                  <span className="absolute top-3 right-3 px-2 py-1 bg-[#f9ad07] text-[#00255e] text-xs font-bold rounded-lg transition-all duration-300 group-hover:scale-105">
                     {product.category}
                   </span>
                 </div>
@@ -83,13 +83,13 @@ export default function FeaturedProducts() {
                     <Star className="w-3 h-3 fill-current" />
                     <Star className="w-3 h-3 fill-current" />
                   </div>
-                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm line-clamp-2">
+                  <h3 className="font-semibold text-[#00255e] dark:text-white text-sm line-clamp-2 group-hover:text-[#f9ad07] transition-colors duration-300">
                     {product.name}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{product.sku}</p>
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                     <span className="text-lg font-bold text-[#f9ad07]">{product.price}</span>
-                    <button className="px-3 py-1.5 bg-[#f9ad07] text-[#00255e] rounded-lg text-xs font-semibold hover:bg-[#e09c00] transition-colors flex items-center gap-1">
+                    <button className="px-3 py-1.5 bg-[#f9ad07] text-[#00255e] rounded-lg text-xs font-semibold transition-all duration-300 hover:bg-[#e09c00] hover:scale-[1.05] active:scale-95 flex items-center gap-1">
                       <ShoppingBag className="w-3.5 h-3.5" /> Add to Cart
                     </button>
                   </div>
@@ -102,4 +102,3 @@ export default function FeaturedProducts() {
     </section>
   );
 }
-

@@ -85,7 +85,7 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3">
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all duration-300"
+              className="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-300"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? (
@@ -97,7 +97,7 @@ export default function Navbar() {
 
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-[#00255e] border-2 border-[#f9ad07] rounded-xl hover:bg-[#f9ad07] transition-all duration-300 text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-[#00255e] dark:text-white border-2 border-[#f9ad07] rounded-xl hover:bg-[#f9ad07] hover:text-[#00255e] transition-all duration-300 text-sm font-semibold"
             >
               <ShoppingBag className="w-4 h-4" />
               Shop
@@ -111,7 +111,7 @@ export default function Navbar() {
           <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all duration-300"
+              className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all duration-300"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? (
@@ -147,7 +147,7 @@ export default function Navbar() {
             ))}
             <Link
               href="/shop"
-              className="block py-3.5 px-4 text-[#00255e] hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-all font-semibold flex items-center gap-2"
+              className="block py-3.5 px-4 text-[#00255e] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-xl transition-all font-semibold flex items-center gap-2"
               onClick={() => setIsOpen(false)}
             >
               <ShoppingBag className="w-4 h-4" />

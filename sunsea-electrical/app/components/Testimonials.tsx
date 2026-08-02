@@ -41,10 +41,10 @@ export default function Testimonials() {
         </Reveal>
         <Reveal delay={0.1}>
           <div className="max-w-3xl mx-auto">
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-10 relative">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-10 relative transition-all duration-300 hover:border-white/20">
               <Quote className="absolute top-6 right-6 w-12 h-12 text-white/5" />
               <div className="flex items-center gap-4 mb-6">
-                <div className="relative w-16 h-16">
+                <div className="relative w-16 h-16 transition-all duration-300 hover:scale-105">
                   <Image
                     src={testimonials[index].image}
                     alt={testimonials[index].name}
@@ -68,14 +68,14 @@ export default function Testimonials() {
               <div className="flex justify-end mt-6 gap-2">
                 <button
                   onClick={prev}
-                  className="p-2 rounded-xl border border-white/20 hover:bg-white/10 hover:scale-105 transition-all"
+                  className="p-2 rounded-xl border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110 active:scale-95"
                   aria-label="Previous testimonial"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
                   onClick={next}
-                  className="p-2 rounded-xl border border-white/20 hover:bg-white/10 hover:scale-105 transition-all"
+                  className="p-2 rounded-xl border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110 active:scale-95"
                   aria-label="Next testimonial"
                 >
                   <ChevronRight className="w-5 h-5" />
@@ -88,4 +88,3 @@ export default function Testimonials() {
     </section>
   );
 }
-
