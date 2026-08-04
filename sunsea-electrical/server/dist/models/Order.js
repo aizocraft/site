@@ -1,0 +1,148 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+// src/models/Order.ts
+const mongoose_1 = __importStar(require("mongoose"));
+const orderItemSchema = new mongoose_1.Schema({
+    productId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'Product', required: true },
+    name: { type: String, required: true },
+    slug: { type: String, required: true },
+    image: { type: String, required: true },
+    sellingPrice: { type: Number, required: true },
+    buyingPrice: { type: Number, default: 0 },
+    profit: { type: Number, default: 0 },
+    qty: { type: Number, required: true, min: 1 },
+    description: { type: String }
+}, { _id: false });
+const orderSchema = new mongoose_1.Schema({
+    userId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'User', required: false, index: true },
+    guestInfo: {
+        email: { type: String, lowercase: true, trim: true },
+        phone: { type: String, trim: true },
+        name: { type: String, trim: true }
+    },
+    items: [orderItemSchema],
+    subtotal: { type: Number, required: true },
+    totalCost: { type: Number, default: 0 }, // Add this
+    totalProfit: { type: Number, default: 0 }, // Add this
+    shippingCost: { type: Number, default: 0 },
+    tax: { type: Number, default: 0 },
+    discount: { type: Number, default: 0 },
+    total: { type: Number, required: true },
+    status: {
+        type: String,
+        enum: ['pending', 'processing', 'paid', 'shipped', 'delivered', 'cancelled', 'refunded'],
+        default: 'pending'
+    },
+    paymentMethod: { type: String, enum: ['cod', 'mpesa', 'card', 'cash', 'bank_transfer', 'cheque'], required: true },
+    paymentStatus: {
+        type: String,
+        enum: ['unpaid', 'partially_paid', 'paid', 'overpaid', 'refunded'],
+        default: 'unpaid'
+    },
+    amountPaid: { type: Number, default: 0 },
+    balanceDue: { type: Number, default: 0 },
+    paymentDetails: {
+        transactionId: { type: String },
+        mpesaReceipt: { type: String },
+        cardLast4: { type: String },
+        cardBrand: { type: String },
+        paidAt: { type: Date },
+        phoneNumber: { type: String }
+    },
+    invoiceNumber: { type: String, unique: true, sparse: true, index: true },
+    quotationNumber: { type: String, index: true },
+    invoiceDate: { type: Date, default: Date.now },
+    dueDate: { type: Date },
+    invoiceSentAt: Date,
+    paymentTerms: { type: String, default: 'Due on receipt' },
+    stripeId: String,
+    selectedShippingArea: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'ShippingArea' },
+    appliedPromoCode: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'PromoCode' },
+    salesCustomerId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'SalesCustomer' },
+    quotationId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'Quotation' },
+    invoiceId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'Invoice' },
+    shippingAddress: {
+        fullName: { type: String, required: true },
+        address1: { type: String, required: true },
+        address2: String,
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        zip: { type: String, required: true },
+        country: { type: String, required: true, default: 'KE' },
+        phone: { type: String, required: true },
+        email: String
+    },
+    notes: String,
+    trackingNumber: String,
+    estimatedDelivery: Date
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+// Indexes
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ 'guestInfo.email': 1 });
+orderSchema.index({ invoiceNumber: 1 });
+orderSchema.index({ quotationNumber: 1 });
+// Virtual for order number
+orderSchema.virtual('orderNumber').get(function () {
+    return `ORD-${this._id.toString().slice(-8).toUpperCase()}`;
+});
+// Virtual for profit margin
+orderSchema.virtual('profitMargin').get(function () {
+    if (this.total && this.totalCost) {
+        return ((this.total - this.totalCost) / this.total) * 100;
+    }
+    return 0;
+});
+// Methods
+orderSchema.methods.canCancel = function () {
+    return ['pending', 'processing'].includes(this.status);
+};
+orderSchema.methods.canRefund = function () {
+    return ['paid', 'partially_paid'].includes(this.paymentStatus) &&
+        ['paid', 'shipped', 'delivered'].includes(this.status);
+};
+// Pre-save hook to calculate balance
+orderSchema.pre('save', function (next) {
+    this.balanceDue = Math.max(0, this.total - this.amountPaid);
+    next();
+});
+const OrderModel = mongoose_1.default.model('Order', orderSchema);
+exports.default = OrderModel;
+//# sourceMappingURL=Order.js.map
