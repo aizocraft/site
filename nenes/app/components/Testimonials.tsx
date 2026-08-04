@@ -7,7 +7,6 @@ import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 interface Testimonial {
   name: string;
   company: string;
-  image: string;
   quote: string;
 }
 
@@ -15,24 +14,18 @@ const testimonials: Testimonial[] = [
   {
     name: "James Mwangi",
     company: "Greenpark Developers",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
     quote:
       "Nenes Construction delivered our residential estate ahead of schedule. Exceptional craftsmanship, professional team, and flawless attention to detail. Highly recommended.",
   },
   {
     name: "Grace Akinyi",
     company: "Westside Properties",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
     quote:
       "The commercial tower project exceeded our expectations. Nenes's engineers demonstrated incredible expertise and commitment to quality construction.",
   },
   {
     name: "Peter Kamau",
     company: "Eldoret Industries",
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80",
     quote:
       "Our industrial warehouse was completed flawlessly. Nenes's project management and structural expertise have significantly improved our operations.",
   },
@@ -58,9 +51,9 @@ export default function Testimonials() {
           <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-10 relative hover:bg-white/10 transition-all duration-300">
             <Quote className="absolute top-6 right-6 w-12 h-12 text-white/5" />
             <div className="flex items-center gap-4 mb-6">
-              <div className="relative w-16 h-16">
+              <div className="relative w-16 h-16 flex-shrink-0">
                 <Image
-                  src={testimonials[testimonialIndex].image}
+                  src="/testimonialimage.png"
                   alt={testimonials[testimonialIndex].name}
                   fill
                   className="rounded-full object-cover border-2 border-white/20"

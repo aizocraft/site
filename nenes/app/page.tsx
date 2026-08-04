@@ -350,7 +350,7 @@ export default function HomePage() {
             <div className="relative w-full reveal animation-delay-300">
               <div className="relative w-full h-auto rounded-3xl overflow-hidden shadow-2xl border border-[var(--color-hero-chip-border)]">
                 <Image
-                  src="/aboutbanner1.png"
+                  src="/aboutbanner.png"
                   alt="Construction engineers at work"
                   width={1920}
                   height={1080}
@@ -416,7 +416,7 @@ export default function HomePage() {
             <div className="relative w-full reveal animation-delay-300">
               <div className="relative w-full h-auto rounded-2xl overflow-hidden shadow-lg">
                 <Image
-                  src="/nenesposter1.png"
+                  src="/nenesposter.png"
                   alt="Nenes Construction - Building Kenya's Future"
                   width={1920}
                   height={1080}

@@ -8,11 +8,8 @@ import {
   ArrowLeft, 
   ArrowRight, 
   Search, 
-  Grid,
   ZoomIn,
   ZoomOut,
-  Maximize,
-  Minimize,
   ChevronDown
 } from "lucide-react";
 import Image from "next/image";
@@ -26,111 +23,150 @@ interface GalleryItem {
   caption?: string;
   width?: number;
   height?: number;
+  isVideo?: boolean;
 }
 
 interface LightboxSlide {
   src: string;
   title: string;
   caption: string;
+  isVideo?: boolean;
 }
 
-// Data with varied aspect ratios for creative grid
+// Data using local images from public/gallery
 const GALLERY: GalleryItem[] = [
   {
     id: "1",
-    src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Greenpark Residential Estate",
-    caption: "Luxury residential estate with modern architecture",
-    width: 800,
-    height: 600,
+    src: "/gallery/1000318630.jpg",
+    title: "Construction Project 1",
+    caption: "Residential construction progress",
   },
   {
     id: "2",
-    src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Westside Commercial Tower",
-    caption: "12-storey commercial landmark in Mombasa",
-    width: 800,
-    height: 900,
+    src: "/gallery/1000318635.jpg",
+    title: "Construction Project 2",
+    caption: "Building foundation work",
   },
   {
     id: "3",
-    src: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Eldoret Industrial Warehouse",
-    caption: "10,000 sqm industrial facility",
-    width: 800,
-    height: 500,
+    src: "/gallery/1000318638.jpg",
+    title: "Construction Project 3",
+    caption: "Structural framework",
   },
   {
     id: "4",
-    src: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Nairobi Hospital Extension",
-    caption: "200-bed medical wing",
-    width: 800,
-    height: 700,
+    src: "/gallery/1000318641.jpg",
+    title: "Construction Project 4",
+    caption: "Wall construction",
   },
   {
     id: "5",
-    src: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Nakuru Affordable Housing",
-    caption: "200-unit community development",
-    width: 800,
-    height: 550,
+    src: "/gallery/1000318643.jpg",
+    title: "Construction Project 5",
+    caption: "Roof installation",
   },
   {
     id: "6",
-    src: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Kisumu Shopping Mall",
-    caption: "Modern retail and entertainment center",
-    width: 800,
-    height: 800,
+    src: "/gallery/1000318647.jpg",
+    title: "Construction Project 6",
+    caption: "Interior finishing",
   },
   {
     id: "7",
-    src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Natural Stone Cladding",
-    caption: "Premium stone wall finishing",
-    width: 800,
-    height: 650,
+    src: "/gallery/1000318649.jpg",
+    title: "Construction Project 7",
+    caption: "Exterior cladding",
   },
   {
     id: "8",
-    src: "https://images.unsplash.com/photo-1600607687644-c7171b42498f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Driveway Paving",
-    caption: "Premium driveway installation",
-    width: 800,
-    height: 450,
+    src: "/gallery/1000318653.jpg",
+    title: "Construction Project 8",
+    caption: "Building facade",
   },
   {
     id: "9",
-    src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Construction Site Progress",
-    caption: "Steel framework and concrete works",
-    width: 800,
-    height: 750,
+    src: "/gallery/1000318656.jpg",
+    title: "Construction Project 9",
+    caption: "Site development",
   },
   {
     id: "10",
-    src: "https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Sustainable Building Design",
-    caption: "Green building with solar integration",
-    width: 800,
-    height: 600,
+    src: "/gallery/1000318657.jpg",
+    title: "Construction Project 10",
+    caption: "Structural steel work",
   },
   {
     id: "11",
-    src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Modern Residential Interior",
-    caption: "Open plan living with premium finishes",
-    width: 800,
-    height: 850,
+    src: "/gallery/1000318662.jpg",
+    title: "Construction Project 11",
+    caption: "Concrete pouring",
   },
   {
     id: "12",
-    src: "https://images.unsplash.com/photo-1486718448742-163732cd1544?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    title: "Commercial Building Facade",
-    caption: "Glass curtain wall installation",
-    width: 800,
-    height: 500,
+    src: "/gallery/1000318663.jpg",
+    title: "Construction Project 12",
+    caption: "Masonry work",
+  },
+  {
+    id: "13",
+    src: "/gallery/1000318668.jpg",
+    title: "Construction Project 13",
+    caption: "Plumbing installation",
+  },
+  {
+    id: "14",
+    src: "/gallery/1000318671.jpg",
+    title: "Construction Project 14",
+    caption: "Electrical wiring",
+  },
+  {
+    id: "15",
+    src: "/gallery/1000318674.jpg",
+    title: "Construction Project 15",
+    caption: "Ceiling installation",
+  },
+  {
+    id: "16",
+    src: "/gallery/1000318677.jpg",
+    title: "Construction Project 16",
+    caption: "Flooring work",
+  },
+  {
+    id: "17",
+    src: "/gallery/1000318680.jpg",
+    title: "Construction Project 17",
+    caption: "Painting and decoration",
+  },
+  {
+    id: "18",
+    src: "/gallery/1000318683.jpg",
+    title: "Construction Project 18",
+    caption: "Landscaping",
+  },
+  {
+    id: "19",
+    src: "/gallery/1000318686.jpg",
+    title: "Construction Project 19",
+    caption: "Final inspection",
+  },
+  {
+    id: "20",
+    src: "/gallery/1000318689.mp4",
+    title: "Construction Video",
+    caption: "Project walkthrough video",
+    isVideo: true,
+  },
+  {
+    id: "21",
+    src: "/gallery/1000318691.jpg",
+    title: "Construction Project 20",
+    caption: "Completed project",
+  },
+  {
+    id: "22",
+    src: "/gallery/1000318693.jpg",
+    title: "Construction Project 21",
+    caption: "Project handover",
   },
 ];
 
@@ -155,6 +191,7 @@ function Lightbox({
   const [touchStartY, setTouchStartY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (index !== null && index !== localIndex) {
@@ -170,6 +207,11 @@ function Lightbox({
   const goTo = (delta: number) => {
     setLocalIndex((prev) => (prev + delta + slides.length) % slides.length);
     setIsZoomed(false);
+    // Reset video if the new slide is a video
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.pause();
+    }
   };
 
   // Keyboard navigation
@@ -231,22 +273,37 @@ function Lightbox({
         onTouchEnd={handleTouchEnd}
         onWheel={handleWheel}
       >
-        {/* Image Container */}
+        {/* Media Container */}
         <div 
           className={`relative w-full h-[70vh] transition-transform duration-300 ${
-            isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
+            !current.isVideo && isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
           }`}
-          onClick={() => setIsZoomed(!isZoomed)}
+          onClick={() => {
+            if (!current.isVideo) {
+              setIsZoomed(!isZoomed);
+            }
+          }}
         >
-          <Image
-            src={current.src}
-            alt={current.title}
-            fill
-            className="object-contain"
-            sizes="(max-width: 1200px) 90vw, 1200px"
-            priority
-            quality={100}
-          />
+          {current.isVideo ? (
+            <video
+              ref={videoRef}
+              src={current.src}
+              className="w-full h-full object-contain"
+              controls
+              autoPlay
+              playsInline
+            />
+          ) : (
+            <Image
+              src={current.src}
+              alt={current.title}
+              fill
+              className="object-contain"
+              sizes="(max-width: 1200px) 90vw, 1200px"
+              priority
+              quality={100}
+            />
+          )}
         </div>
 
         {/* Top Controls */}
@@ -255,18 +312,25 @@ function Lightbox({
             <span className="rounded-full bg-black/50 backdrop-blur-sm px-3 py-1 text-xs font-medium text-white">
               {localIndex + 1} / {slides.length}
             </span>
+            {current.isVideo && (
+              <span className="rounded-full bg-red-500/80 backdrop-blur-sm px-2 py-1 text-xs font-medium text-white">
+                Video
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsZoomed(!isZoomed);
-              }}
-              className="rounded-full bg-black/50 backdrop-blur-sm p-2 text-white transition-colors hover:bg-black/70"
-              aria-label="Toggle zoom"
-            >
-              {isZoomed ? <ZoomOut className="size-5" /> : <ZoomIn className="size-5" />}
-            </button>
+            {!current.isVideo && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsZoomed(!isZoomed);
+                }}
+                className="rounded-full bg-black/50 backdrop-blur-sm p-2 text-white transition-colors hover:bg-black/70"
+                aria-label="Toggle zoom"
+              >
+                {isZoomed ? <ZoomOut className="size-5" /> : <ZoomIn className="size-5" />}
+              </button>
+            )}
             <button
               onClick={onClose}
               className="rounded-full bg-black/50 backdrop-blur-sm p-2 text-white transition-colors hover:bg-black/70"
@@ -312,8 +376,12 @@ function Lightbox({
           <div className="mt-3 flex items-center gap-3 text-xs text-white/60">
             <span>Use arrow keys to navigate</span>
             <span className="w-px h-4 bg-white/20" />
-            <span>Press F to toggle zoom</span>
-            <span className="w-px h-4 bg-white/20" />
+            {!current.isVideo && (
+              <>
+                <span>Press F to toggle zoom</span>
+                <span className="w-px h-4 bg-white/20" />
+              </>
+            )}
             <span>Swipe to change</span>
           </div>
         </div>
@@ -477,13 +545,31 @@ export default function GalleryPage() {
                       viewMode === "masonry" ? getItemHeight(i) : "aspect-[4/3]"
                     )}
                   >
-                    <Image
-                      src={item.src}
-                      alt={item.title}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
+                    {item.isVideo ? (
+                      <div className="relative w-full h-full">
+                        <video
+                          src={item.src}
+                          className="w-full h-full object-cover"
+                          muted
+                          playsInline
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <div className="rounded-full bg-white/90 p-4 shadow-lg">
+                            <svg className="size-8 text-black/80" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Image
+                        src={item.src}
+                        alt={item.title}
+                        fill
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                    )}
                     
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -497,6 +583,13 @@ export default function GalleryPage() {
                     <span className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-white/90 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:scale-110 shadow-lg">
                       <Expand className="size-4 text-[var(--color-foreground)]" />
                     </span>
+                    
+                    {/* Video Badge */}
+                    {item.isVideo && (
+                      <span className="absolute left-3 top-3 rounded-full bg-red-500/80 backdrop-blur-sm px-2 py-0.5 text-[10px] font-medium text-white">
+                        Video
+                      </span>
+                    )}
                     
                     {/* Info - Slide up */}
                     <span className="absolute inset-x-0 bottom-0 translate-y-6 p-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
@@ -530,6 +623,7 @@ export default function GalleryPage() {
               src: i.src,
               title: i.title,
               caption: i.caption || "",
+              isVideo: i.isVideo || false,
             }))}
             index={activeIndex}
             onClose={() => setActiveIndex(null)}
