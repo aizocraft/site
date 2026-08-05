@@ -56,7 +56,7 @@ export default function Hero() {
               >
                 <SplitText
                   text="SunSea Electrical"
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-4 leading-tight tracking-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 leading-tight tracking-tight"
                   delay={60}
                   duration={0.7}
                   ease="power3.out"
