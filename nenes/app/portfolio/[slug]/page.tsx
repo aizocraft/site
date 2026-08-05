@@ -52,7 +52,27 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     );
   }
 
-  const images = project.gallery || [project.image];
+const images = project.gallery || [project.image];
+
+  const projectJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Project",
+    name: project.title,
+    description: project.description,
+    url: `https://nenesconstruction.vercel.app/portfolio/${project.slug}`,
+    image: project.gallery?.[0] || project.image,
+    location: {
+      "@type": "Place",
+      name: project.location,
+    },
+    category: project.category,
+    keywords: ["construction", "Kenya", project.category, project.location],
+    founder: {
+      "@type": "Organization",
+      name: "Nenes Construction",
+      url: "https://nenesconstruction.vercel.app",
+    },
+  };
 
   const nextImage = (): void => {
     setActiveImage((prev) => (prev + 1) % images.length);
@@ -62,8 +82,13 @@ export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
     setActiveImage((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  return (
+return (
     <div className="min-h-screen bg-[var(--color-bg)]">
+      {/* SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd) }}
+      />
       {/* Hero Section */}
       <section className="relative pt-32 md:pt-40 pb-16 md:pb-24 overflow-hidden bg-[var(--color-hero-bg)] border-b border-[var(--color-nav-border)]">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">

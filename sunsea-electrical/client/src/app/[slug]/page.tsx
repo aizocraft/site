@@ -25,25 +25,25 @@ export async function generateMetadata({
       product = null;
     }
 
-    // Return 404 metadata if product not found
+// Return 404 metadata if product not found
     if (!product) {
       return {
-        title: 'Product Not Found | Plasma Water Africa',
-        description: 'The requested product is not available. Browse our collection of high-quality solar products.',
+        title: 'Product Not Found | SunSea Electrical',
+        description: 'The requested product is not available. Browse our collection of high-quality electrical and energy products.',
         robots: {
           index: false,
           follow: true,
         },
         openGraph: {
-          title: 'Product Not Found | Plasma Water Africa',
+          title: 'Product Not Found | SunSea Electrical',
           description: 'The requested product is not available.',
-          siteName: 'Plasma Water Africa',
+          siteName: 'SunSea Electrical',
           locale: 'en_KE',
           type: 'website',
         },
         twitter: {
           card: 'summary',
-          title: 'Product Not Found | Plasma Water Africa',
+          title: 'Product Not Found | SunSea Electrical',
           description: 'The requested product is not available.',
         },
       };
@@ -61,7 +61,7 @@ export async function generateMetadata({
     // if (product.brand) titleParts.push(product.brand);
     titleParts.push(product.name);
     if (product.type) titleParts.push(product.type);
-    titleParts.push('| Plasma Water Africa');
+titleParts.push('| SunSea Electrical');
     const title = titleParts.join(' ');
 
     // Build SEO description
@@ -70,7 +70,7 @@ export async function generateMetadata({
       : `Buy ${product.name} in Kenya at the best price. ${product.brand ? `Brand: ${product.brand}. ` : ''}${product.type ? `Type: ${product.type}. ` : ''}Quality solar products with warranty.`;
 
     // Get image URL for Open Graph
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://plasmawater.co.ke';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://sunseaelectrical.vercel.app';
     const firstImage = product.images?.[0];
     
     const imageUrl = firstImage
@@ -120,7 +120,7 @@ export async function generateMetadata({
         title,
         description,
         url: canonicalUrl,
-        siteName: 'Plasma Water Africa',
+siteName: 'SunSea Electrical',
         locale: 'en_KE',
         type: 'website',
         images: imageUrl ? [
@@ -138,12 +138,12 @@ export async function generateMetadata({
         title,
         description,
         images: imageUrl ? [imageUrl] : undefined,
-        site: '@PlasmaWaterKE',
-        creator: '@PlasmaWaterKE',
+site: '@SunSeaElectrical',
+        creator: '@SunSeaElectrical',
       },
-      category: product.category || 'Solar Products',
-      applicationName: 'Plasma Water Africa',
-      authors: [{ name: 'Plasma Water Africa' }],
+      category: product.category || 'Electrical Products',
+      applicationName: 'SunSea Electrical',
+      authors: [{ name: 'SunSea Electrical' }],
       generator: 'Next.js',
       referrer: 'origin-when-cross-origin',
       formatDetection: {
@@ -157,8 +157,8 @@ export async function generateMetadata({
     // ✅ FALLBACK: If anything fails in metadata generation
     console.error('Metadata generation error:', error);
     return {
-      title: 'Product | Plasma Water Africa',
-      description: 'Browse our collection of high-quality solar products.',
+title: 'Product | SunSea Electrical',
+      description: 'Browse our collection of high-quality electrical and energy products.',
       robots: {
         index: true,
         follow: true,
@@ -215,12 +215,12 @@ export default async function ProductPage({
                 '@type': 'WebPage',
                 name: 'Product Not Found',
                 description: 'The requested product is not available.',
-                url: `https://plasmawater.co.ke/${slug}`,
+url: `https://sunseaelectrical.vercel.app/${slug}`,
                 breadcrumb: {
                   '@type': 'BreadcrumbList',
                   itemListElement: [
-                    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://plasmawater.co.ke/' },
-                    { '@type': 'ListItem', position: 2, name: 'Products', item: 'https://plasmawater.co.ke/products' },
+                    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://sunseaelectrical.vercel.app/' },
+                    { '@type': 'ListItem', position: 2, name: 'Products', item: 'https://sunseaelectrical.vercel.app/products' },
                     { '@type': 'ListItem', position: 3, name: 'Product Not Found' },
                   ],
                 },

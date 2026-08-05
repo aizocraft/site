@@ -22,11 +22,11 @@ import {
 import SolarWaterHeatersClient from './SolarWaterHeatersClient';
 
 export const metadata: Metadata = {
-  title: 'Solar Water Heaters | Seven Stars Solar Water Heating Kenya | Plasma Water Africa',
+  title: 'Solar Water Heaters | Seven Stars Solar Water Heating Kenya | SunSea Electrical',
   description: 'Save up to 85% on water heating with Seven Stars solar water heaters. Professional installation, 20+ year lifespan. Endless hot water for your home or business.',
   keywords: 'solar water heater Kenya, Seven Stars solar, solar hot water, solar heating system Nairobi',
   openGraph: {
-    title: 'Solar Water Heaters | Seven Stars | Plasma Water Africa',
+    title: 'Solar Water Heaters | Seven Stars | SunSea Electrical',
     description: 'Save up to 85% on water heating with premium solar water heaters',
     type: 'website',
     locale: 'en_KE',

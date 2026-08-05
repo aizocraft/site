@@ -241,6 +241,37 @@ export default function HomePage() {
   const [openServiceIndex, setOpenServiceIndex] = useState<number | null>(null);
   const [activeProcess, setActiveProcess] = useState(0);
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Where does Nenes Construction provide services in Kenya?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Nenes Construction provides residential, commercial, and industrial building services across Kenya, including Nairobi, Embu, Meru, Nyeri, Tharaka-Nithi, Kirinyaga, Nakuru, Mombasa, Eldoret, Kisumu, Kiambu, Machakos and all other counties.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What construction services does Nenes Construction offer?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "We offer general contracting, residential construction, commercial buildings, renovation & remodeling, architectural design, project management, structural inspection, and interior & exterior finishing.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is Nenes Construction experienced?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. Nenes Construction has been building across Kenya since 2010, delivering residential, commercial, and industrial projects with certified engineers, architects, and skilled builders.",
+        },
+      },
+    ],
+  };
+
   useScrollReveal();
 
   useEffect(() => {
@@ -272,8 +303,13 @@ export default function HomePage() {
 
   const featuredProjects = PORTFOLIO_PROJECTS.slice(0, 3);
 
-  return (
+return (
     <>
+      {/* SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Hero Section - Construction Themed */}
       <section className="relative overflow-hidden bg-[var(--color-hero-bg)]">
         {/* Construction Pattern Overlay */}

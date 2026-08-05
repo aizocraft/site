@@ -28,36 +28,36 @@ interface Service {
 const services: Service[] = [
   {
     id: 1,
-    Icon: BoreholeIcon,
-    title: "Borehole Drilling",
-    description: "Precision drilling solutions delivering sustainable groundwater access with hydrogeological surveying and state-of-the-art equipment.",
-    longDescription: "Our comprehensive borehole drilling service combines cutting-edge technology with decades of geological expertise. We conduct detailed hydrogeological surveys, utilize advanced rotary drilling rigs, and implement strict quality control measures to ensure optimal water yield, purity, and long-term sustainability for communities and industries across Africa.",
+    Icon: Zap,
+    title: "Industrial Power Systems",
+    description: "MV/LV switchgear, distribution, motor control, and substation engineering delivering reliable industrial power.",
+    longDescription: "Our industrial power systems service covers everything from MV/LV switchgear and distribution boards to motor control centers and complete substation engineering. We design, install, and maintain robust power infrastructure that keeps your operations running safely and efficiently, with full compliance to Kenyan and international standards.",
     features: [
-      "Advanced Rotary Drilling Technology",
-      "Comprehensive Hydrogeological Surveys",
-      "Water Quality Analysis & Treatment",
-      "Sustainable Yield Assessment",
-      "Professional Pump Installation",
+      "MV/LV Switchgear & Distribution",
+      "Motor Control Centers",
+      "Substation Engineering",
+      "Power Factor Correction",
+      "Protection & Relay Systems",
       "24/7 Maintenance & Support"
     ],
     benefits: [
-      "100% water quality guarantee",
-      "15-year structural warranty",
+      "100% safety compliance",
+      "15-year installation warranty",
       "Free annual maintenance",
       "Emergency response team"
     ],
-    image: "/images/borehole-drilling5.jpg",
+    image: "/images/solar.jpg",
   },
   {
     id: 2,
     Icon: Sun,
-    title: "Solar Solutions",
-    description: "Custom-designed solar energy systems maximizing Africa's solar potential with premium components and expert installation.",
-    longDescription: "Transform your energy consumption with our bespoke solar solutions. We engineer, supply, and install high-efficiency photovoltaic systems tailored to your specific energy needs. From residential to industrial applications, our solutions deliver reliable power, significant cost savings, and reduced carbon footprint with intelligent monitoring and optimal performance.",
+    title: "Solar Energy Solutions",
+    description: "Rooftop, ground-mount, and hybrid PV with battery storage and EPC delivery.",
+    longDescription: "Transform your energy consumption with our bespoke solar solutions. We engineer, supply, and install high-efficiency photovoltaic systems—rooftop, ground-mount, and hybrid PV with battery storage and full EPC delivery—tailored to your specific energy needs. From residential to industrial applications, our solutions deliver reliable power, significant cost savings, and reduced carbon footprint with intelligent monitoring and optimal performance.",
     features: [
-      "Custom System Design & Engineering",
-      "Premium Tier-1 Solar Panels",
-      "Advanced Battery Storage Solutions",
+      "Rooftop, Ground-Mount & Hybrid PV",
+      "Battery Storage Solutions",
+      "Full EPC Delivery",
       "Smart Energy Monitoring System",
       "Professional Installation Team",
       "10-Year Comprehensive Warranty"
@@ -72,23 +72,89 @@ const services: Service[] = [
   },
   {
     id: 3,
-    Icon: WaterTowerIcon,
-    title: "Water Towers",
-    description: "Engineered water storage solutions with robust construction, seismic resilience, and advanced corrosion protection systems.",
-    longDescription: "Our elevated water tower construction service delivers robust, long-lasting structures engineered to withstand extreme environmental conditions. We specialize in custom-designed storage solutions that ensure consistent water pressure, reliable supply, and structural integrity for communities, industries, and municipalities across Africa.",
+    Icon: Zap,
+    title: "Generator Systems",
+    description: "Diesel, gas, and hybrid gensets with synchronisation and grid paralleling.",
+    longDescription: "Our generator systems service delivers reliable backup and prime power through diesel, gas, and hybrid gensets. We design, supply, install, and commission complete generator systems with automatic synchronisation and grid paralleling for commercial, industrial, and residential applications—ensuring uninterrupted power whenever you need it.",
     features: [
-      "Structural Engineering Excellence",
-      "Custom Capacity Planning",
-      "Premium Galvanized Steel",
-      "Comprehensive Maintenance Programs",
-      "Seismic & Wind Load Design",
-      "Advanced Corrosion Protection"
+      "Diesel, Gas & Hybrid Gensets",
+      "Automatic Synchronisation",
+      "Grid Paralleling",
+      "Automatic Transfer Switches",
+      "Sound-Attenuated Enclosures",
+      "24/7 Maintenance & Support"
     ],
     benefits: [
-      "50+ year structural lifespan",
-      "Seismic certified design",
-      "Corrosion-free guarantee",
-      "Free structural inspection"
+      "Uninterrupted power supply",
+      "Seamless load sharing",
+      "Backup during outages",
+      "Emergency response team"
+    ],
+    image: "/images/watertower.jpg",
+  },
+  {
+    id: 4,
+    Icon: Zap,
+    title: "Smart Building Systems",
+    description: "IoT-enabled lighting, security, and climate control systems for modern, efficient commercial buildings.",
+    longDescription: "Our smart building systems service delivers intelligent, IoT-enabled solutions for lighting, security, and climate control. We design and integrate automated systems that reduce energy consumption, enhance occupant comfort, and provide centralized monitoring and control for modern commercial and residential buildings.",
+    features: [
+      "IoT-Enabled Lighting Control",
+      "Integrated Security Systems",
+      "Smart Climate Control",
+      "Energy Monitoring & Analytics",
+      "Centralized Building Management",
+      "Comprehensive Maintenance Programs"
+    ],
+    benefits: [
+      "30-50% energy reduction",
+      "Remote building management",
+      "Enhanced security & safety",
+      "Free system assessment"
+    ],
+    image: "/images/watertower.jpg",
+  },
+  {
+    id: 5,
+    Icon: Zap,
+    title: "CCTV & Networking",
+    description: "Comprehensive security systems and structured cabling for enterprise networks.",
+    longDescription: "Our CCTV & Networking service delivers comprehensive security systems and structured cabling for enterprise networks. We design and install high-definition CCTV surveillance, access control, and structured data cabling that keep your premises secure and your business connected—with reliable, future-ready network infrastructure.",
+    features: [
+      "HD CCTV Surveillance Systems",
+      "Access Control Systems",
+      "Structured Data Cabling",
+      "Enterprise Network Installation",
+      "Remote Monitoring Access",
+      "24/7 Technical Support"
+    ],
+    benefits: [
+      "Enhanced security & safety",
+      "Remote monitoring access",
+      "Reliable network infrastructure",
+      "Free site assessment"
+    ],
+    image: "/images/solar.jpg",
+  },
+  {
+    id: 6,
+    Icon: Zap,
+    title: "Maintenance Contracts",
+    description: "Regular maintenance and emergency repair services for all electrical systems.",
+    longDescription: "Our maintenance contracts service provides regular preventive maintenance and emergency repair for all electrical systems. We keep your power infrastructure—panels, switchgear, generators, and solar systems—running at peak performance with scheduled inspections, testing, and rapid-response repairs, protecting your investment and reducing costly downtime.",
+    features: [
+      "Scheduled Preventive Maintenance",
+      "Emergency Repair Services",
+      "Panel & Switchgear Servicing",
+      "Generator & Solar System Care",
+      "Performance Testing & Reporting",
+      "Priority Response Support"
+    ],
+    benefits: [
+      "Reduced downtime",
+      "Extended equipment lifespan",
+      "Predictable maintenance costs",
+      "Priority emergency response"
     ],
     image: "/images/watertower.jpg",
   },
@@ -231,8 +297,8 @@ const Services = () => {
               Services
             </span>
           </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
-            Water and energy solutions engineered for a sustainable future
+<p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
+            Electrical and energy solutions engineered for a sustainable future
           </p>
         </motion.div>
 

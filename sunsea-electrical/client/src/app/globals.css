@@ -15,10 +15,10 @@
     --popover-foreground: 222.2 84% 4.9%;
     
     /* Brand colors - Light mode */
-    --primary: #000063;
+    --primary: #00225c;
     --primary-foreground: #ffffff;
-    --primary-mid: #0043b3;
-    --primary-light: #009dff;
+    --primary-mid: #0089d1;
+    --primary-light: #ffac10;
     
     /* Secondary colors */
     --secondary: 210 40% 96%;
@@ -33,7 +33,7 @@
     /* UI elements */
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 204 100% 50%; /* #009dff */
+    --ring: 37 100% 53%; /* #ffac10 */
     --radius: 0.5rem;
   }
 
@@ -47,10 +47,10 @@
     --popover-foreground: 210 40% 98%;
     
     /* Brand colors - Dark mode */
-    --primary: #000063;
+    --primary: #00225c;
     --primary-foreground: #ffffff;
-    --primary-mid: #0043b3;
-    --primary-light: #009dff;
+    --primary-mid: #0089d1;
+    --primary-light: #ffac10;
     
     /* Secondary colors */
     --secondary: 217.2 32.6% 17.5%;
@@ -65,7 +65,7 @@
     /* UI elements */
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 204 100% 55%; /* Brighter #009dff for dark */
+    --ring: 37 100% 53%; /* #ffac10 */
   }
 }
 
@@ -237,7 +237,7 @@ body {
   border-radius: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 4px 12px rgba(0, 67, 179, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 137, 209, 0.4);
   transition: all 0.2s ease;
   z-index: 2;
   border: 3px solid white;
@@ -245,7 +245,7 @@ body {
 
 .price-slider-thumb:hover {
   transform: translate(-50%, -50%) scale(1.2);
-  box-shadow: 0 6px 20px rgba(0, 157, 255, 0.6);
+  box-shadow: 0 6px 20px rgba(255, 172, 16, 0.6);
 }
 
 .price-slider-thumb::-webkit-slider-thumb {
@@ -254,7 +254,7 @@ body {
   height: var(--thumb-size);
   background: var(--thumb-bg);
   border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0, 67, 179, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 137, 209, 0.4);
   cursor: grab;
 }
 
@@ -264,7 +264,7 @@ body {
   background: var(--thumb-bg);
   border-radius: 50%;
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 67, 179, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 137, 209, 0.4);
   cursor: grab;
 }
 
@@ -314,7 +314,7 @@ body {
 
 /* Buttons with brand colors */
 .btn-primary {
-  background-color: #0043b3;
+  background-color: #0089d1;
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -324,23 +324,23 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: #000063;
+  background-color: #00225c;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
 .btn-secondary {
   background-color: transparent;
-  color: #009dff;
+  color: #ffac10;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-weight: 500;
-  border: 1px solid #009dff;
+  border: 1px solid #ffac10;
   transition: all 0.2s ease;
 }
 
 .btn-secondary:hover {
-  background-color: #009dff;
+  background-color: #ffac10;
   color: white;
 }
 
@@ -353,7 +353,7 @@ body {
 }
 
 .card:hover {
-  border-color: #009dff;
+  border-color: #ffac10;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   transform: translateY(-2px);
 }
@@ -370,8 +370,8 @@ body {
 
 .input:focus {
   outline: none;
-  border-color: #009dff;
-  box-shadow: 0 0 0 3px rgba(0, 157, 255, 0.1);
+  border-color: #ffac10;
+  box-shadow: 0 0 0 3px rgba(255, 172, 16, 0.1);
 }
 
 /* Badges */
@@ -385,7 +385,7 @@ body {
 }
 
 .badge-primary {
-  background-color: #009dff;
+  background-color: #ffac10;
   color: white;
 }
 
@@ -401,20 +401,20 @@ body {
 
 /* Links */
 .link {
-  color: #009dff;
+  color: #ffac10;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .link:hover {
-  color: #0043b3;
+  color: #0089d1;
   text-decoration: underline;
 }
 
 /* Focus ring with brand color (CSS-safe; avoids Tailwind-only `ring` properties) */
 *:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #009dff, 0 0 0 4px rgba(0, 157, 255, 0.25);
+  box-shadow: 0 0 0 2px #ffac10, 0 0 0 4px rgba(255, 172, 16, 0.25);
   border-radius: 0.25rem;
 }
 
@@ -430,17 +430,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #0043b3;
+  background: #0089d1;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #009dff;
+  background: #ffac10;
 }
 
 /* Selection color */
 ::selection {
-  background-color: #009dff;
+  background-color: #ffac10;
   color: white;
 }
 

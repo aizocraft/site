@@ -3,17 +3,17 @@ import { Metadata } from 'next';
 import SolarSolutionsClient from './SolarSolutionsClient';
 
 export const metadata: Metadata = {
-  title: 'Solar Energy Solutions Kenya | Solar Panels Installation | Plasma Water Africa',
+  title: 'Solar Energy Solutions Kenya | Solar Panels Installation | SunSea Electrical',
   description: 'Professional solar panel installation for homes and businesses. Reduce electricity bills by 70-90% with our premium solar systems. Free consultation and quotes.',
   keywords: 'solar panels Kenya, solar energy solutions, solar water heaters, solar pumps, commercial solar, residential solar, hybrid solar systems',
-  authors: [{ name: 'Plasma Water Africa' }],
+  authors: [{ name: 'SunSea Electrical' }],
   openGraph: {
-    title: 'Solar Energy Solutions | Plasma Water Africa',
+    title: 'Solar Energy Solutions | SunSea Electrical',
     description: 'Professional solar panel installation for homes and businesses. Save up to 90% on electricity bills.',
     type: 'website',
     locale: 'en_KE',
-    url: 'https://plasmawater.co.ke/solar-solutions',
-    siteName: 'Plasma Water Africa',
+url: 'https://sunseaelectrical.vercel.app/solar-solutions',
+    siteName: 'SunSea Electrical',
     images: [
       {
         url: '/images/solar-og.jpg',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://plasmawater.co.ke/solar-solutions',
+canonical: 'https://sunseaelectrical.vercel.app/solar-solutions',
   },
 };
 

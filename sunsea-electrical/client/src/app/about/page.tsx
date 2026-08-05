@@ -3,37 +3,35 @@ import About from './About'
 import { makeSeo } from '../seo'
 
 export const metadata: Metadata = makeSeo({
-  title: 'About Plasma Water Africa | Water & Solar Experts in Kenya',
+  title: 'About SunSea Electrical | Electrical Engineering Experts in Kenya',
   description:
-    'Learn about Plasma Water Africa—your trusted provider of solar energy solutions, borehole drilling services, pump installations, water treatment, and elevated water towers across Kenya. Built for reliability, sustainability, and long-term performance.',
+    'Learn about SunSea Electrical—your trusted provider of industrial power systems, solar energy solutions, generators, smart building systems, and maintenance across Kenya. Built for reliability, safety, and long-term performance.',
   canonicalPath: '/about',
   keywords: [
-    'Plasma Water Africa',
-    'about Plasma Water Africa',
+    'SunSea Electrical',
+    'about SunSea Electrical',
+    'electrical engineering Kenya',
     'solar installation Kenya',
-    'borehole drilling Kenya',
-    'water pump installation',
-    'water tower construction',
-    'water treatment Kenya',
+    'generator systems',
+    'smart building systems',
+    'electrical maintenance Kenya',
     'renewable energy Kenya',
   ],
   openGraph: {
-    title: 'About Plasma Water Africa | Water & Solar Experts',
+    title: 'About SunSea Electrical | Electrical Engineering Experts',
     description:
-      'We deliver clean water and reliable renewable energy solutions across Kenya—from project survey to installation and support.',
-    url: 'https://plasmawater.co.ke/about',
-    images: [{ url: '/images/plasma-water-africa-logo.png', width: 1200, height: 630, alt: 'Plasma Water Africa' }],
+      'We deliver safe, efficient, and future-ready power solutions across Kenya—from consultation to installation and support.',
+url: 'https://sunseaelectrical.vercel.app/about',
+    images: [{ url: '/poster.png', width: 1200, height: 630, alt: 'SunSea Electrical' }],
   },
   twitter: {
-    title: 'About Plasma Water Africa',
+    title: 'About SunSea Electrical',
     description:
-      'Solar, boreholes, pumps, and elevated water towers in Kenya—trusted solutions from Plasma Water Africa.',
-    images: ['/images/plasma-water-africa-logo.png'],
+      'Electrical engineering, solar, generators, and smart buildings in Kenya—trusted solutions from SunSea Electrical.',
+    images: ['/poster.png'],
   },
 })
 
 export default function AboutPage() {
   return <About />;
 }
-
-

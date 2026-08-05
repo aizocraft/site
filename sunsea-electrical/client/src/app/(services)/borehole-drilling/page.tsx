@@ -13,11 +13,11 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Borehole Drilling Services Kenya | Professional Water Well Drilling | Plasma Water Africa',
+  title: 'Borehole Drilling Services Kenya | Professional Water Well Drilling | SunSea Electrical',
   description: 'Professional borehole drilling in Kenya up to 500m depth. DTH technology, casing installation, and test pumping. 99% success rate. Get clean water for your property.',
   keywords: 'borehole drilling Kenya, water well drilling, borehole services Nairobi, professional drilling',
   openGraph: {
-    title: 'Professional Borehole Drilling Services | Plasma Water Africa',
+    title: 'Professional Borehole Drilling Services | SunSea Electrical',
     description: 'Access clean, reliable groundwater with state-of-the-art drilling technology',
     type: 'website',
     locale: 'en_KE',
@@ -143,7 +143,7 @@ export default function BoreholeDrillingPage() {
                 <span className="text-blue-600 dark:text-blue-400">Our Drilling Services?</span>
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                At Plasma Water Africa, we combine advanced DTH (Down-The-Hole) drilling technology 
+At SunSea Electrical, we combine advanced DTH (Down-The-Hole) drilling technology 
                 with years of expertise to deliver reliable water access. Our comprehensive service 
                 ensures you get clean, sustainable water for your home, farm, or business.
               </p>

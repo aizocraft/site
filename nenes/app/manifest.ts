@@ -1,0 +1,29 @@
+import type { MetadataRoute } from "next";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: "Nenes Construction — Building Excellence Across Kenya",
+    short_name: "Nenes",
+    description:
+      "Professional construction company offering residential, commercial, and industrial building services across Kenya. General contracting, design, build, and renovation.",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#ffffff",
+    theme_color: "#ffffff",
+    icons: [
+      {
+        src: "/favicon.png",
+        sizes: "192x192",
+        type: "image/png",
+      },
+      {
+        src: "/nenesposter.png",
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+    orientation: "portrait-primary",
+    lang: "en",
+    categories: ["construction", "business", "engineering"],
+  };
+}

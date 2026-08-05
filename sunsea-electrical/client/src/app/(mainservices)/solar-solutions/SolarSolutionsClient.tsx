@@ -199,7 +199,7 @@ export default function SolarSolutionsClient() {
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
               Why Choose{' '}
-              <span className="text-blue-600 dark:text-blue-400">Plasma Water Africa?</span>
+<span className="text-blue-600 dark:text-blue-400">SunSea Electrical?</span>
             </h2>
             <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               We deliver excellence in every solar installation
@@ -271,7 +271,7 @@ export default function SolarSolutionsClient() {
                 Schedule Consultation
               </Link>
               <Link 
-                href="mailto:plasmawaterafrica@gmail.com" 
+href="mailto:sunseaelectrical@gmail.com"
                 className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-5 py-2 rounded-lg font-semibold text-sm transition-all"
               >
                 <Mail className="h-3.5 w-3.5" />

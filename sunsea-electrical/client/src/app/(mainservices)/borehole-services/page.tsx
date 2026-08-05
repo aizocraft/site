@@ -17,11 +17,11 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Professional Borehole Drilling Services in Kenya | Plasma Water Africa',
+  title: 'Professional Borehole Drilling Services in Kenya | SunSea Electrical',
   description: 'Expert borehole drilling, hydro-geological surveys, pump installation, and rehabilitation services. NEMA compliant with 99% success rate. Free consultation.',
   keywords: 'borehole drilling Kenya, water borehole services, hydro-geological survey, submersible pumps, borehole rehabilitation, EIA report Kenya',
   openGraph: {
-    title: 'Professional Borehole Services | Plasma Water Africa',
+    title: 'Professional Borehole Services | SunSea Electrical',
     description: 'Complete groundwater solutions from survey to installation. Reliable and sustainable borehole services across Kenya.',
     type: 'website',
     locale: 'en_KE',

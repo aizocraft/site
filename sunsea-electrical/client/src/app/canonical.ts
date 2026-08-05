@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-const BASE_URL = 'https://plasmawater.co.ke'
+const BASE_URL = 'https://sunseaelectrical.vercel.app'
 
 export function canonicalFromPath(pathname?: string) {
   if (!pathname) return undefined
@@ -12,4 +12,3 @@ export function alternatesCanonical(pathname?: string): Metadata['alternates'] {
   if (!canonical) return undefined
   return { canonical }
 }
-

@@ -43,7 +43,7 @@ export default function HomeClient() {
                 Featured Products
               </h2>
               <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
-                Our most popular and trusted equipment for your needs
+                Trusted electrical and energy equipment for your projects
               </p>
             </div>
 
@@ -136,9 +136,9 @@ export default function HomeClient() {
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight">
-              Ready to Transform Your{' '}
+              Ready to Power Your{' '}
 <span className="text-blue-200">
-                Water & Energy Solutions?
+                Electrical & Energy Solutions?
               </span>
             </h2>
 

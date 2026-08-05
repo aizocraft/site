@@ -21,6 +21,20 @@ export default function PortfolioPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [viewMode, setViewMode] = useState("grid");
 
+  const portfolioJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Nenes Construction Portfolio",
+    description:
+      "Explore Nenes Construction completed projects across Kenya, including residential, commercial, industrial, and healthcare buildings.",
+    url: "https://nenesconstruction.vercel.app/portfolio",
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Nenes Construction",
+      url: "https://nenesconstruction.vercel.app",
+    },
+  };
+
   const filteredProjects = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return PORTFOLIO_PROJECTS.filter((project) => {
@@ -39,8 +53,13 @@ export default function PortfolioPage() {
     setActiveCategory("All");
   };
 
-  return (
+return (
     <div className="min-h-screen bg-[var(--color-bg)]">
+      {/* SEO Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(portfolioJsonLd) }}
+      />
       {/* Hero Section - Consistent size */}
       <section className="relative overflow-hidden bg-[var(--color-hero-bg)] border-b border-[var(--color-nav-border)]">
         <div className="absolute inset-0 hero-pattern pointer-events-none" />

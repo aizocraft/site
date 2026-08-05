@@ -62,7 +62,7 @@ export default function Hero({ onOpenProfile }: HeroProps) {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = 'Plasma_Water_Africa_Profile.pdf';
+      link.download = 'SunSea_Electrical_Profile.pdf';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -81,17 +81,17 @@ export default function Hero({ onOpenProfile }: HeroProps) {
     }
   };
 
-  const cards = useMemo(
+const cards = useMemo(
     () => [
       {
         icon: Eye,
         label: 'Vision',
-        text: 'To be a global leader in sustainable water and energy solutions, pioneering innovative technologies to ensure equitable access to clean water for all community groups.',
+        text: 'To be East Africa\u2019s most trusted electrical engineering partner, leading the region\u2019s transition to smart, clean, and resilient energy infrastructure.',
       },
       {
         icon: Target,
         label: 'Mission',
-        text: 'To leverage innovative water and energy systems to address the urgent challenges of water scarcity in Africa through cutting-edge technology, sustainable practices and community engagement.',
+        text: 'To deliver reliable, innovative, and sustainable electrical solutions that empower homes, businesses, and industries\u2014ensuring safety, efficiency, and uninterrupted power for every client we serve.',
       },
     ],
     []
@@ -141,10 +141,10 @@ return (
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            Leading the
+            Engineering
             <br />
             <span className="text-[#0043b3] dark:text-[#009dff] inline-block mt-2">
-              Water Revolution
+              Excellence
             </span>
             <br />
            
@@ -157,8 +157,8 @@ return (
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            Plasma Water Africa delivers comprehensive, ISO-standard engineering for water and energy
-            challenges across the continent.
+            SunSea Electrical delivers comprehensive, ISO-standard engineering for power and energy
+            challenges across the region.
           </motion.p>
 
           {/* CTA Actions */}
@@ -223,7 +223,7 @@ return (
               </motion.a>
 
               <motion.a
-                href="mailto:plasmawaterafrica@gmail.com"
+                href="mailto:sunseaelectrical@gmail.com"
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-[#0043b3] dark:hover:bg-[#0043b3] hover:text-white dark:hover:text-white hover:border-[#009dff] transition-all duration-300"
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}

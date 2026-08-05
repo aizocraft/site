@@ -277,13 +277,13 @@ export default function ContactClient() {
                     Email
                   </h3>
 
-                  <motion.a
-                    href="mailto:plasmawaterafrica@gmail.com"
+<motion.a
+                    href="mailto:sunseaelectrical@gmail.com"
                     className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors break-all group/link inline-flex items-center gap-1"
                     whileHover={{ x: 4 }}
                   >
                     <Mail size={12} />
-                    <span>plasmawaterafrica@gmail.com</span>
+                    <span>sunseaelectrical@gmail.com</span>
                   </motion.a>
                 </div>
               </div>
@@ -570,7 +570,7 @@ export default function ContactClient() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="w-full"
-              title="Plasma Water Africa Location - Hurlingham Square Shopping Centre, Nairobi"
+title="SunSea Electrical Location - Hurlingham Square Shopping Centre, Nairobi"
             />
           </motion.div>
         </div>

@@ -1,14 +1,59 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import type { Metadata } from "next";
 import { Calendar, User, Clock, ChevronLeft, Share2, Bookmark, ArrowLeft, Tag } from "lucide-react";
 import { BLOG_POSTS, getPostBySlug, getRelatedPosts } from "../data";
+
+const BASE_URL = "https://nenesconstruction.vercel.app";
 
 // Generate static params for all blog posts
 export function generateStaticParams() {
   return BLOG_POSTS.map((post) => ({
     slug: post.slug,
   }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+
+  if (!post) {
+    return {
+      title: "Blog Post Not Found | Nenes Construction",
+      description: "The requested blog post is not available.",
+    };
+  }
+
+  return {
+    title: `${post.title} | Nenes Construction`,
+    description: post.excerpt,
+    alternates: {
+      canonical: `${BASE_URL}/blog/${post.slug}`,
+    },
+    openGraph: {
+      type: "article",
+      locale: "en_KE",
+      url: `${BASE_URL}/blog/${post.slug}`,
+      siteName: "Nenes Construction",
+      title: post.title,
+      description: post.excerpt,
+      images: [{ url: post.image, width: 800, height: 450, alt: post.title }],
+      authors: [post.author],
+      publishedTime: undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: [post.image],
+    },
+    keywords: [...post.tags, "construction", "Kenya", "Nenes Construction"],
+  };
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {

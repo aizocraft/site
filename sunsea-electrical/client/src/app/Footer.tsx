@@ -101,7 +101,7 @@ export default function Footer() {
                 )}
                 <div>
                   <div className="font-bold text-lg md:text-xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent bg-300% animate-gradient">
-                    {company?.companyName || 'PlasmaWater'}
+                    {company?.companyName || 'SunSea Electrical'}
                   </div>
                   {company?.slogan && (
                     <div className="text-blue-600 dark:text-blue-400 text-[11px] md:text-xs font-medium tracking-wide mt-0.5 flex items-center gap-1">
@@ -276,7 +276,7 @@ export default function Footer() {
               <div className="flex items-center gap-2 flex-wrap justify-center">
                 <span>© {currentYear}</span>
                 <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
-                <span className="font-medium">{company?.companyName || 'PlasmaWater Africa'}</span>
+                <span className="font-medium">{company?.companyName || 'SunSea Electrical'}</span>
                 <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
  <span className="inline-flex items-center gap-1">
   Built in

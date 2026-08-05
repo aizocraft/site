@@ -22,23 +22,23 @@ import FAQ from './FAQ';
 
 const profilePdf = {
   url: "/profile.pdf",
-  name: "Plasma_Water_Africa_Profile.pdf",
+  name: "SunSea_Electrical_Profile.pdf",
   size: "1 MB",
   lastUpdated: "January 2026",
 };
 
 const whyUs = [
-  "We offer affordable borehole and solar solutions that help you save more.",
+  "We offer affordable electrical and energy solutions that help you save more.",
   "Every project we undertake ensures expectations are met, backed by vast experience.",
   "Cutting-edge technology and expert installation make going solar simple, so you start saving immediately.",
-  "Highly trained, skilled employees who will never sacrifice quality in any installation or service.",
+  "Highly trained, skilled engineers who will never sacrifice quality in any installation or service.",
 ];
 
 const testimonials = [
-  { name: "James Mwangi", role: "Nairobi County Farmer", stars: 5, text: "Plasma Water Africa transformed our irrigation setup. The borehole they drilled now supplies our entire 20-acre farm year-round. Professional team, on-time delivery." },
-  { name: "Grace Achieng", role: "Community Health Officer", stars: 5, text: "Clean water access for our clinic jumped from 40% to 100% after their purification system. Truly life-changing work." },
-  { name: "David Kariuki", role: "SME Owner, Thika", stars: 4, text: "The solar pumping system they designed has cut our water costs by 70%. Reliable, quiet, and zero maintenance issues in 18 months." },
-  { name: "Sarah Wanjiku", role: "School Administrator", stars: 5, text: "Our school now has clean running water thanks to Plasma Water Africa. The team was professional and the system works perfectly." },
+  { name: "James Mwangi", role: "Facilities Manager - KCB Group", stars: 5, text: "SunSea Electrical delivered an exceptional backup power system for our Nairobi headquarters. Professional team, on-time delivery, and within budget." },
+  { name: "Grace Achieng", role: "Hospital Administrator", stars: 5, text: "Their reliable power infrastructure has kept our critical systems running without interruption. Truly life-saving work." },
+  { name: "David Kariuki", role: "SME Owner, Thika", stars: 4, text: "The solar energy system they designed has cut our electricity costs by 70%. Reliable, quiet, and zero maintenance issues in 18 months." },
+  { name: "Sarah Wanjiku", role: "School Administrator", stars: 5, text: "Our school now has reliable, safe electrical installations thanks to SunSea Electrical. The team was professional and the system works perfectly." },
 ];
 
 export default function About() {
@@ -116,7 +116,7 @@ className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-xl font-
       <Hero onOpenProfile={() => setModalOpen(true)} />
       <Value />
 
-      {/* Meet Plasma Water Africa Section*/}
+{/* Meet SunSea Electrical Section*/}
       <section className="py-10 md:py-16 bg-white dark:bg-gray-950">
         <div className="w-full px-4 sm:px-6 lg:px-32">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -133,15 +133,15 @@ className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-xl font-
                 </span>
               </div>
 
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
-                Meet Plasma Water{' '}
+<h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+                Meet SunSea{' '}
                 <span className="text-cyan-500 dark:text-cyan-400">
-                  Africa
+                  Electrical
                 </span>
               </h2>
 
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-8 text-lg">
-                We are dedicated to providing reliable and cost-effective water and solar energy systems for homes, farms, and businesses across Africa.
+                We are dedicated to providing reliable and cost-effective electrical and energy systems for homes, businesses, and industries across Kenya.
               </p>
 
               <div className="space-y-5 mb-10">

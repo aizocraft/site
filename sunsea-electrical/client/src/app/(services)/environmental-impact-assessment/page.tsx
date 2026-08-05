@@ -13,11 +13,11 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Environmental Impact Assessment Kenya | NEMA EIA Services | Plasma Water Africa',
+  title: 'Environmental Impact Assessment Kenya | NEMA EIA Services | SunSea Electrical',
   description: 'Professional EIA services for borehole drilling and construction projects. NEMA-compliant reports and permit assistance. Lead experts in environmental engineering.',
   keywords: 'EIA Kenya, NEMA environmental impact assessment, borehole EIA report, construction EIA Kenya',
   openGraph: {
-    title: 'Environmental Impact Assessment | Plasma Water Africa',
+    title: 'Environmental Impact Assessment | SunSea Electrical',
     description: 'Professional NEMA-compliant EIA services for borehole and construction projects',
     type: 'website',
     locale: 'en_KE',

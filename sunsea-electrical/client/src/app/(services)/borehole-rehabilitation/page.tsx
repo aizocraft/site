@@ -16,11 +16,11 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Borehole Rehabilitation Services Kenya | Well Restoration | Plasma Water Africa',
+  title: 'Borehole Rehabilitation Services Kenya | Well Restoration | SunSea Electrical',
   description: 'Restore underperforming boreholes to original capacity. Pump removal, fishing, re-boring, screen cleaning, and yield restoration services. 99% success rate.',
   keywords: 'borehole rehabilitation Kenya, well restoration, borehole cleaning, borehole repair Nairobi',
   openGraph: {
-    title: 'Borehole Rehabilitation Services | Plasma Water Africa',
+    title: 'Borehole Rehabilitation Services | SunSea Electrical',
     description: 'Restore your underperforming borehole to its original capacity',
     type: 'website',
     locale: 'en_KE',

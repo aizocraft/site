@@ -3,35 +3,40 @@ import ProjectsPageContent from './ProjectsPageContent';
 import { makeSeo } from '../seo';
 
 export const metadata = makeSeo({
-  title: 'Our Projects | Plasma Water Africa',
+  title: 'Our Projects | SunSea Electrical',
   description:
-    'Explore Plasma Water Africa projects across Kenya, including solar installations, borehole drilling, water towers, and integrated energy-water solutions.',
+    'Explore SunSea Electrical projects across Kenya, including industrial power systems, solar installations, generator systems, electrical installations, and integrated energy solutions.',
   canonicalPath: '/projects',
   keywords: [
-    'Plasma Water Africa projects',
+    'SunSea Electrical projects',
+    'electrical installation projects Kenya',
     'solar installation Kenya projects',
-    'borehole drilling Kenya',
-    'water tower construction Kenya',
+    'industrial power systems Kenya',
+    'generator systems projects',
+    'electrical engineering projects Kenya',
     'renewable energy projects Kenya',
-    'water and solar solutions Kenya',
+    'electrical projects Nairobi',
+    'electrical projects Embu',
+    'electrical projects Meru',
+    'electrical projects Kenya',
   ],
   openGraph: {
-    title: 'Plasma Water Africa Projects',
+    title: 'SunSea Electrical Projects',
     description:
-      'View our completed and ongoing solar, borehole, and water infrastructure projects across Kenya.',
-    url: 'https://plasmawater.co.ke/projects',
+      'View our completed and ongoing electrical, solar, and power infrastructure projects across Kenya.',
+    url: 'https://sunseaelectrical.vercel.app/projects',
     images: [{ 
-      url: '/images/plasma-water-africa-logo.png', 
+      url: '/poster.png', 
       width: 1200, 
       height: 630, 
-      alt: 'Plasma Water Africa Projects' 
+      alt: 'SunSea Electrical Projects' 
     }],
   },
   twitter: {
-    title: 'Plasma Water Africa Projects',
+    title: 'SunSea Electrical Projects',
     description:
-      'See our solar, water, and infrastructure projects across Kenya delivered by Plasma Water Africa.',
-    images: ['/images/plasma-water-africa-logo.png'],
+      'See our electrical, solar, and power infrastructure projects across Kenya delivered by SunSea Electrical.',
+    images: ['/poster.png'],
   },
 });
 

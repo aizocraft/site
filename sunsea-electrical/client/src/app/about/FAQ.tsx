@@ -16,27 +16,27 @@ import { submitFeedback } from '@/lib/api';
 const faqs = [
   { 
     q: "What services do you offer?", 
-    a: "Borehole drilling, solar pumping, water treatment, generators, and irrigation networking — all to ISO standards. Our comprehensive approach ensures end-to-end solutions for any water or energy challenge." 
+    a: "Industrial power systems, solar energy solutions, generator systems, smart building systems, CCTV & networking, and professional electrical installation — all to ISO standards. Our comprehensive approach ensures end-to-end solutions for any electrical or energy challenge." 
   },
-  { 
+{ 
     q: "How can I contact you?", 
-    a: "Reach us via our contact form, phone (+254 728 749 722 /+254 728 899 757), or email (plasmawaterafrica@gmail.com)." 
+    a: "Reach us via our contact form, phone (+254 728 749 722 / +254 728 899 757), or email (sunseaelectrical@gmail.com)." 
   },
   { 
     q: "What areas do you serve?", 
-    a: "We operate across multiple African countries, serving both rural communities and urban developments. Currently active in Kenya, Uganda, Tanzania, Rwanda, and expanding to more regions." 
+    a: "We serve clients across Kenya — including Nairobi, Embu, Meru, Nyeri, Tharaka-Nithi, and Kirinyaga — handling both residential and commercial electrical projects." 
   },
   { 
     q: "What makes you different?", 
-    a: "Our ISO standards, 100% reliability track record, and genuine community-focused approach set us apart from the competition. We offer customized solutions with ongoing support." 
+    a: "Our ISO-aligned practices, 100% reliability track record, and genuine community-focused approach set us apart from the competition. We offer customized solutions with ongoing support." 
   },
   { 
     q: "Do you offer custom solutions?", 
     a: "Absolutely — every project is tailored for maximum efficiency and value specific to your site and needs. We conduct thorough assessments before proposing any solution." 
   },
   { 
-  q: "How long does a borehole drilling project take?", 
-  a: "Most borehole drilling projects are completed within a few days, depending on site conditions, depth requirements, and geological factors. Our team conducts a site assessment and provides a clear project timeline before work begins." 
+  q: "How long does an electrical installation project take?", 
+  a: "Most electrical installation projects are completed within a few days or weeks, depending on the scope, site conditions, and requirements. Our team conducts a site assessment and provides a clear project timeline before work begins." 
 },
 ];
 
@@ -141,7 +141,7 @@ export default function FAQ() {
               </span>
             </h2>
             <p className="text-gray-500 dark:text-gray-400 mb-8 text-base leading-relaxed">
-              Find quick answers to common questions about our services, process, and how we can help you achieve water security.
+Find quick answers to common questions about our services, process, and how we can help you achieve reliable, efficient power.
             </p>
 
             <div className="space-y-4">

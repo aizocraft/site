@@ -15,11 +15,11 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Hydro-Geological Survey Kenya | Groundwater Survey Services | Plasma Water Africa',
+  title: 'Hydro-Geological Survey Kenya | Groundwater Survey Services | SunSea Electrical',
   description: 'Professional hydro-geological surveys using V.E.S and H.E.P methods. Identify optimal borehole drilling locations with 99% accuracy. WRMA permit assistance.',
   keywords: 'hydro-geological survey Kenya, groundwater survey, borehole siting, VES survey Kenya',
   openGraph: {
-    title: 'Hydro-Geological Survey Services | Plasma Water Africa',
+    title: 'Hydro-Geological Survey Services | SunSea Electrical',
     description: 'Find the perfect location for your borehole with advanced geophysical survey methods',
     type: 'website',
     locale: 'en_KE',

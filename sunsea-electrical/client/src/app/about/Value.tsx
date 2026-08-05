@@ -12,22 +12,22 @@ const values = [
   {
     icon: Lightbulb,
     title: "Innovation",
-    desc: "Cutting-edge technology for efficient and sustainable water pumping solutions.",
+    desc: "Cutting-edge electrical engineering and technology for efficient, future-ready power solutions.",
   },
   {
     icon: Leaf,
     title: "Sustainability",
-    desc: "Eco-friendly practices to minimise environmental impact and promote resource management.",
+    desc: "Eco-friendly practices promoting clean energy and responsible resource management.",
   },
   {
     icon: Wrench,
     title: "Expertise",
-    desc: "Experienced professionals delivering exceptional results in water and energy sectors.",
+    desc: "Certified electrical engineers and technicians delivering exceptional results across the energy sector.",
   },
   {
     icon: HeartHandshake,
     title: "Community",
-    desc: "Partnering with local communities to address specific needs with lasting solutions.",
+    desc: "Partnering with local communities to deliver safe, reliable electrical solutions that meet their needs.",
   },
 ];
 
@@ -51,7 +51,7 @@ export default function Value() {
           </motion.span>
           <div className="w-12 h-0.5 bg-cyan-500 mx-auto mb-4" />
           <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-base">
-            The principles that guide everything we do at Plasma Water Africa
+The principles that guide everything we do at SunSea Electrical
           </p>
         </motion.div>
 

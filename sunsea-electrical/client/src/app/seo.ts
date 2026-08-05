@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
-const BASE_URL = 'https://plasmawater.co.ke'
-const DEFAULT_OG_IMAGE = '/images/plasma-water-africa-logo.png'
+const BASE_URL = 'https://sunseaelectrical.vercel.app'
+const DEFAULT_OG_IMAGE = '/poster.png'
 
 type SeoParams = {
   title: string
@@ -43,7 +43,7 @@ export function makeSeo(params: SeoParams): Metadata {
     const og: any = {
       type: 'website',
       locale: 'en_KE',
-      siteName: 'Plasma Water Africa',
+      siteName: 'SunSea Electrical',
       images: ogImages,
       ...params.openGraph,
     }
@@ -55,19 +55,35 @@ export function makeSeo(params: SeoParams): Metadata {
 
 
 
-  return {
+return {
     title: params.title,
     description: params.description,
     keywords: toCommaSeparated(params.keywords),
     metadataBase: new URL(BASE_URL),
     alternates: canonical ? { canonical } : undefined,
     openGraph: openGraph as any,
+    applicationName: 'SunSea Electrical',
+    authors: [{ name: 'SunSea Electrical', url: BASE_URL }],
+    creator: 'SunSea Electrical',
+    publisher: 'SunSea Electrical',
+    category: 'Electrical Engineering',
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     twitter: {
       card: 'summary_large_image',
+      site: '@SunSeaElectrical',
+      creator: '@SunSeaElectrical',
       ...params.twitter,
     } as any,
   } as any
 
 }
-
-

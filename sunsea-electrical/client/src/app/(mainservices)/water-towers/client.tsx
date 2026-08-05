@@ -182,7 +182,7 @@ export default function WaterTowersClient() {
             <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src="/images/tower-construction1.jpg"
-                alt="Water tower construction and installation by Plasma Water Africa"
+alt="Water tower construction and installation by SunSea Electrical"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-500"
                 onError={(e) => {
@@ -246,7 +246,7 @@ export default function WaterTowersClient() {
                 Contact Us
               </Link>
               <Link 
-                href="mailto:info@plasmawater.co.ke" 
+href="mailto:sunseaelectrical@gmail.com"
                 className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-6 py-2.5 rounded-xl font-semibold transition-all"
               >
                 <Mail className="h-4 w-4" />

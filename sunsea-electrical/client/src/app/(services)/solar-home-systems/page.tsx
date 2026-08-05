@@ -30,7 +30,7 @@ import {
 import CircularGallery from '@/components/CircularGallery';
 
 export const metadata: Metadata = {
-  title: 'Solar Home Systems | Residential Solar Power Kenya | Plasma Water Africa',
+  title: 'Solar Home Systems | Residential Solar Power Kenya | SunSea Electrical',
   description: 'Cut electricity bills by 70-90% with our premium residential solar systems. 6kW and 5kVA solutions with battery storage. Professional installation across Kenya.',
   keywords: 'solar panels for homes Kenya, residential solar system, home solar installation, solar power Nairobi',
 };

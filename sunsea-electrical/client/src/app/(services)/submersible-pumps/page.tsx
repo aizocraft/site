@@ -21,11 +21,11 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Submersible & Booster Pumps Kenya | Borehole Pump Installation | Plasma Water Africa',
+  title: 'Submersible & Booster Pumps Kenya | Borehole Pump Installation | SunSea Electrical',
   description: 'Professional submersible pump installation for boreholes. Sizing based on depth and yield requirements. Complete pumping systems including control panels. 24/7 support.',
   keywords: 'submersible pumps Kenya, borehole pumps, booster pumps, pump installation Nairobi',
   openGraph: {
-    title: 'Submersible & Booster Pumps | Plasma Water Africa',
+    title: 'Submersible & Booster Pumps | SunSea Electrical',
     description: 'Professional pump installation tailored to your borehole\'s requirements',
     type: 'website',
     locale: 'en_KE',
@@ -140,7 +140,7 @@ export default function SubmersiblePumpsPage() {
             <div className="relative h-[400px] md:h-[450px] rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src="/images/sub-pump.png"
-                alt="Submersible pump system by Plasma Water Africa"
+alt="Submersible pump system by SunSea Electrical"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-500"
 

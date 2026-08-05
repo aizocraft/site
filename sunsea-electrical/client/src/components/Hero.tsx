@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   ArrowRight, 
   Headphones,
   ThumbsUp,
-  Droplet,
+  Zap,
   Sun
 } from 'lucide-react';
 import SplitText from './SplitText';
@@ -15,71 +15,15 @@ import ShinyText from './ShinyText';
 import Counter from './Counter';
 
 export default function Hero() {
-  const [currentBgImage, setCurrentBgImage] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
-  const cursorX = useMotionValue(0);
-  const cursorY = useMotionValue(0);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springConfig = { damping: 25, stiffness: 700 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
-
-  // Background images for carousel
-  const bgImages = [
-    {
-      src: "/images/borehole-drilling5.jpg",
-      alt: 'Borehole drilling in Africa',
-    },
-    {
-      src: "/images/solar.jpg",
-      alt: 'Solar installations in Africa',
-    },
-    {
-      src: "/images/watertower.jpg",
-      alt: 'Water tower construction in Africa',
-    }
-  ];
 
   // Stats data
   const stats = [
-    { value: 500, suffix: '+', label: 'Boreholes Drilled', icon: Droplet, duration: 2 },
+    { value: 500, suffix: '+', label: 'Projects Completed', icon: Zap, duration: 2 },
     { value: 100, suffix: '+', label: 'Solar Installations', icon: Sun, duration: 2.5 },
     { value: 24, suffix: '/7', label: 'Expert Support', icon: Headphones, duration: 1.5 },
     { value: 100, suffix: '%', label: 'Satisfaction', icon: ThumbsUp, duration: 2 }
   ];
-
-  // Background image carousel
-  useEffect(() => {
-    const bgInterval = setInterval(() => {
-      setCurrentBgImage((prev) => (prev + 1) % bgImages.length);
-    }, 5000);
-    return () => clearInterval(bgInterval);
-  }, [bgImages.length]);
-
-  // Mouse move effect for 3D tilt
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 16);
-      cursorY.set(e.clientY - 16);
-      if (heroRef.current) {
-        const rect = heroRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        mouseX.set(x);
-        mouseY.set(y);
-      }
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [cursorX, cursorY, mouseX, mouseY]);
-
-  const rotateX = useTransform(mouseX, [0, 1], [5, -5]);
-  const rotateY = useTransform(mouseY, [0, 1], [-5, 5]);
-
-  const goToBgImage = (index: number) => {
-    setCurrentBgImage(index);
-  };
 
   return (
     <>
@@ -87,41 +31,17 @@ export default function Hero() {
         ref={heroRef} 
         className="relative min-h-[85vh] md:min-h-[95vh] lg:min-h-[90vh] lg:mt-7 flex items-center justify-center overflow-hidden"
       >
-        {/* Background Images Carousel - No overlay */}
+        {/* Background Image - poster.png */}
         <div className="absolute inset-0 z-0">
-          {bgImages.map((image, index) => (
-            <div
-              key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                index === currentBgImage ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <img 
-                src={image.src} 
-                alt={image.alt} 
-                className="w-full h-full object-cover object-center"
-              />
-            </div>
-          ))}
+          <img 
+            src="/poster.png" 
+            alt="SunSea Electrical - Electrical Engineering"
+            className="w-full h-full object-cover object-center"
+          />
           
           {/* Subtle dark gradient only at bottom for text readability - no overlay on main image */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent/30 to-black/60" />
           
-          {/* Background Dots Indicator */}
-          <div className="absolute bottom-28 sm:bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2 sm:gap-3">
-            {bgImages.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-300 focus:outline-none ${
-                  index === currentBgImage 
-                    ? 'bg-[#3b82f6] scale-125 shadow-lg shadow-blue-500/50 w-4 sm:w-5' 
-                    : 'bg-white/50 hover:bg-white/80'
-                }`}
-                onClick={() => goToBgImage(index)}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
         </div>
 
         {/* Subtle Animated Orbs - very faint */}
@@ -133,7 +53,7 @@ export default function Hero() {
               y: [0, -30, 0],
             }}
             transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/4 -left-32 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl"
+            className="absolute top-1/4 -left-32 w-80 h-80 bg-[#0089d1]/10 rounded-full blur-3xl"
           />
           <motion.div
             animate={{
@@ -142,14 +62,14 @@ export default function Hero() {
               y: [0, 30, 0],
             }}
             transition={{ duration: 30, repeat: Infinity, ease: "linear", delay: 5 }}
-            className="absolute bottom-1/4 -right-32 w-80 h-80 bg-blue-400/5 rounded-full blur-3xl"
+            className="absolute bottom-1/4 -right-32 w-80 h-80 bg-[#ffac10]/10 rounded-full blur-3xl"
           />
         </div>
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 md:py-16 lg:py-20">
           <div className="flex flex-col items-center text-center">
             
-            {/* Animated Main Title - Delayed and centered */}
+            {/* Animated Main Title */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -157,7 +77,7 @@ export default function Hero() {
               className="mb-4 sm:mb-6"
             >
               <SplitText
-                text="Plasma Water Africa"
+                text="SunSea Electrical"
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-4 leading-tight drop-shadow-2xl tracking-tight"
                 delay={60}
                 duration={0.7}
@@ -181,7 +101,7 @@ export default function Hero() {
             >
               <div className="bg-white/30 backdrop-blur-md rounded-2xl p-5 sm:p-8 shadow-xl border border-white/50">
                 <ShinyText 
-                  text="Experts in borehole drilling, solar installations, and water tower construction. Bringing clean water and renewable energy to communities across Africa." 
+                  text="Powering infrastructure through precision engineering — from substations to solar plants, from the panel board to the cloud." 
                   disabled={false} 
                   speed={4} 
                   className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed font-medium text-center text-black" 
@@ -201,9 +121,9 @@ export default function Hero() {
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group relative px-6 sm:px-9 py-3 sm:py-4 bg-[#1e3a8a] text-white font-semibold text-sm sm:text-base rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                  className="group relative px-6 sm:px-9 py-3 sm:py-4 bg-[#0089d1] text-white font-semibold text-sm sm:text-base rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-[#3b82f6] to-[#1e3a8a] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#ffac10] to-[#0089d1] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <span className="relative z-10 flex items-center gap-2">
                     Shop Now
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -211,17 +131,17 @@ export default function Hero() {
                 </motion.button>
               </Link>
 
-              {/* Learn More - Outline Modern */}
-              <Link href="/about">
+              {/* Get Quote - Outline Modern */}
+              <Link href="/contact">
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.98 }}
                   className="relative px-6 sm:px-9 py-3 sm:py-4 font-semibold text-sm sm:text-base rounded-full transition-all duration-300 group"
                 >
-                  <span className="absolute inset-0 border-2 border-white/80 rounded-full group-hover:border-[#3b82f6] transition-colors duration-300" />
+                  <span className="absolute inset-0 border-2 border-white/80 rounded-full group-hover:border-[#ffac10] transition-colors duration-300" />
                   <span className="absolute inset-0 bg-white/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-300" />
                   <span className="relative z-10 text-white group-hover:text-white flex items-center gap-2">
-                    Learn More
+                    Get Quote
                     <motion.span
                       animate={{ x: [0, 4, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
@@ -240,7 +160,7 @@ export default function Hero() {
               transition={{ delay: 0.9 }}
               className="flex flex-wrap justify-center gap-6 sm:gap-12 md:gap-16 max-w-3xl mx-auto w-full px-2"
             >
-              {/* Boreholes */}
+              {/* Projects */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -250,7 +170,7 @@ export default function Hero() {
                 <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
                   <Counter end={500} duration={2} suffix="+" />
                 </div>
-                <div className="text-xs sm:text-sm text-white/60 mt-1 sm:mt-2">Boreholes</div>
+                <div className="text-xs sm:text-sm text-white/60 mt-1 sm:mt-2">Projects</div>
               </motion.div>
 
               {/* Solar */}
@@ -292,7 +212,7 @@ export default function Hero() {
           </svg>
         </div>
 
-        {/* Scroll Indicator - Moved up slightly to avoid hiding dots */}
+        {/* Scroll Indicator */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -308,7 +228,7 @@ export default function Hero() {
             <motion.div 
               animate={{ height: [4, 8, 4] }}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1 bg-gradient-to-t from-[#3b82f6] to-[#1e3a8a] rounded-full"
+              className="w-1 bg-gradient-to-t from-[#ffac10] to-[#0089d1] rounded-full"
             />
           </motion.div>
         </motion.div>

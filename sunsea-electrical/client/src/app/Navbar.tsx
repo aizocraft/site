@@ -191,8 +191,8 @@ export default function Navbar() {
     )
   }
 
-  const logoUrl = '/plasmawater_africa_logo.png'
-  const companyName = 'Plasma Water Africa'
+  const logoUrl = '/logo.png'
+  const companyName = 'SunSea Electrical'
 
   return (
     <>
