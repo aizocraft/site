@@ -33,8 +33,53 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/api", "/_next"],
       },
-      {
+{
         userAgent: "Bingbot",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "DuckDuckBot",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "Baiduspider",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "YandexBot",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "Applebot",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "Applebot-Extended",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "Bytespider",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "CCBot",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "cohere-ai",
+        allow: "/",
+        disallow: ["/api", "/_next"],
+      },
+      {
+        userAgent: "Meta-ExternalAgent",
         allow: "/",
         disallow: ["/api", "/_next"],
       },
