@@ -205,7 +205,7 @@ export async function generateQuoteNumber(date: Date = new Date()): Promise<stri
   );
 
   const sequence = String(counter!.sequence).padStart(4, '0');
-  return `${sequence}-${month}-PSMA/Q`;
+  return `${sequence}-${month}-SSE/Q`;
 }
 
 const QuotationModel = mongoose.model<IQuotation>('Quotation', quotationSchema);

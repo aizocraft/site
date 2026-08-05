@@ -12,9 +12,9 @@ interface WhatsAppButtonProps {
 }
  const whatsappAvatar = "/whatsapp-logo.png"; 
 const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
-  phoneNumber = "254728749722",
-  accountName = "Plasma Water Africa",
-  welcomeMessage = "Hi there! 👋 Welcome to Plasma Water Africa. How can we assist you today?",
+  phoneNumber = "254784909466",
+  accountName = "Sun Sea Electrical",
+  welcomeMessage = "Hi there! 👋 Welcome to Sun Sea Electrical. How can we assist you today?",
   avatar = "/logo.png",
  }) => {
   const [isOpen, setIsOpen] = useState(false);

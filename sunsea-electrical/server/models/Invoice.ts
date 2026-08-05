@@ -220,7 +220,7 @@ export async function generateInvoiceNumber(date: Date = new Date()): Promise<st
   );
 
   const sequence = String(counter!.sequence).padStart(4, '0');
-  return `${sequence}-${month}-PSMA/I`;
+  return `${sequence}-${month}-SSE/I`;
 }
 
 const InvoiceModel = mongoose.model<IInvoice>('Invoice', invoiceSchema);

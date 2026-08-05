@@ -15,8 +15,8 @@ export async function generateInvoicePDF(
   const kcbLogoUrl = '/kcb-logo.png';
   const footerLogoUrl = '/logo.png';
   
-  const companyName = settings?.companyName || 'PLASMA WATER AFRICA';
-  const companySlogan = settings?.slogan || 'Quality Water Solutions';
+const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
+  const companySlogan = settings?.slogan || 'Reliable Electrical & Energy Solutions';
   const taxRate = invoice.taxRate || 0.16;
   
   // Get transport info
@@ -116,11 +116,11 @@ export async function generateInvoicePDF(
   const getHeaderHTML = () => `
     <div class="header">
       <div class="company-info">
-        <div class="company-name">${escapeHtml(companyName)}</div>
-        <div class="company-address">P.O BOX 4996-00200</div>
-        <div class="company-location">NAIROBI, KENYA</div>
-        <div class="company-tel">TEL: 0710743793</div>
-        <div class="company-email">Email: plasmawaterafrica@gmail.com</div>
+<div class="company-name">${escapeHtml(companyName)}</div>
+        <div class="company-address">Kianjokoma, Embu</div>
+        <div class="company-location">EMBU, KENYA</div>
+        <div class="company-tel">TEL: 0784909466</div>
+        <div class="company-email">Email: sunseaelectrical@gmail.com</div>
       </div>
       <div class="logo-area">
         <img src="${finalLogoUrl}" class="company-logo" alt="Logo" crossorigin="anonymous" />
@@ -223,9 +223,9 @@ export async function generateInvoicePDF(
             </div>
           </div>
           <div class="payment-details">
-            <div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">PLASMA WATER AFRICA</span></div>
+<div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">SUN SEA ELECTRICAL</span></div>
             <div class="payment-detail"><span class="payment-detail-key">Account Number</span><span class="payment-detail-value">1312281278</span></div>
-            <div class="payment-detail"><span class="payment-detail-key">Branch</span><span class="payment-detail-value">Moi Avenue, Nairobi</span></div>
+            <div class="payment-detail"><span class="payment-detail-key">Branch</span><span class="payment-detail-value">Embu</span></div>
           </div>
         </div>
         <div class="payment-method">
@@ -238,8 +238,8 @@ export async function generateInvoicePDF(
           </div>
           <div class="payment-details">
             <div class="payment-detail"><span class="payment-detail-key">Lipa na M-PESA</span><span class="payment-detail-value">Buy Goods & Services</span></div>
-            <div class="payment-detail"><span class="payment-detail-key">Till No.</span><span class="payment-detail-value">9114123</span></div>
-            <div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">PLASMA WATER AFRICA</span></div>
+<div class="payment-detail"><span class="payment-detail-key">Till No.</span><span class="payment-detail-value">9114123</span></div>
+            <div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">SUN SEA ELECTRICAL</span></div>
           </div>
         </div>
       </div>
@@ -278,7 +278,7 @@ export async function generateInvoicePDF(
           </div>
         </div>
         <div class="footer-logo-section">
-          <img src="${footerLogoUrl}" class="footer-logo" alt="Plasma Water Africa" crossorigin="anonymous" onerror="this.style.display='none'" />
+<img src="${footerLogoUrl}" class="footer-logo" alt="Sun Sea Electrical" crossorigin="anonymous" onerror="this.style.display='none'" />
         </div>
         <div class="footer-slogan">${escapeHtml(companySlogan)}  |  © ${new Date().getFullYear()} ${escapeHtml(companyName)}. All rights reserved.</div>
       </div>

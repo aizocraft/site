@@ -51,43 +51,15 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
   const getPageSubtitle = () => {
     if (isForgotPasswordPage) return 'Enter your email to receive a reset link'
     if (isResetPasswordPage) return 'Choose a strong password for your account'
-   // return activeTab === 'login' 
-     // ? 'Sign in to continue to your account'
-     // : 'Join us today and get started'
+    return activeTab === 'login'
+      ? 'Sign in to continue to your account'
+      : 'Join us today and get started'
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{ 
-            x: [0, 100, -50, 0],
-            y: [0, -50, 100, 0],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-r from-blue-400/30 to-indigo-400/30 dark:from-blue-500/20 dark:to-indigo-500/20 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-60 dark:opacity-40"
-        />
-        <motion.div
-          animate={{ 
-            x: [0, -100, 50, 0],
-            y: [0, 50, -100, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear", delay: 2 }}
-          className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-r from-indigo-400/30 to-purple-400/30 dark:from-indigo-500/20 dark:to-purple-500/20 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-60 dark:opacity-40"
-        />
-        <motion.div
-          animate={{ 
-            x: [0, 50, -100, 0],
-            y: [0, -100, 50, 0],
-          }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear", delay: 4 }}
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-400/30 to-blue-400/30 dark:from-purple-500/20 dark:to-blue-500/20 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-60 dark:opacity-40"
-        />
-      </div>
-
-      {/* Subtle Grid Pattern */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cdefs%3E%3Cpattern id=%22grid%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Cpath d=%22M 60 0 L 0 0 0 60%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%220.5%22 stroke-opacity=%220.05%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23grid)%22/%3E%3C/svg%3E')] dark:bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cdefs%3E%3Cpattern id=%22grid%22 width=%2260%22 height=%2260%22 patternUnits=%22userSpaceOnUse%22%3E%3Cpath d=%22M 60 0 L 0 0 0 60%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%220.5%22 stroke-opacity=%220.03%22/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22url(%23grid)%22/%3E%3C/svg%3E')] opacity-50" />
+    <div className="min-h-screen flex items-start sm:items-center justify-center p-4 pt-24 sm:pt-28 lg:pt-32 pb-10 relative overflow-hidden bg-gray-50 dark:bg-gray-950">
+      {/* Subtle background accent - solid, no gradient */}
+      <div className="absolute inset-0 bg-[#0089d1]/5 dark:bg-[#0089d1]/10 pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md lg:max-w-lg transform transition-all duration-500 animate-fadeInUp">
         {/* Logo/Brand */}
@@ -95,15 +67,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-8"
+          className="text-center mb-6 lg:mb-8"
         >
-
-          
           <motion.h1 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-           className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white"
+            className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white"
           >
             {getPageTitle()}
           </motion.h1>
@@ -125,7 +95,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="relative bg-white/60 dark:bg-gray-800/40 backdrop-blur-xl rounded-2xl p-1 mb-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+              className="relative bg-white dark:bg-gray-800/40 backdrop-blur-xl rounded-2xl p-1 mb-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50"
             >
               <div className="relative flex gap-1">
                 <button
@@ -165,7 +135,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl lg:rounded-3xl p-6 lg:p-10 border border-gray-200/50 dark:border-gray-700/50 shadow-2xl shadow-gray-200/20 dark:shadow-black/20"
+          className="bg-white dark:bg-gray-900 backdrop-blur-xl rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10 border border-gray-200/50 dark:border-gray-700/50 shadow-2xl shadow-gray-200/20 dark:shadow-black/20"
         >
           {children}
         </motion.div>
@@ -193,17 +163,6 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       </div>
 
       <style jsx>{`
-        @keyframes blob {
-          0%, 100% { 
-            transform: translate(0px, 0px) scale(1); 
-          }
-          33% { 
-            transform: translate(30px, -50px) scale(1.1); 
-          }
-          66% { 
-            transform: translate(-20px, 20px) scale(0.9); 
-          }
-        }
         @keyframes fadeInUp {
           from {
             opacity: 0;

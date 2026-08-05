@@ -3,13 +3,27 @@
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '@/lib/api';
-import { ArrowRight, ChevronRight, Shield } from 'lucide-react';
+import { 
+  ArrowRight, 
+  ChevronRight, 
+  CheckCircle2, 
+  Phone, 
+  Mail, 
+  MapPin 
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import Hero from '@/components/Hero';
 import ProductCard from '@/components/ProductCard';
 import Services from '@/components/Services';
 import Features from '@/components/Features';
+
+const whyUs = [
+  "We offer affordable electrical and energy solutions that help you save more.",
+  "Every project we undertake ensures expectations are met, backed by vast experience.",
+  "Cutting-edge technology and expert installation make going solar simple, so you start saving immediately.",
+  "Highly trained, skilled engineers who will never sacrifice quality in any installation or service.",
+];
 
 export default function HomeClient() {
   // Featured products query
@@ -22,8 +36,106 @@ export default function HomeClient() {
   return (
     <>
       <Hero />
+
+      {/* About Section - after hero */}
+      <section className="py-20 sm:py-24 lg:py-28 bg-white dark:bg-gray-950 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Image - original size, not cropped */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="relative"
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-800">
+                <img
+                  src="/banner.png"
+                  alt="SunSea Electrical - About Us"
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+              <div className="hidden lg:flex absolute -bottom-6 -right-6 bg-[#0089d1] text-white rounded-2xl px-6 py-4 shadow-lg">
+                <div>
+                  <div className="text-3xl font-bold">15+</div>
+                  <div className="text-xs font-medium opacity-90">Years Experience</div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Text */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-px bg-[#0089d1]" />
+                <span className="text-sm font-semibold tracking-[0.2em] uppercase text-[#0089d1] dark:text-[#009dff]">
+                  Your Trusted Partner
+                </span>
+              </div>
+
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+                Meet SunSea{' '}
+                <span className="text-[#0089d1] dark:text-[#009dff]">
+                  Electrical
+                </span>
+              </h2>
+
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-8 text-base sm:text-lg">
+                We are dedicated to providing reliable and cost-effective electrical and energy systems for homes, businesses, and industries across Kenya.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                {whyUs.map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -16 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex gap-3 items-start group"
+                  >
+                    <CheckCircle2 size={22} className="text-[#0089d1] dark:text-[#009dff] mt-0.5 shrink-0" />
+                    <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors">
+                      {item}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <Link href="/about">
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#0089d1] hover:bg-[#0077b5] text-white font-semibold rounded-xl text-base transition-all duration-200 shadow-md hover:shadow-lg"
+                  >
+                    Learn More About Us
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.button>
+                </Link>
+                <Link href="/products">
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-7 py-3.5 bg-transparent border-2 border-gray-300 dark:border-gray-700 hover:border-[#0089d1] dark:hover:border-[#009dff] text-gray-700 dark:text-gray-300 hover:text-[#0089d1] dark:hover:text-[#009dff] font-semibold rounded-xl text-base transition-all duration-200"
+                  >
+                    Browse Products
+                  </motion.button>
+                </Link>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       <Services />
 
+      {/* Featured Products */}
       <section className="py-12 lg:py-16 bg-white dark:bg-gray-950">
         <div className="px-2 sm:px-4 lg:max-w-8xl lg:mx-auto lg:mx-4 lg:px-16">
           <motion.div
@@ -93,84 +205,116 @@ export default function HomeClient() {
 
       <Features />
 
-<section className="relative py-20 sm:py-24 lg:py-28 overflow-hidden bg-blue-900">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white/20 rounded-full"
-              initial={{
-                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-                y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
-              }}
-              animate={{ y: [null, -150, -300], opacity: [0, 0.5, 0] }}
-              transition={{ duration: Math.random() * 6 + 4, repeat: Infinity, delay: Math.random() * 5 }}
-            />
-          ))}
-
-          <motion.div
-            animate={{ scale: [1, 1.2, 1], x: [0, 50, 0], y: [0, -30, 0] }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute top-20 left-10 w-72 h-72 bg-blue-400/20 rounded-full blur-3xl"
-          />
-
-          <motion.div
-            animate={{ scale: [1, 1.3, 1], x: [0, -50, 0], y: [0, 30, 0] }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'linear', delay: 3 }}
-            className="absolute bottom-20 right-10 w-80 h-80 bg-blue-300/20 rounded-full blur-3xl"
-          />
+      {/* Contact Section - replaces old CTA */}
+      <section className="relative py-20 sm:py-24 lg:py-28 overflow-hidden bg-slate-50 dark:bg-gray-950">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#0089d1]/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#ffac10]/10 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="text-center mb-12 sm:mb-16"
           >
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <Shield className="w-4 h-4 text-white/80" />
-              <span className="text-sm font-medium text-white/90">Trusted by Clients</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight">
-              Ready to Power Your{' '}
-<span className="text-blue-200">
-                Electrical & Energy Solutions?
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-4">
+              Get In{' '}
+              <span className="text-[#0089d1] dark:text-[#009dff]">
+                Touch
               </span>
             </h2>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
+              Reach out to our expert team for reliable electrical and energy solutions
+            </p>
+          </motion.div>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <motion.a
-                href="/contact"
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Location */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="group bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="w-14 h-14 rounded-xl bg-[#0089d1] flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <MapPin size={24} className="text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Location</h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                Kianjokoma
+                <br />
+                Embu, Kenya
+              </p>
+            </motion.div>
+
+            {/* Phone */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="group bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="w-14 h-14 rounded-xl bg-[#ffac10] flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Phone size={24} className="text-gray-900" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Call Us</h3>
+              <a
+                href="tel:0784909466"
+                className="text-gray-600 dark:text-gray-400 hover:text-[#0089d1] dark:hover:text-[#009dff] transition-colors"
+              >
+                0784 909 466
+              </a>
+            </motion.div>
+
+            {/* Email */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="group bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <div className="w-14 h-14 rounded-xl bg-[#ffac10] flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Mail size={24} className="text-gray-900" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Email</h3>
+              <a
+                href="mailto:sunseaelectrical@gmail.com"
+                className="text-gray-600 dark:text-gray-400 hover:text-[#0089d1] dark:hover:text-[#009dff] transition-colors break-all"
+              >
+                sunseaelectrical@gmail.com
+              </a>
+            </motion.div>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center mt-12"
+          >
+            <Link href="/contact">
+              <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group relative px-8 py-4 bg-white text-blue-700 font-bold text-base sm:text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-[#0089d1] hover:bg-[#0077b5] text-white font-bold text-base sm:text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-<span className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <span className="relative z-10 flex items-center gap-2">
-                  Contact Our Experts
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </span>
-              </motion.a>
-
-              <motion.a
-                href="/products"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="px-8 py-4 border-2 border-white/30 text-white hover:bg-white/10 font-bold text-base sm:text-lg rounded-xl transition-all duration-300 backdrop-blur-sm"
-              >
-                Browse Products
-              </motion.a>
-            </div>
-
-            <p className="text-xs text-white/50 mt-8">Free consultation • Quick response</p>
+                Contact Our Experts
+                <ArrowRight className="w-5 h-5" />
+              </motion.button>
+            </Link>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-6">
+              Mon-Sat•8:00 AM - 6:00 PM
+            </p>
           </motion.div>
         </div>
       </section>
     </>
   );
 }
-

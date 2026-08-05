@@ -401,16 +401,27 @@ export default function AddProductPage() {
                       className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 appearance-none"
                       required
                     >
-                      <option value="">Select a category</option>
-                      <option value="Solar Panels">Solar Panels</option>
-                      <option value="Inverters">Inverters</option>
-                      <option value="Batteries">Batteries</option>
-                      <option value="Water Pumps">Water Pumps</option>
-                      <option value="Cables & Connectors">Cables & Connectors</option>
-                      <option value="Solar Lights">Solar Lights</option>
-                      <option value="Solar Water Heaters">Solar Water Heaters</option>
-                      <option value="Generators">Generators</option>
-                      <option value="Accessories">Accessories</option>
+<option value="">Select a category</option>
+                      <option value="Cables & Wires">Cables & Wires</option>
+                      <option value="Circuit Protection">Circuit Protection</option>
+                      <option value="Switches & Sockets">Switches & Sockets</option>
+                      <option value="Lighting">Lighting</option>
+                      <option value="Conduits & Trunking">Conduits & Trunking</option>
+                      <option value="Electrical Accessories">Electrical Accessories</option>
+                      <option value="Solar Products">Solar Products</option>
+                      <option value="Backup Power">Backup Power</option>
+                      <option value="Industrial Electrical">Industrial Electrical</option>
+                      <option value="Motors & Pumps">Motors & Pumps</option>
+                      <option value="CCTV & Security">CCTV & Security</option>
+                      <option value="Networking">Networking</option>
+                      <option value="Smart Home">Smart Home</option>
+                      <option value="Tools">Tools</option>
+                      <option value="Safety Equipment">Safety Equipment</option>
+                      <option value="Fans & Ventilation">Fans & Ventilation</option>
+                      <option value="Enclosures">Enclosures</option>
+                      <option value="Plumbing & Water">Plumbing & Water</option>
+                      <option value="Brands">Brands</option>
+                      <option value="Featured Collections">Featured Collections</option>
                       <option value="Labour">Labour</option>
                       <option value="Other">Other</option>
                     </select>

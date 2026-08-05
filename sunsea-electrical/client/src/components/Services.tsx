@@ -276,9 +276,15 @@ const Services = () => {
   };
 
   return (
-    <section id="services" className="relative py-20 sm:py-24 lg:py-32 overflow-hidden bg-white dark:bg-gray-950">
+    <section id="services" className="relative py-20 sm:py-24 lg:py-32 overflow-hidden bg-slate-50 dark:bg-gray-950">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl" />
+      </div>
+
       {/* Content */}
-    <div className="px-2 sm:px-4 lg:max-w-8xl lg:mx-8 relative z-10">
+      <div className="px-2 sm:px-4 lg:max-w-8xl lg:mx-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -293,7 +299,7 @@ const Services = () => {
               Services
             </span>
           </h2>
-<p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
             Electrical and energy solutions engineered for a sustainable future
           </p>
         </motion.div>
@@ -312,7 +318,7 @@ const Services = () => {
               >
                 <TiltCard3D>
                   <div 
-                    className="group relative overflow-hidden rounded-2xl bg-slate-50 dark:bg-gray-900 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200 dark:border-gray-800"
+                    className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200 dark:border-gray-800"
                     onClick={() => openModal(service)}
                   >
                     {/* Image Section - Taller for better visibility */}
@@ -322,7 +328,7 @@ const Services = () => {
                         alt={service.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-black/30" />
+                      <div className="absolute inset-0 bg-gray-900/40" />
                     </div>
                     
                     {/* Content - Larger padding for bigger cards */}
@@ -335,7 +341,7 @@ const Services = () => {
                           <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
                             {service.title}
                           </h3>
-                          <div className="w-16 h-0.5 bg-blue-600 rounded-full mt-2 transition-all duration-300 group-hover:w-24" />
+                          <div className="w-16 h-0.5 bg-blue-500 rounded-full mt-2 transition-all duration-300 group-hover:w-24" />
                         </div>
                       </div>
                       
@@ -375,7 +381,7 @@ const Services = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-500 bg-slate-50 dark:bg-gray-900 hover:scale-[1.02] cursor-pointer h-full"
+                  className="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-500 bg-white dark:bg-gray-900 hover:scale-[1.02] cursor-pointer h-full"
                   onClick={() => openModal(service)}
                 >
                   <div className="relative h-52 overflow-hidden">
@@ -401,7 +407,7 @@ const Services = () => {
                     <ul className="space-y-2">
                       {service.features.slice(0, 3).map((feature, i) => (
                         <li key={i} className="flex items-center text-gray-700 dark:text-gray-300 text-sm">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 mr-2 flex-shrink-0" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 mr-2 flex-shrink-0" />
                           <span className="truncate">{feature}</span>
                         </li>
                       ))}
@@ -437,7 +443,7 @@ const Services = () => {
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
                 <Card
-                  className="group overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all duration-500 bg-slate-50 dark:bg-gray-900 cursor-pointer"
+                  className="group overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all duration-500 bg-white dark:bg-gray-900 cursor-pointer"
                   onClick={() => openModal(service)}
                 >
                   <div className="relative h-48 overflow-hidden">
@@ -477,7 +483,7 @@ const Services = () => {
           })}
         </div>
 
-        {/* Modal remains the same */}
+        {/* Modal - Fixes navbar overlap with proper z-index, responsive sizing and microinteractions */}
         <AnimatePresence mode="wait">
           {isModalOpen && selectedService && (
             <motion.div
@@ -486,7 +492,7 @@ const Services = () => {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm"
               onClick={closeModal}
             >
               <motion.div
@@ -495,29 +501,30 @@ const Services = () => {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-[95%] sm:max-w-[90%] md:max-w-2xl lg:max-w-3xl max-h-[90vh] overflow-hidden border border-gray-200 dark:border-gray-800 mt-8 sm:mt-12 md:mt-16"
+                className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-[95%] sm:max-w-lg md:max-w-2xl lg:max-w-3xl max-h-[85vh] overflow-hidden border border-gray-200 dark:border-gray-800"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Header */}
-                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-gray-900">
+                {/* Header - sticky to always stay visible */}
+                <div className="sticky top-0 z-10 p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                       <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg flex-shrink-0">
                         <selectedService.Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{selectedService.title}</h3>
+                        <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{selectedService.title}</h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
+                          <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                           <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Premium Service Provider</span>
                         </div>
                       </div>
                     </div>
                     <motion.button
                       onClick={closeModal}
-                      className="p-2 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all flex-shrink-0 ml-2 shadow-sm"
-                      whileHover={{ scale: 1.1 }}
+                      className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all flex-shrink-0 ml-2 shadow-sm"
+                      whileHover={{ scale: 1.1, rotate: 90 }}
                       whileTap={{ scale: 0.9 }}
+                      aria-label="Close"
                       type="button"
                     >
                       <X className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 dark:text-gray-400" />
@@ -526,7 +533,7 @@ const Services = () => {
                 </div>
 
                 {/* Scrollable Body */}
-                <div className="overflow-y-auto max-h-[calc(90vh-80px)] sm:max-h-[calc(90vh-100px)]">
+                <div className="overflow-y-auto max-h-[calc(85vh-88px)] sm:max-h-[calc(85vh-100px)]">
                   <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                     {/* Image */}
                     <div className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-lg">
@@ -557,12 +564,36 @@ const Services = () => {
                             transition={{ delay: i * 0.05 }}
                             className="flex items-start group/feature"
                           >
-                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mr-2 sm:mr-3 mt-0.5 flex-shrink-0 transition-transform group-hover/feature:scale-110" />
+                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mr-2 sm:mr-3 mt-0.5 flex-shrink-0 transition-transform group-hover/feature:scale-110" />
                             <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{feature}</span>
                           </motion.div>
                         ))}
                       </div>
                     </div>
+
+                    {/* Benefits */}
+                    {selectedService.benefits && selectedService.benefits.length > 0 && (
+                      <div>
+                        <h4 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
+                          <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                          Why Choose Us
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {selectedService.benefits.map((benefit, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.1 + i * 0.05 }}
+                              className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700"
+                            >
+                              <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                              <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{benefit}</span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* CTA Button */}
                     <Button
