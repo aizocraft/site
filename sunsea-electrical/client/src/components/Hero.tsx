@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
   ArrowRight, 
-  Headphones,
   ThumbsUp,
   Zap,
   Sun
@@ -31,7 +30,7 @@ export default function Hero() {
       >
         {/* Left Content */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 md:py-16 lg:py-20">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             
             {/* Text Column - Left */}
             <div className="flex flex-col items-start text-left">
@@ -40,10 +39,11 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full px-4 py-1.5 mb-6"
+                className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full px-4 py-1.5 mb-5"
               >
+
                 <span className="text-xs sm:text-sm font-semibold tracking-wide uppercase">
-                  Precision Electrical Engineering
+                Electrical Engineering
                 </span>
               </motion.div>
 
@@ -52,7 +52,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                className="mb-4 sm:mb-6"
+                className="mb-4 sm:mb-5"
               >
                 <SplitText
                   text="SunSea Electrical"
@@ -75,7 +75,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
-                className="max-w-xl mb-8 sm:mb-10"
+                className="max-w-xl mb-7 sm:mb-8"
               >
                 <p className="text-base sm:text-lg md:text-xl leading-relaxed text-gray-600 dark:text-gray-400">
                   Powering infrastructure through precision engineering — from substations to solar plants, from the panel board to the cloud.
@@ -87,14 +87,14 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="flex flex-wrap gap-4 mb-10 sm:mb-12"
+                className="flex flex-wrap gap-3 sm:gap-4 mb-8 sm:mb-10"
               >
                 {/* Shop Now - Solid */}
                 <Link href="/products">
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group relative px-6 sm:px-9 py-3 sm:py-4 bg-[#0089d1] text-white font-semibold text-sm sm:text-base rounded-full shadow-lg hover:shadow-2xl transition-all duration-300"
+                    className="group relative px-6 sm:px-9 py-3 sm:py-4 bg-[#0089d1] text-white font-semibold text-sm sm:text-base rounded-full shadow-lg hover:shadow-2xl active:scale-95 transition-all duration-300"
                   >
                     <span className="relative z-10 flex items-center gap-2">
                       Shop Now
@@ -123,7 +123,7 @@ export default function Hero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.9 }}
-                className="flex flex-wrap gap-6 sm:gap-12 max-w-xl w-full"
+                className="flex flex-wrap gap-6 sm:gap-10 md:gap-12 w-full"
               >
                 {stats.map((stat, index) => (
                   <motion.div
@@ -133,27 +133,27 @@ export default function Hero() {
                     transition={{ delay: 1 + index * 0.1 }}
                     className="text-left"
                   >
-                    <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
+                    <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
                       <Counter end={stat.value} duration={stat.duration} suffix={stat.suffix} />
                     </div>
-                    <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{stat.label}</div>
+                    <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">{stat.label}</div>
                   </motion.div>
                 ))}
               </motion.div>
             </div>
 
-            {/* Image Column - Right */}
+            {/* Image Column - Right (visible on all screens) */}
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-              className="relative hidden lg:block"
+              className="relative w-full"
             >
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-800">
                 <img 
                   src="/poster.png" 
                   alt="SunSea Electrical - Electrical Engineering"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto lg:h-full"
                 />
               </div>
             </motion.div>
@@ -165,7 +165,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer z-20 hidden sm:block"
+          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 cursor-pointer z-20 hidden sm:block"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
           <motion.div 

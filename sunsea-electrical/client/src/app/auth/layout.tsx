@@ -51,9 +51,9 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
   const getPageSubtitle = () => {
     if (isForgotPasswordPage) return 'Enter your email to receive a reset link'
     if (isResetPasswordPage) return 'Choose a strong password for your account'
-    return activeTab === 'login' 
-      ? 'Sign in to continue to your account'
-      : 'Join us today and get started'
+   // return activeTab === 'login' 
+     // ? 'Sign in to continue to your account'
+     // : 'Join us today and get started'
   }
 
   return (
