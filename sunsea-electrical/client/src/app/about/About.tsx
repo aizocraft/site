@@ -188,33 +188,52 @@ className="flex-1 bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-xl font-
               </div>
             </motion.div>
 
-            {/* Right Column - Feature Highlights */}
+{/* Right Column - Feature Highlights + Image */}
             <motion.div
-              className="grid grid-cols-2 gap-6"
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              className="space-y-6"
             >
-              {[
-                { label: "ISO Certified", icon: ShieldCheck },
-                { label: "15+ Years Experience", icon: Target },
-                { label: "24/7 Support", icon: Phone },
-                { label: "Custom Solutions", icon: Wrench },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  className="group bg-gray-50 dark:bg-gray-900 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-800 hover:border-cyan-500 dark:hover:border-cyan-500 transition-all duration-300 hover:shadow-lg"
-                  whileHover={{ y: -4 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <div className="w-14 h-14 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center mx-auto mb-4 group-hover:bg-cyan-500 transition-all duration-300">
-                    <item.icon size={24} className="text-cyan-600 dark:text-cyan-400 group-hover:text-white transition-colors duration-300" />
-                  </div>
-                  <p className="text-base font-semibold text-gray-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                    {item.label}
+              {/* Banner Image */}
+              <div className="relative rounded-2xl overflow-hidden shadow-xl group">
+                <img
+                  src="/banner.png"
+                  alt="SunSea Electrical about"
+                  className="w-full h-56 sm:h-64 md:h-72 object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#00225c]/80 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-5 right-5">
+                  <p className="text-white font-bold text-lg sm:text-xl drop-shadow">
+                    Powering the Future of Energy
                   </p>
-                </motion.div>
-              ))}
+                  <p className="text-white/80 text-sm">Reliable • Safe • Sustainable</p>
+                </div>
+              </div>
+
+              {/* Feature Highlights */}
+              <div className="grid grid-cols-2 gap-6">
+                {[
+                  { label: "ISO Certified", icon: ShieldCheck },
+                  { label: "15+ Years Experience", icon: Target },
+                  { label: "24/7 Support", icon: Phone },
+                  { label: "Custom Solutions", icon: Wrench },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="group bg-gray-50 dark:bg-gray-900 rounded-xl p-6 text-center border border-gray-200 dark:border-gray-800 hover:border-cyan-500 dark:hover:border-cyan-500 transition-all duration-300 hover:shadow-lg"
+                    whileHover={{ y: -4 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className="w-14 h-14 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center mx-auto mb-4 group-hover:bg-cyan-500 transition-all duration-300">
+                      <item.icon size={24} className="text-cyan-600 dark:text-cyan-400 group-hover:text-white transition-colors duration-300" />
+                    </div>
+                    <p className="text-base font-semibold text-gray-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                      {item.label}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
           </div>
         </div>

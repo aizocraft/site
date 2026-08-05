@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { X, Send, Minimize2 } from "lucide-react";
+import { X, Send, Minimize2, MessageCircle, Zap, Sun, Wrench, Shield, Headphones, CheckCircle2 } from "lucide-react";
 
 interface WhatsAppButtonProps {
   phoneNumber?: string;
@@ -10,42 +10,55 @@ interface WhatsAppButtonProps {
   welcomeMessage?: string;
   avatar?: string;
 }
- const whatsappAvatar = "/whatsapp-logo.png"; 
+const whatsappAvatar = "/whatsapp-logo.png";
+
 const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   phoneNumber = "254784909466",
   accountName = "Sun Sea Electrical",
   welcomeMessage = "Hi there! 👋 Welcome to Sun Sea Electrical. How can we assist you today?",
   avatar = "/logo.png",
- }) => {
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
+  // Quick replies tailored for an electrical & energy company
+  const quickReplies = [
+    { icon: Zap, label: "Solar Solutions", color: "green", text: "I'm interested in Solar Energy solutions. Can you share options and pricing?" },
+    { icon: Wrench, label: "Electrical Installations", color: "green", text: "I need Electrical Installation services. Can you help and share a quote?" },
+    { icon: Sun, label: "Generator Systems", color: "green", text: "I need a Generator. What sizes and prices do you offer?" },
+    { icon: Shield, label: "Smart Building", color: "green", text: "I'm interested in Smart Building & automation systems. Tell me more." },
+    { icon: MessageCircle, label: "CCTV & Networking", color: "green", text: "I need CCTV & Networking services for my premises. Can you help?" },
+    { icon: CheckCircle2, label: "Maintenance Contracts", color: "green", text: "I'm interested in a Maintenance Contract for my electrical systems." },
+    { icon: Headphones, label: "Request Quotation", color: "green", text: "I need a quotation for electrical products and services. Can you help?" },
+    { icon: MessageCircle, label: "Talk to an Engineer", color: "green", text: "I'd like to speak with an engineer about my project. When are you available?" },
+  ];
+
   // Detect dark mode
   useEffect(() => {
     const checkDarkMode = () => {
       const isDark = document.documentElement.classList.contains('dark') ||
-                    document.body.classList.contains('dark') ||
-                    document.documentElement.getAttribute('data-theme') === 'dark';
+        document.body.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark';
       setIsDarkMode(isDark);
     };
 
     checkDarkMode();
-    
+
     // Watch for theme changes
     const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    
+
     return () => observer.disconnect();
   }, []);
 
   // Check scroll position to hide on certain conditions
   useEffect(() => {
     let lastScrollY = window.scrollY;
-    
+
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       // Hide when scrolling down fast, show when scrolling up or at top
@@ -56,7 +69,7 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       }
       lastScrollY = currentScrollY;
     };
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -85,28 +98,27 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
 
   return (
     <>
-      {/* Floating Button */}
-      <div 
+      {/* Floating Button - solid green, no gradient */}
+      <div
         className={`fixed bottom-6 right-6 z-50 transition-all duration-500 transform ${
           isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'
         } ${isVisible ? 'translate-y-0' : 'translate-y-24'}`}
       >
         <button
           onClick={() => setIsOpen(true)}
-         // Remove the gradient classes from this line:
-className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl hover:shadow-xl transition-all duration-300 transform hover:scale-110 animate-pulse-slow"
+          className="group relative bg-green-600 text-white rounded-full p-3 shadow-2xl hover:shadow-xl transition-all duration-300 transform hover:scale-110 animate-pulse-slow"
         >
           {/* Ripple Effect */}
-          <span className="absolute inset-0 rounded-full bg-green-400 opacity-75 animate-ripple"></span>
-          <span className="absolute inset-0 rounded-full bg-green-400 opacity-75 animate-ripple-delay"></span>
-          
+          <span className="absolute inset-0 rounded-full bg-green-500 opacity-75 animate-ripple"></span>
+          <span className="absolute inset-0 rounded-full bg-green-500 opacity-75 animate-ripple-delay"></span>
+
           {/* Real WhatsApp Icon from local file */}
-          <img 
-            src={whatsappAvatar} 
+          <img
+            src={whatsappAvatar}
             alt="WhatsApp"
             className="w-8 h-8 relative z-10 object-contain"
           />
-          
+
           {/* Notification Badge */}
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-ping"></span>
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full"></span>
@@ -115,29 +127,29 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
 
       {/* WhatsApp Chat Window */}
       {isOpen && (
-        <div 
+        <div
           className={`fixed bottom-6 right-6 z-50 w-[90vw] sm:w-[380px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl transition-all duration-500 transform ${
             isMinimized ? 'h-14' : 'h-[560px]'
           } ${isVisible ? 'translate-y-0' : 'translate-y-24'} animate-slideUp`}
         >
-          {/* Header */}
-<div className="bg-gradient-to-r from-[#000063] to-[#0043b3] rounded-t-2xl p-4 text-white">
-              <div className="flex items-center justify-between">
+          {/* Header - solid green, no gradient */}
+          <div className={`bg-green-600 rounded-t-2xl p-4 text-white ${isDarkMode ? 'bg-green-700' : ''}`}>
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <img 
-                    src={whatsappAvatar} 
+                  <img
+                    src={whatsappAvatar}
                     alt={accountName}
                     className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-lg"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = 'https://via.placeholder.com/40';
                     }}
                   />
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></span>
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-300 border-2 border-white rounded-full"></span>
                 </div>
                 <div>
                   <h3 className="font-bold text-base">{accountName}</h3>
-                  <p className="text-xs text-green-100">Online • Usually replies in minutes</p>
+                  <p className="text-xs text-green-50">Online • Usually replies in minutes</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -159,12 +171,12 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
 
           {!isMinimized && (
             <>
-              {/* Chat Body */}
-              <div className="flex-1 p-4 overflow-y-auto h-[420px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+              {/* Chat Body - solid background, no gradient */}
+              <div className="flex-1 p-4 overflow-y-auto h-[420px] bg-gray-50 dark:bg-gray-800">
                 {/* Welcome Message */}
                 <div className="flex items-start gap-2 mb-4 animate-fadeIn">
-                  <img 
-                    src={avatar} 
+                  <img
+                    src={avatar}
                     alt={accountName}
                     className="w-8 h-8 rounded-full object-cover"
                     onError={(e) => {
@@ -172,7 +184,7 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
                     }}
                   />
                   <div className="flex-1">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-none p-3 shadow-md">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl rounded-tl-none p-3 shadow-md">
                       <p className="text-sm text-gray-800 dark:text-gray-200">
                         {welcomeMessage}
                       </p>
@@ -182,68 +194,42 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
                     </p>
                   </div>
                 </div>
-                
-                {/* Quick Reply Buttons */}
+
+                {/* Quick Reply Buttons - updated for electrical services */}
                 <div className="mt-6 space-y-3">
                   <p className="text-xs text-gray-500 dark:text-gray-400 text-center">Quick replies:</p>
                   <div className="grid grid-cols-2 gap-2">
-                    <button
-                      onClick={() => handleQuickReply("I'm interested in Borehole Drilling services. Can you share pricing and process?")}
-                      className="text-xs bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-700 dark:text-green-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-green-200 dark:border-green-800"
-                    >
-                      🚰 Borehole Drilling
-                    </button>
-                    <button
-                      onClick={() => handleQuickReply("I need Water Pumps for my project. What options do you have?")}
-                      className="text-xs bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-blue-200 dark:border-blue-800"
-                    >
-                      💧 Water Pumps
-                    </button>
-                    <button
-                      onClick={() => handleQuickReply("I'm interested in Solar Water Pumping solutions. Tell me more.")}
-                      className="text-xs bg-yellow-50 dark:bg-yellow-900/20 hover:bg-yellow-100 dark:hover:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-yellow-200 dark:border-yellow-800"
-                    >
-                      ☀️ Solar Solutions
-                    </button>
-                    <button
-                      onClick={() => handleQuickReply("I need Water Treatment systems for my home/business.")}
-                      className="text-xs bg-cyan-50 dark:bg-cyan-900/20 hover:bg-cyan-100 dark:hover:bg-cyan-900/40 text-cyan-700 dark:text-cyan-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-cyan-200 dark:border-cyan-800"
-                    >
-                      💧 Water Treatment
-                    </button>
-                    <button
-                      onClick={() => handleQuickReply("I need a Generator. What sizes and prices do you offer?")}
-                      className="text-xs bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/40 text-orange-700 dark:text-orange-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-orange-200 dark:border-orange-800"
-                    >
-                      ⚡ Generators
-                    </button>
-                    <button
-                      onClick={() => handleQuickReply("I need Irrigation System for my farm. Can you help?")}
-                      className="text-xs bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-emerald-200 dark:border-emerald-800"
-                    >
-                      🌾 Irrigation
-                    </button>
-                    <button
-                      onClick={() => handleQuickReply("I'm interested in Swimming Pool construction and maintenance.")}
-                      className="text-xs bg-sky-50 dark:bg-sky-900/20 hover:bg-sky-100 dark:hover:bg-sky-900/40 text-sky-700 dark:text-sky-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-sky-200 dark:border-sky-800"
-                    >
-                      🏊 Swimming Pools
-                    </button>
-                    <button
-                      onClick={() => handleQuickReply("I need a quotation for multiple products. Can you help?")}
-                      className="text-xs bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-purple-200 dark:border-purple-800"
-                    >
-                      📋 Request Quotation
-                    </button>
+                    {quickReplies.map((reply, idx) => {
+                      const Icon = reply.icon;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => handleQuickReply(reply.text)}
+                          className="flex items-center gap-2 text-xs bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40 text-green-700 dark:text-green-400 px-3 py-2 rounded-xl transition-all duration-200 text-left border border-green-200 dark:border-green-800"
+                        >
+                          <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span className="truncate">{reply.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Trust Badges */}
                 <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                    <span>✓ 24/7 Support</span>
-                    <span>✓ Free Consultation</span>
-                    <span>✓ Quality Guaranteed</span>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <Headphones className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <span className="text-[10px] text-gray-600 dark:text-gray-400">24/7 Support</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <span className="text-[10px] text-gray-600 dark:text-gray-400">Free Consultation</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <span className="text-[10px] text-gray-600 dark:text-gray-400">Quality Guaranteed</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -263,12 +249,11 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
                   <button
                     onClick={handleSendMessage}
                     disabled={!message.trim() && !welcomeMessage}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl p-2.5 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-green-600 hover:bg-green-700 text-white rounded-xl p-2.5 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send className="w-5 h-5" />
                   </button>
                 </div>
-
               </div>
             </>
           )}
@@ -286,7 +271,7 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
             opacity: 0;
           }
         }
-        
+
         @keyframes rippleDelay {
           0% {
             transform: scale(1);
@@ -297,7 +282,7 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
             opacity: 0;
           }
         }
-        
+
         @keyframes slideUp {
           from {
             opacity: 0;
@@ -308,7 +293,7 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
             transform: translateY(0);
           }
         }
-        
+
         @keyframes fadeIn {
           from {
             opacity: 0;
@@ -319,27 +304,27 @@ className="group relative bg-transparent text-white rounded-full p-3 shadow-2xl 
             transform: translateY(0);
           }
         }
-        
+
         .animate-ripple {
           animation: ripple 1.5s ease-out infinite;
         }
-        
+
         .animate-ripple-delay {
           animation: rippleDelay 1.5s ease-out infinite 0.75s;
         }
-        
+
         .animate-slideUp {
           animation: slideUp 0.3s ease-out;
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
         }
-        
+
         .animate-pulse-slow {
           animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        
+
         @keyframes pulse {
           0%, 100% {
             opacity: 1;

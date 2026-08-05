@@ -8,8 +8,7 @@ import {
   ChevronRight, 
   CheckCircle2, 
   Phone, 
-  Mail, 
-  MapPin 
+  Zap
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -205,113 +204,78 @@ export default function HomeClient() {
 
       <Features />
 
-      {/* Contact Section - replaces old CTA */}
-      <section className="relative py-20 sm:py-24 lg:py-28 overflow-hidden bg-slate-50 dark:bg-gray-950">
+{/* Call To Action Section */}
+      <section className="relative py-20 sm:py-24 lg:py-28 overflow-hidden">
+<div className="absolute inset-0 bg-[#003d66] dark:bg-[#005a99]" />
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#0089d1]/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#ffac10]/10 rounded-full blur-3xl" />
+          <motion.div
+            animate={{ scale: [1, 1.1, 1], x: [0, 40, 0] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+            className="absolute top-1/4 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.15, 1], x: [0, -40, 0] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "linear", delay: 4 }}
+            className="absolute -right-24 bottom-1/4 w-96 h-96 bg-[#ffac10]/20 rounded-full blur-3xl"
+          />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-4">
-              Get In{' '}
-              <span className="text-[#0089d1] dark:text-[#009dff]">
-                Touch
-              </span>
+            <span className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6 text-white/90 text-xs sm:text-sm font-semibold tracking-wide uppercase">
+              <Zap className="w-4 h-4" />
+              Ready to Power Your Project?
+            </span>
+
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-5 leading-tight">
+              Let's Build Something{' '}
+              <span className="text-[#ffac10]">Electric</span>
             </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
-              Reach out to our expert team for reliable electrical and energy solutions
+
+            <p className="text-base sm:text-lg lg:text-xl text-blue-50/90 max-w-2xl mx-auto leading-relaxed mb-10">
+              Get a free consultation and expert guidance from our team. Whether it's solar, electrical installations, or energy solutions — we've got you covered.
             </p>
-          </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Location */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="group bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="w-14 h-14 rounded-xl bg-[#0089d1] flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <MapPin size={24} className="text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Location</h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Kianjokoma
-                <br />
-                Embu, Kenya
-              </p>
-            </motion.div>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Link href="/contact">
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-[#0066a8] hover:bg-[#ffac10] hover:text-gray-900 font-bold text-base sm:text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
+                  Get a Free Quote
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </motion.button>
+              </Link>
 
-            {/* Phone */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="group bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="w-14 h-14 rounded-xl bg-[#ffac10] flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Phone size={24} className="text-gray-900" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Call Us</h3>
               <a
                 href="tel:0784909466"
-                className="text-gray-600 dark:text-gray-400 hover:text-[#0089d1] dark:hover:text-[#009dff] transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-white/70 hover:border-white text-white hover:bg-white/10 font-bold text-base sm:text-lg rounded-xl transition-all duration-300"
               >
-                0784 909 466
+                <Phone className="w-5 h-5" />
+                Call 0784 909 466
               </a>
-            </motion.div>
+            </div>
 
-            {/* Email */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="group bg-white dark:bg-gray-900 rounded-2xl p-8 border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="w-14 h-14 rounded-xl bg-[#ffac10] flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Mail size={24} className="text-gray-900" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Email</h3>
-              <a
-                href="mailto:sunseaelectrical@gmail.com"
-                className="text-gray-600 dark:text-gray-400 hover:text-[#0089d1] dark:hover:text-[#009dff] transition-colors break-all"
-              >
-                sunseaelectrical@gmail.com
-              </a>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center mt-12"
-          >
-            <Link href="/contact">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-[#0089d1] hover:bg-[#0077b5] text-white font-bold text-base sm:text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
-              >
-                Contact Our Experts
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
-            </Link>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-6">
-              Mon-Sat•8:00 AM - 6:00 PM
-            </p>
+            <div className="flex flex-wrap justify-center gap-6 mt-10 text-blue-50/80 text-sm">
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#ffac10]" />
+                Free Consultation
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#ffac10]" />
+                Expert Engineers
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#ffac10]" />
+                Quality Guaranteed
+              </span>
+            </div>
           </motion.div>
         </div>
       </section>

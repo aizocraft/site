@@ -13,6 +13,7 @@ import {
   Wrench
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -483,138 +484,141 @@ const Services = () => {
           })}
         </div>
 
-        {/* Modal - Fixes navbar overlap with proper z-index, responsive sizing and microinteractions */}
-        <AnimatePresence mode="wait">
-          {isModalOpen && selectedService && (
-            <motion.div
-              key="modal-backdrop"
-              variants={backdropVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm"
-              onClick={closeModal}
-            >
+{/* Modal - Rendered via portal to body to avoid navbar overlap and any parent overflow/transform clipping */}
+        {typeof window !== 'undefined' && createPortal(
+          <AnimatePresence mode="wait">
+            {isModalOpen && selectedService && (
               <motion.div
-                key="modal-content"
-                variants={modalVariants}
+                key="modal-backdrop"
+                variants={backdropVariants}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-[95%] sm:max-w-lg md:max-w-2xl lg:max-w-3xl max-h-[85vh] overflow-hidden border border-gray-200 dark:border-gray-800"
-                onClick={(e) => e.stopPropagation()}
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm"
+                onClick={closeModal}
               >
-                {/* Header - sticky to always stay visible */}
-                <div className="sticky top-0 z-10 p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg flex-shrink-0">
-                        <selectedService.Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{selectedService.title}</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                          <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Premium Service Provider</span>
+                <motion.div
+                  key="modal-content"
+                  variants={modalVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-[95%] sm:max-w-lg md:max-w-2xl lg:max-w-3xl max-h-[85vh] overflow-hidden border border-gray-200 dark:border-gray-800"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Header - sticky to always stay visible */}
+                  <div className="sticky top-0 z-10 p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                          <selectedService.Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">{selectedService.title}</h3>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                            <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">Premium Service Provider</span>
+                          </div>
                         </div>
                       </div>
+                      <motion.button
+                        onClick={closeModal}
+                        className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all flex-shrink-0 ml-2 shadow-sm"
+                        whileHover={{ scale: 1.1, rotate: 90 }}
+                        whileTap={{ scale: 0.9 }}
+                        aria-label="Close"
+                        type="button"
+                      >
+                        <X className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 dark:text-gray-400" />
+                      </motion.button>
                     </div>
-                    <motion.button
-                      onClick={closeModal}
-                      className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all flex-shrink-0 ml-2 shadow-sm"
-                      whileHover={{ scale: 1.1, rotate: 90 }}
-                      whileTap={{ scale: 0.9 }}
-                      aria-label="Close"
-                      type="button"
-                    >
-                      <X className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600 dark:text-gray-400" />
-                    </motion.button>
                   </div>
-                </div>
 
-                {/* Scrollable Body */}
-                <div className="overflow-y-auto max-h-[calc(85vh-88px)] sm:max-h-[calc(85vh-100px)]">
-                  <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-                    {/* Image */}
-                    <div className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-lg">
-                      <img
-                        src={selectedService.image}
-                        alt={selectedService.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
-                      {selectedService.longDescription}
-                    </p>
-
-                    {/* Features */}
-                    <div>
-                      <h4 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-                        <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-                        Key Features
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                        {selectedService.features.map((feature, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="flex items-start group/feature"
-                          >
-                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mr-2 sm:mr-3 mt-0.5 flex-shrink-0 transition-transform group-hover/feature:scale-110" />
-                            <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{feature}</span>
-                          </motion.div>
-                        ))}
+                  {/* Scrollable Body */}
+                  <div className="overflow-y-auto max-h-[calc(85vh-88px)] sm:max-h-[calc(85vh-100px)]">
+                    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+                      {/* Image */}
+                      <div className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-lg">
+                        <img
+                          src={selectedService.image}
+                          alt={selectedService.title}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </div>
 
-                    {/* Benefits */}
-                    {selectedService.benefits && selectedService.benefits.length > 0 && (
+                      {/* Description */}
+                      <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
+                        {selectedService.longDescription}
+                      </p>
+
+                      {/* Features */}
                       <div>
                         <h4 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
-                          <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-                          Why Choose Us
+                          <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                          Key Features
                         </h4>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {selectedService.benefits.map((benefit, i) => (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                          {selectedService.features.map((feature, i) => (
                             <motion.div
                               key={i}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.1 + i * 0.05 }}
-                              className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.05 }}
+                              className="flex items-start group/feature"
                             >
-                              <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
-                              <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{benefit}</span>
+                              <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mr-2 sm:mr-3 mt-0.5 flex-shrink-0 transition-transform group-hover/feature:scale-110" />
+                              <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{feature}</span>
                             </motion.div>
                           ))}
                         </div>
                       </div>
-                    )}
 
-                    {/* CTA Button */}
-                    <Button
-                      size="lg"
-                      className="w-full h-11 sm:h-14 text-sm sm:text-base font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group"
-                      onClick={() => {
-                        closeModal();
-                        setTimeout(() => {
-                          window.location.href = "/contact";
-                        }, 200);
-                      }}
-                    >
-                      <span>Request a Quote</span>
-                      <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
-                    </Button>
+                      {/* Benefits */}
+                      {selectedService.benefits && selectedService.benefits.length > 0 && (
+                        <div>
+                          <h4 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2">
+                            <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                            Why Choose Us
+                          </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {selectedService.benefits.map((benefit, i) => (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 + i * 0.05 }}
+                                className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700"
+                              >
+                                <CheckCircle2 className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                                <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{benefit}</span>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* CTA Button */}
+                      <Button
+                        size="lg"
+                        className="w-full h-11 sm:h-14 text-sm sm:text-base font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group"
+                        onClick={() => {
+                          closeModal();
+                          setTimeout(() => {
+                            window.location.href = "/contact";
+                          }, 200);
+                        }}
+                      >
+                        <span>Request a Quote</span>
+                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
       </div>
     </section>
   );

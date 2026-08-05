@@ -100,14 +100,18 @@ const cards = useMemo(
   if (!mounted) return null;
 
 return (
-    <section className="relative min-h-[85vh] md:min-h-[90vh] lg:min-h-[92vh] flex flex-col justify-center overflow-hidden bg-[hsl(var(--background))] dark:bg-[hsl(var(--background))]">
+    <section className="relative min-h-[85vh] md:min-h-[90vh] lg:min-h-[92vh] flex flex-col justify-center overflow-hidden bg-[#00225c]">
       {/* ===== BACKGROUND IMAGE ===== */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0" aria-hidden="true">
         <img
-          src="/borehole.jpg"
-          alt="Borehole drilling operations"
-          className="w-full h-full object-cover object-center opacity-20 dark:opacity-10"
+          src="/banner.png"
+          alt="SunSea Electrical banner"
+          className="w-full h-full object-cover object-center"
+          loading="eager"
         />
+        {/* Responsive overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#00225c]/95 via-[#00225c]/70 to-[#00225c]/40" />
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
       {/* ===== MAIN CONTENT ===== */}
@@ -123,16 +127,16 @@ return (
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="w-12 h-px bg-[#009dff] dark:bg-[#009dff]" />
-            <span className="text-xs font-bold tracking-[0.3em] uppercase text-[#0043b3] dark:text-[#009dff]">
+            <div className="w-12 h-px bg-[#00c2ff]" />
+            <span className="text-xs font-bold tracking-[0.3em] uppercase text-[#00c2ff]">
               Since 2010
             </span>
-            <div className="w-12 h-px bg-[#009dff] dark:bg-[#009dff]" />
+            <div className="w-12 h-px bg-[#00c2ff]" />
           </motion.div>
 
           {/* Main Headline */}
           <motion.h1
-            className="font-bold leading-[1.2] mb-6 text-gray-900 dark:text-white"
+            className="font-bold leading-[1.2] mb-6 text-white"
             style={{
               fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
               letterSpacing: '-0.02em',
@@ -143,16 +147,16 @@ return (
           >
             Engineering
             <br />
-            <span className="text-[#0043b3] dark:text-[#009dff] inline-block mt-2">
+            <span className="text-[#00c2ff] inline-block mt-2">
               Excellence
             </span>
             <br />
-           
+
           </motion.h1>
 
           {/* Description */}
           <motion.p
-            className="text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto text-gray-600 dark:text-gray-400"
+            className="text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto text-white/85"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -173,7 +177,7 @@ return (
               <motion.button
                 onClick={handleDownload}
                 disabled={isDownloading}
-                className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white bg-[#0043b3] hover:bg-[#009dff] dark:bg-[#0043b3] dark:hover:bg-[#009dff] transition-all duration-300 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white bg-[#0089d1] hover:bg-[#009dff] transition-all duration-300 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
                 whileHover={!isDownloading ? { scale: 1.02, y: -2 } : {}}
                 whileTap={!isDownloading ? { scale: 0.98 } : {}}
               >
@@ -190,16 +194,16 @@ return (
                   </>
                 )}
               </motion.button>
-              
+
               {/* Progress Bar */}
               {isDownloading && (
                 <motion.div
-                  className="absolute -bottom-2 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+                  className="absolute -bottom-2 left-0 right-0 h-1 bg-white/30 rounded-full overflow-hidden"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
                   <motion.div
-                    className="h-full bg-[#009dff] rounded-full"
+                    className="h-full bg-[#00c2ff] rounded-full"
                     initial={{ width: '0%' }}
                     animate={{ width: `${downloadProgress}%` }}
                   />
@@ -208,28 +212,28 @@ return (
             </div>
 
             {/* Divider */}
-            <div className="w-px h-6 bg-gray-300 dark:bg-gray-700 hidden sm:block" />
+            <div className="w-px h-6 bg-white/30 hidden sm:block" />
 
             {/* Contact Icons */}
             <div className="flex gap-3">
               <motion.a
                 href="tel:+254728749722"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-[#0043b3] dark:hover:bg-[#0043b3] hover:text-white dark:hover:text-white hover:border-[#009dff] transition-all duration-300"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/25 hover:bg-white hover:text-[#00225c] transition-all duration-300 backdrop-blur-sm"
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Phone size={14} className="text-[#0043b3] dark:text-[#009dff] group-hover:text-white" />
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 hidden sm:inline">+254 728 749 722</span>
+                <Phone size={14} className="text-[#00c2ff]" />
+                <span className="text-xs font-medium text-white hidden sm:inline">+254 728 749 722</span>
               </motion.a>
 
               <motion.a
                 href="mailto:sunseaelectrical@gmail.com"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-[#0043b3] dark:hover:bg-[#0043b3] hover:text-white dark:hover:text-white hover:border-[#009dff] transition-all duration-300"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/25 hover:bg-white hover:text-[#00225c] transition-all duration-300 backdrop-blur-sm"
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Mail size={14} className="text-[#0043b3] dark:text-[#009dff]" />
-                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 hidden lg:inline">Email Us</span>
+                <Mail size={14} className="text-[#00c2ff]" />
+                <span className="text-xs font-medium text-white hidden lg:inline">Email Us</span>
               </motion.a>
             </div>
           </motion.div>
@@ -246,7 +250,7 @@ return (
               return (
                 <motion.div
                   key={card.label}
-                  className="group relative rounded-xl p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-[#009dff] dark:hover:border-[#009dff] transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="group relative rounded-xl p-6 bg-white/95 border border-white/30 hover:border-[#00c2ff] transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm"
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={stagger(i, 0.1)}
@@ -254,24 +258,24 @@ return (
                 >
                   <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-lg bg-[#0043b3] dark:bg-[#0043b3] flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-[#0089d1] flex items-center justify-center">
                         <Icon size={18} className="text-white" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#0043b3] dark:text-[#009dff]">
+                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#0089d1]">
                           {card.label}
                         </p>
-                        <p className="text-gray-900 dark:text-white font-bold text-base leading-tight">
+                        <p className="text-gray-900 font-bold text-base leading-tight">
                           Our {card.label}
                         </p>
                       </div>
                     </div>
 
-                    <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                    <p className="text-sm leading-relaxed text-gray-600">
                       {card.text}
                     </p>
 
-                    <div className="mt-4 h-px w-12 bg-[#009dff] group-hover:w-20 transition-all duration-300" />
+                    <div className="mt-4 h-px w-12 bg-[#00c2ff] group-hover:w-20 transition-all duration-300" />
                   </div>
                 </motion.div>
               );
@@ -290,13 +294,13 @@ return (
   animate={{ opacity: 1 }}
   transition={{ delay: 1.2, duration: 0.8 }}
 >
-  <span className="text-[11px] uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+<span className="text-[11px] uppercase tracking-[0.3em] text-white/70">
     Scroll Down
   </span>
 
-  <div className="w-7 h-12 border-2 border-[#009dff]/70 rounded-full flex justify-center p-1">
+  <div className="w-7 h-12 border-2 border-[#00c2ff]/80 rounded-full flex justify-center p-1">
     <motion.div
-      className="w-1.5 h-3 rounded-full bg-[#009dff]"
+      className="w-1.5 h-3 rounded-full bg-[#00c2ff]"
       animate={{
         y: [0, 16, 0],
         opacity: [1, 0.3, 1],
