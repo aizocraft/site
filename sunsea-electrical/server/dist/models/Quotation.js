@@ -37,7 +37,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateQuoteNumber = generateQuoteNumber;
-// models/Quotation.ts - Updated with profit tracking
 const mongoose_1 = __importStar(require("mongoose"));
 const QuoteNumberCounter_1 = __importDefault(require("./QuoteNumberCounter"));
 const quotationItemSchema = new mongoose_1.Schema({
@@ -61,13 +60,16 @@ const transportInfoSchema = new mongoose_1.Schema({
     description: { type: String, trim: true }
 }, { _id: false });
 const quotationSchema = new mongoose_1.Schema({
-    customerId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'SalesCustomer', required: true, index: true },
+    customerId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'SalesCustomer', required: true },
     customerName: { type: String, required: true },
     customerEmail: { type: String, lowercase: true, trim: true },
     customerPhone: { type: String, trim: true },
     customerLocation: { type: String, trim: true },
-    createdBy: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    createdBy: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     createdByName: { type: String },
+    invoiceId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Invoice', required: false },
+    invoiceNumber: { type: String, required: false },
+    lastInvoiceCreatedAt: { type: Date, required: false },
     items: { type: [quotationItemSchema], required: true, validate: {
             validator: function (items) {
                 return items && items.length > 0;
@@ -88,14 +90,13 @@ const quotationSchema = new mongoose_1.Schema({
     transportDescription: { type: String, trim: true },
     estimatedDelivery: { type: String, trim: true },
     total: { type: Number, required: true, min: 0 },
-    quoteNumber: { type: String, required: true, unique: true, index: true },
+    quoteNumber: { type: String, required: true, unique: true }, // unique creates index automatically
     status: {
         type: String,
         enum: ['draft', 'sent', 'accepted', 'rejected', 'expired'],
-        default: 'draft',
-        index: true
+        default: 'draft'
     },
-    validUntil: { type: Date, required: true, index: true },
+    validUntil: { type: Date, required: true },
     notes: { type: String, trim: true },
     terms: { type: String, trim: true },
     acceptedAt: { type: Date },
@@ -103,12 +104,18 @@ const quotationSchema = new mongoose_1.Schema({
     rejectedAt: { type: Date },
     rejectedReason: { type: String }
 }, { timestamps: true });
-// Pre-save middleware to calculate totals including profit
+// Only define NON-unique indexes here
+// DO NOT redefine quoteNumber since it already has 'unique: true'
+quotationSchema.index({ customerId: 1 });
+quotationSchema.index({ createdBy: 1 });
+quotationSchema.index({ status: 1 });
+quotationSchema.index({ validUntil: 1 });
+quotationSchema.index({ createdAt: -1 });
+// Pre-save middleware
 quotationSchema.pre('save', function (next) {
     var _a;
     if (this.isModified('items') || this.isModified('discount') || this.isModified('discountType') ||
         this.isModified('transportInfo') || this.isModified('taxPerItem')) {
-        // Calculate subtotal, totalCost, totalProfit
         this.subtotal = 0;
         this.totalCost = 0;
         this.totalProfit = 0;
@@ -123,12 +130,10 @@ quotationSchema.pre('save', function (next) {
             this.totalCost += itemCost;
             this.totalProfit += itemProfit;
         }
-        // Calculate discount
         let discountAmount = this.discount;
         if (this.discountType === 'percentage') {
             discountAmount = this.subtotal * (this.discount / 100);
         }
-        // Calculate tax
         let tax = 0;
         if (this.taxPerItem) {
             tax = this.items.reduce((sum, item) => sum + (item.tax || 0), 0);
@@ -138,13 +143,11 @@ quotationSchema.pre('save', function (next) {
             tax = taxableAmount * this.taxRate;
         }
         this.tax = tax;
-        // Calculate final total
         const transportCost = ((_a = this.transportInfo) === null || _a === void 0 ? void 0 : _a.cost) || this.transportCost || 0;
         this.total = this.subtotal - discountAmount + this.tax + transportCost;
     }
     next();
 });
-// Generate quote number in format: 0001-MM-PSMA/Q
 async function generateQuoteNumber(date = new Date()) {
     const year = date.getFullYear();
     const monthNumber = date.getMonth() + 1;

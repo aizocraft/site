@@ -37,7 +37,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateInvoiceNumber = generateInvoiceNumber;
-// models/Invoice.ts - Updated with profit tracking
 const mongoose_1 = __importStar(require("mongoose"));
 const QuoteNumberCounter_1 = __importDefault(require("./QuoteNumberCounter"));
 const invoiceItemSchema = new mongoose_1.Schema({
@@ -64,14 +63,15 @@ const paymentSchema = new mongoose_1.Schema({
     reference: { type: String },
     date: { type: Date, default: Date.now },
     recordedBy: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
-    transactionId: { type: String }
+    transactionId: { type: String },
+    phoneNumber: { type: String }
 });
 const invoiceSchema = new mongoose_1.Schema({
-    quotationId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Quotation', required: true, index: true },
+    quotationId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Quotation', required: true },
     quotationNumber: { type: String, required: true },
-    orderId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Order', index: true },
+    orderId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Order' },
     orderCreatedAt: { type: Date },
-    customerId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'SalesCustomer', required: true, index: true },
+    customerId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'SalesCustomer', required: true },
     customerName: { type: String, required: true },
     customerEmail: { type: String, lowercase: true, trim: true },
     customerPhone: { type: String, trim: true },
@@ -91,12 +91,11 @@ const invoiceSchema = new mongoose_1.Schema({
     transportCost: { type: Number, default: 0 },
     transportDescription: { type: String },
     total: { type: Number, required: true, min: 0 },
-    invoiceNumber: { type: String, required: true, unique: true, index: true },
+    invoiceNumber: { type: String, required: true, unique: true }, // unique creates index automatically
     status: {
         type: String,
         enum: ['draft', 'sent', 'paid', 'partially_paid', 'overdue', 'cancelled'],
-        default: 'draft',
-        index: true
+        default: 'draft'
     },
     paymentStatus: {
         type: String,
@@ -112,9 +111,18 @@ const invoiceSchema = new mongoose_1.Schema({
     payments: [paymentSchema],
     sentAt: { type: Date }
 }, { timestamps: true });
-// Pre-save middleware to calculate totals including profit
+// Only define NON-unique indexes here
+// DO NOT redefine invoiceNumber since it already has 'unique: true'
+invoiceSchema.index({ quotationId: 1 });
+invoiceSchema.index({ customerId: 1 });
+invoiceSchema.index({ createdBy: 1 });
+invoiceSchema.index({ status: 1 });
+invoiceSchema.index({ paymentStatus: 1 });
+invoiceSchema.index({ issueDate: -1 });
+invoiceSchema.index({ dueDate: 1 });
+invoiceSchema.index({ orderId: 1 });
+// Pre-save middleware
 invoiceSchema.pre('save', function (next) {
-    // Calculate profit metrics for items
     if (this.isModified('items')) {
         this.subtotal = 0;
         this.totalCost = 0;
@@ -131,7 +139,6 @@ invoiceSchema.pre('save', function (next) {
             this.totalProfit += itemProfit;
         }
     }
-    // Calculate balance due
     if (this.isModified('amountPaid') || this.isModified('total')) {
         this.balanceDue = Math.max(0, this.total - this.amountPaid);
         if (this.amountPaid === 0) {
@@ -152,7 +159,6 @@ invoiceSchema.pre('save', function (next) {
     }
     next();
 });
-// Generate invoice number
 async function generateInvoiceNumber(date = new Date()) {
     const year = date.getFullYear();
     const monthNumber = date.getMonth() + 1;

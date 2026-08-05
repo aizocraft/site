@@ -3,10 +3,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// src/routes/shipping.routes.ts
 const express_1 = require("express");
 const auth_1 = __importDefault(require("../middleware/auth"));
 const ShippingArea_1 = __importDefault(require("../models/ShippingArea"));
+const notification_service_1 = require("../services/notification.service");
+const User_1 = __importDefault(require("../models/User"));
 const router = (0, express_1.Router)();
+// Helper to send notifications to all admins
+const notifyAdmins = async (title, message, actionUrl, metadata = {}) => {
+    try {
+        const adminUsers = await User_1.default.find({ role: 'admin', isActive: true });
+        if (adminUsers.length > 0) {
+            await Promise.all(adminUsers.map(admin => (0, notification_service_1.createNotification)({
+                userId: admin._id.toString(),
+                type: 'system',
+                title,
+                message,
+                actionUrl,
+                metadata: {
+                    ...metadata,
+                    timestamp: new Date().toISOString()
+                }
+            })));
+            console.log(`✅ Shipping notification sent to ${adminUsers.length} admin(s): ${title}`);
+        }
+    }
+    catch (error) {
+        console.error('Failed to send admin notification:', error);
+    }
+};
 // GET /api/shipping - Admin list (paginated)
 router.get('/', auth_1.default, async (req, res) => {
     try {
@@ -51,25 +77,42 @@ router.get('/public', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch shipping areas' });
     }
 });
-// POST /api/shipping - Admin create
+// POST /api/shipping - Admin create with notification
 router.post('/', auth_1.default, async (req, res) => {
     try {
         if (req.user.role !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
         }
         const { name, regions, baseCost, freeThreshold, description } = req.body;
-        if (!name || !baseCost) {
-            return res.status(400).json({ error: 'Name and baseCost required' });
+        // Fix: Check for undefined/null instead of falsy (0 is valid)
+        if (!name || baseCost === undefined || baseCost === null) {
+            return res.status(400).json({ error: 'Name and baseCost are required' });
+        }
+        // Validate baseCost is a number
+        const parsedBaseCost = parseFloat(baseCost.toString());
+        if (isNaN(parsedBaseCost) || parsedBaseCost < 0) {
+            return res.status(400).json({ error: 'baseCost must be a valid number >= 0' });
         }
         const area = new ShippingArea_1.default({
             name,
             regions: regions || [],
-            baseCost: parseFloat(baseCost.toString()),
+            baseCost: parsedBaseCost,
             freeThreshold: parseFloat((freeThreshold === null || freeThreshold === void 0 ? void 0 : freeThreshold.toString()) || '0'),
             description,
             isActive: true
         });
         await area.save();
+        // ✅ NOTIFICATION: New shipping area created
+        await notifyAdmins('🚚 New Shipping Area Created', `${req.user.email || req.user.name} created a new shipping area: "${name}" with base cost KES ${parsedBaseCost.toLocaleString()}`, '/dashboard/shipping', {
+            action: 'create_shipping_area',
+            createdBy: req.user.email || req.user.name,
+            areaId: area._id,
+            areaName: name,
+            regions: regions.length,
+            baseCost: parsedBaseCost,
+            freeThreshold: parseFloat((freeThreshold === null || freeThreshold === void 0 ? void 0 : freeThreshold.toString()) || '0'),
+            isActive: true
+        });
         res.status(201).json(area);
     }
     catch (error) {
@@ -77,24 +120,84 @@ router.post('/', auth_1.default, async (req, res) => {
         res.status(400).json({ error: error.message || 'Failed to create area' });
     }
 });
-// PUT /api/shipping/:id - Admin update
+// PUT /api/shipping/:id - Admin update with notification
 router.put('/:id', auth_1.default, async (req, res) => {
-    var _a;
     try {
         if (req.user.role !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
         }
-        const area = await ShippingArea_1.default.findByIdAndUpdate(req.params.id, {
-            name: req.body.name,
-            regions: req.body.regions,
-            baseCost: parseFloat(req.body.baseCost.toString()),
-            freeThreshold: parseFloat(((_a = req.body.freeThreshold) === null || _a === void 0 ? void 0 : _a.toString()) || '0'),
-            description: req.body.description,
-            isActive: req.body.isActive !== undefined ? req.body.isActive : undefined
-        }, { new: true, runValidators: true });
+        const { name, regions, baseCost, freeThreshold, description, isActive } = req.body;
+        // Get existing area for comparison
+        const existingArea = await ShippingArea_1.default.findById(req.params.id);
+        if (!existingArea) {
+            return res.status(404).json({ error: 'Shipping area not found' });
+        }
+        // Validate baseCost if provided
+        let parsedBaseCost;
+        if (baseCost !== undefined) {
+            parsedBaseCost = parseFloat(baseCost.toString());
+            if (isNaN(parsedBaseCost) || parsedBaseCost < 0) {
+                return res.status(400).json({ error: 'baseCost must be a valid number >= 0' });
+            }
+        }
+        const updateData = {};
+        const changes = [];
+        if (name !== undefined && name !== existingArea.name) {
+            updateData.name = name;
+            changes.push(`name: "${existingArea.name}" → "${name}"`);
+        }
+        if (regions !== undefined && JSON.stringify(regions) !== JSON.stringify(existingArea.regions)) {
+            updateData.regions = regions;
+            changes.push(`regions: ${existingArea.regions.length} → ${regions.length} regions`);
+        }
+        if (baseCost !== undefined && parsedBaseCost !== undefined && parsedBaseCost !== existingArea.baseCost) {
+            updateData.baseCost = parsedBaseCost;
+            changes.push(`baseCost: KES ${existingArea.baseCost.toLocaleString()} → KES ${parsedBaseCost.toLocaleString()}`);
+        }
+        if (freeThreshold !== undefined) {
+            const newThreshold = parseFloat(freeThreshold.toString()) || 0;
+            if (newThreshold !== existingArea.freeThreshold) {
+                updateData.freeThreshold = newThreshold;
+                changes.push(`freeThreshold: KES ${existingArea.freeThreshold.toLocaleString()} → KES ${newThreshold.toLocaleString()}`);
+            }
+        }
+        if (description !== undefined && description !== existingArea.description) {
+            updateData.description = description;
+            changes.push('description updated');
+        }
+        if (isActive !== undefined && isActive !== existingArea.isActive) {
+            updateData.isActive = isActive;
+            changes.push(`status: ${existingArea.isActive ? 'active' : 'inactive'} → ${isActive ? 'active' : 'inactive'}`);
+        }
+        if (Object.keys(updateData).length === 0) {
+            return res.json(existingArea);
+        }
+        const area = await ShippingArea_1.default.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
         if (!area) {
             return res.status(404).json({ error: 'Shipping area not found' });
         }
+        // ✅ NOTIFICATION: Shipping area updated
+        await notifyAdmins('✏️ Shipping Area Updated', `${req.user.email || req.user.name} updated shipping area "${area.name}": ${changes.join(', ')}`, '/dashboard/shipping', {
+            action: 'update_shipping_area',
+            updatedBy: req.user.email || req.user.name,
+            areaId: area._id,
+            areaName: area.name,
+            changes,
+            oldValues: {
+                name: existingArea.name,
+                regions: existingArea.regions,
+                baseCost: existingArea.baseCost,
+                freeThreshold: existingArea.freeThreshold,
+                isActive: existingArea.isActive
+            },
+            newValues: {
+                name: area.name,
+                regions: area.regions,
+                baseCost: area.baseCost,
+                freeThreshold: area.freeThreshold,
+                isActive: area.isActive
+            }
+        });
         res.json(area);
     }
     catch (error) {
@@ -102,21 +205,103 @@ router.put('/:id', auth_1.default, async (req, res) => {
         res.status(400).json({ error: error.message || 'Failed to update area' });
     }
 });
-// DELETE /api/shipping/:id - Admin delete
+// DELETE /api/shipping/:id - Admin delete with notification
 router.delete('/:id', auth_1.default, async (req, res) => {
     try {
         if (req.user.role !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
         }
-        const area = await ShippingArea_1.default.findByIdAndDelete(req.params.id);
+        const area = await ShippingArea_1.default.findById(req.params.id);
         if (!area) {
             return res.status(404).json({ error: 'Shipping area not found' });
         }
+        const areaName = area.name;
+        const regionCount = area.regions.length;
+        await ShippingArea_1.default.findByIdAndDelete(req.params.id);
+        // ✅ NOTIFICATION: Shipping area deleted - notify other admins
+        await notifyAdmins('🗑️ Shipping Area Deleted', `${req.user.email || req.user.name} deleted shipping area "${areaName}" (${regionCount} regions)`, '/dashboard/shipping', {
+            action: 'delete_shipping_area',
+            deletedBy: req.user.email || req.user.name,
+            areaId: req.params.id,
+            areaName,
+            regionCount,
+            baseCost: area.baseCost,
+            wasActive: area.isActive,
+            deletedAt: new Date().toISOString()
+        });
         res.json({ success: true, message: 'Area deleted' });
     }
     catch (error) {
         console.error('Delete shipping area error:', error);
         res.status(500).json({ error: 'Failed to delete area' });
+    }
+});
+// Optional: POST /api/shipping/:id/toggle - Toggle active status with notification
+router.patch('/:id/toggle', auth_1.default, async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const area = await ShippingArea_1.default.findById(req.params.id);
+        if (!area) {
+            return res.status(404).json({ error: 'Shipping area not found' });
+        }
+        const oldStatus = area.isActive;
+        area.isActive = !area.isActive;
+        await area.save();
+        // ✅ NOTIFICATION: Shipping area status toggled
+        const statusAction = area.isActive ? 'activated' : 'deactivated';
+        await notifyAdmins(area.isActive ? '✅ Shipping Area Activated' : '⛔ Shipping Area Deactivated', `${req.user.email || req.user.name} ${statusAction} shipping area "${area.name}"`, '/dashboard/shipping', {
+            action: 'toggle_shipping_area',
+            updatedBy: req.user.email || req.user.name,
+            areaId: area._id,
+            areaName: area.name,
+            oldStatus,
+            newStatus: area.isActive,
+            actionType: statusAction
+        });
+        res.json({ success: true, isActive: area.isActive, area });
+    }
+    catch (error) {
+        console.error('Toggle shipping area error:', error);
+        res.status(500).json({ error: 'Failed to toggle area status' });
+    }
+});
+// Optional: GET /api/shipping/stats - Shipping statistics for admin dashboard
+router.get('/stats/overview', auth_1.default, async (req, res) => {
+    var _a, _b;
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const [totalAreas, activeAreas, inactiveAreas, totalRegions] = await Promise.all([
+            ShippingArea_1.default.countDocuments(),
+            ShippingArea_1.default.countDocuments({ isActive: true }),
+            ShippingArea_1.default.countDocuments({ isActive: false }),
+            ShippingArea_1.default.aggregate([
+                { $project: { regionCount: { $size: '$regions' } } },
+                { $group: { _id: null, total: { $sum: '$regionCount' } } }
+            ])
+        ]);
+        const areasWithFreeShipping = await ShippingArea_1.default.countDocuments({
+            freeThreshold: { $gt: 0, $lte: 100000 }
+        });
+        const averageShippingCost = await ShippingArea_1.default.aggregate([
+            { $match: { isActive: true } },
+            { $group: { _id: null, avgCost: { $avg: '$baseCost' } } }
+        ]);
+        res.json({
+            totalAreas,
+            activeAreas,
+            inactiveAreas,
+            totalRegions: ((_a = totalRegions[0]) === null || _a === void 0 ? void 0 : _a.total) || 0,
+            areasWithFreeShipping,
+            averageShippingCost: ((_b = averageShippingCost[0]) === null || _b === void 0 ? void 0 : _b.avgCost) || 0
+        });
+    }
+    catch (error) {
+        console.error('Shipping stats error:', error);
+        res.status(500).json({ error: 'Failed to fetch shipping statistics' });
     }
 });
 exports.default = router;

@@ -38,7 +38,7 @@ const getImageUrl = (image) => {
 };
 // POST /api/orders - Create order (supports both auth and guest)
 router.post('/', optionalAuth_1.default, async (req, res) => {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     try {
         const { items, shippingAddress, paymentMethod, guestInfo, notes, shippingAreaId, promoCode } = req.body;
         // Validation
@@ -146,11 +146,42 @@ router.post('/', optionalAuth_1.default, async (req, res) => {
                 promoCodeStr = undefined;
             }
         }
+        // In src/routes/orderRoutes.ts, replace the tax calculation section
         const shippingCost = (shippingArea.freeThreshold > 0 && calculatedSubtotal >= shippingArea.freeThreshold) ? 0 : shippingArea.baseCost;
+        // Get company settings for tax calculation
         const settings = await CompanySettings_1.CompanySettings.findOne();
         const taxRate = (_c = settings === null || settings === void 0 ? void 0 : settings.taxRate) !== null && _c !== void 0 ? _c : 0.16;
-        const tax = calculatedSubtotal * taxRate;
+        const taxExemptCategories = (_d = settings === null || settings === void 0 ? void 0 : settings.taxExemptCategories) !== null && _d !== void 0 ? _d : [];
+        // Calculate tax based on product categories
+        let taxableSubtotal = 0;
+        let taxExemptSubtotal = 0;
+        for (const item of orderItems) {
+            const product = await Product_1.default.findById(item.productId);
+            if (product) {
+                const categoryName = product.category || '';
+                const isTaxExempt = taxExemptCategories.some((cat) => categoryName.toLowerCase().includes(cat.toLowerCase()));
+                if (isTaxExempt) {
+                    taxExemptSubtotal += item.sellingPrice * item.qty;
+                }
+                else {
+                    taxableSubtotal += item.sellingPrice * item.qty;
+                }
+            }
+            else {
+                taxableSubtotal += item.sellingPrice * item.qty;
+            }
+        }
+        const tax = taxableSubtotal * taxRate;
         const finalTotal = calculatedSubtotal + shippingCost - discount + tax;
+        console.log('Order Tax Calculation:', {
+            calculatedSubtotal,
+            taxableSubtotal,
+            taxExemptSubtotal,
+            taxRate,
+            tax,
+            taxExemptCategories,
+            finalTotal
+        });
         // Create order
         const orderData = {
             items: orderItems,
@@ -168,8 +199,10 @@ router.post('/', optionalAuth_1.default, async (req, res) => {
                 email: shippingAddress.email || (guestInfoData === null || guestInfoData === void 0 ? void 0 : guestInfoData.email)
             },
             paymentMethod,
-            paymentStatus: 'unpaid',
-            status: paymentMethod === 'cod' ? 'pending' : 'processing',
+            // ✅ Accept paymentStatus from request, default to 'unpaid'
+            paymentStatus: req.body.paymentStatus || 'unpaid',
+            // ✅ Accept status from request, default based on payment method
+            status: req.body.status || (paymentMethod === 'cod' ? 'pending' : 'processing'),
             notes: notes || null
         };
         if (userId) {
@@ -207,6 +240,7 @@ router.post('/', optionalAuth_1.default, async (req, res) => {
         // Send order confirmation to customer
         (0, email_service_1.sendOrderConfirmation)({
             orderId: order._id.toString(),
+            orderNumber: order.orderNumber,
             customerName: customerName,
             customerEmail: customerEmail,
             subtotal: calculatedSubtotal,
@@ -222,6 +256,7 @@ router.post('/', optionalAuth_1.default, async (req, res) => {
         if (process.env.ADMIN_EMAIL) {
             (0, email_service_1.sendAdminOrderNotification)({
                 orderId: order._id.toString(),
+                orderNumber: order.orderNumber,
                 customerName: customerName,
                 customerEmail: customerEmail,
                 customerPhone: customerPhone,
@@ -512,6 +547,8 @@ router.get('/admin/orders', auth_1.default, async (req, res) => {
         const status = req.query.status;
         const paymentMethod = req.query.paymentMethod;
         const search = req.query.search;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
         const sortField = req.query.sort || 'createdAt';
         const sortOrder = req.query.order === 'asc' ? 1 : -1;
         const query = {};
@@ -519,6 +556,20 @@ router.get('/admin/orders', auth_1.default, async (req, res) => {
             query.status = status;
         if (paymentMethod)
             query.paymentMethod = paymentMethod;
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate)
+                query.createdAt.$gte = new Date(startDate);
+            if (endDate)
+                query.createdAt.$lte = new Date(endDate);
+        }
+        if (search) {
+            query.$or = [
+                { 'guestInfo.email': { $regex: search, $options: 'i' } },
+                { 'guestInfo.phone': { $regex: search, $options: 'i' } },
+                { 'shippingAddress.fullName': { $regex: search, $options: 'i' } }
+            ];
+        }
         if (search) {
             query.$or = [
                 { 'guestInfo.email': { $regex: search, $options: 'i' } },
@@ -800,6 +851,35 @@ router.get('/admin/stats/summary', auth_1.default, async (req, res) => {
     catch (error) {
         console.error('Stats error:', error);
         res.status(500).json({ error: 'Failed to fetch statistics' });
+    }
+});
+// GET /api/orders/:id/can-retry - Check if order can retry payment
+router.get('/:id/can-retry', optionalAuth_1.default, async (req, res) => {
+    try {
+        const orderId = req.params.id;
+        if (!mongoose_1.default.Types.ObjectId.isValid(orderId)) {
+            return res.status(400).json({ error: 'Invalid order ID' });
+        }
+        const order = await Order_1.default.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+        // Check if order can retry payment
+        const canRetry = order.paymentStatus === 'unpaid';
+        const lastTransaction = await Transaction_1.default.findOne({
+            orderId: order._id
+        }).sort({ createdAt: -1 });
+        res.json({
+            canRetry,
+            orderId: order._id,
+            orderNumber: order.orderNumber,
+            paymentStatus: order.paymentStatus,
+            lastTransactionStatus: (lastTransaction === null || lastTransaction === void 0 ? void 0 : lastTransaction.status) || null
+        });
+    }
+    catch (error) {
+        console.error('Check retry error:', error);
+        res.status(500).json({ error: 'Failed to check retry status' });
     }
 });
 exports.default = router;

@@ -3,9 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// src/routes/feedback.routes.ts
 const express_1 = require("express");
 const Feedback_1 = require("../models/Feedback");
 const auth_1 = __importDefault(require("../middleware/auth"));
+const notification_service_1 = require("../services/notification.service");
+const User_1 = __importDefault(require("../models/User"));
 const router = (0, express_1.Router)();
 // Helper function to get client IP
 const getClientIp = (req) => {
@@ -15,7 +18,7 @@ const getClientIp = (req) => {
         'unknown';
 };
 // ==================== PUBLIC ROUTES ====================
-// Submit feedback (public) - name and email are optional
+// Submit feedback (public) - WITH ADMIN NOTIFICATION
 router.post('/', async (req, res) => {
     try {
         const { name, email, rating, category, feedback, isPublic } = req.body;
@@ -27,8 +30,8 @@ router.post('/', async (req, res) => {
         }
         // Create feedback (name and email are optional)
         const newFeedback = new Feedback_1.Feedback({
-            name: name || 'Anonymous', // Default to Anonymous if not provided
-            email: email || undefined, // Can be undefined
+            name: name || 'Anonymous',
+            email: email || undefined,
             rating,
             category: category || 'product',
             feedback,
@@ -37,6 +40,38 @@ router.post('/', async (req, res) => {
             ipAddress: getClientIp(req)
         });
         await newFeedback.save();
+        // ✅ NOTIFICATION: Send to all admins for low ratings (1-2 stars) or all feedback
+        try {
+            const adminUsers = await User_1.default.find({ role: 'admin', isActive: true });
+            if (adminUsers.length > 0) {
+                const ratingIcon = rating <= 2 ? '⚠️' : rating === 3 ? '📝' : '⭐';
+                const priority = rating <= 2 ? 'URGENT - ' : '';
+                const notificationPromises = adminUsers.map(admin => (0, notification_service_1.createNotification)({
+                    userId: admin._id.toString(),
+                    type: 'system',
+                    title: `${ratingIcon} ${priority}New ${rating}-Star Feedback`,
+                    message: `${name || 'Anonymous'} rated ${rating}/5: "${feedback.substring(0, 80)}${feedback.length > 80 ? '...' : ''}"`,
+                    actionUrl: `/dashboard/feedback/${newFeedback._id}`,
+                    metadata: {
+                        feedbackId: newFeedback._id.toString(),
+                        name: name || 'Anonymous',
+                        email: email || null,
+                        rating,
+                        category,
+                        feedback: feedback.substring(0, 500),
+                        isPublic,
+                        submittedAt: new Date().toISOString(),
+                        ipAddress: getClientIp(req)
+                    }
+                }));
+                await Promise.all(notificationPromises);
+                console.log(`✅ Feedback notification sent to ${adminUsers.length} admin(s)`);
+            }
+        }
+        catch (notificationErr) {
+            console.error('Failed to send feedback notification to admins:', notificationErr);
+            // Don't block the response if notification fails
+        }
         res.status(201).json({
             success: true,
             message: 'Thank you for your feedback!',
@@ -178,7 +213,30 @@ router.get('/', auth_1.default, async (req, res) => {
         });
     }
 });
-// Update feedback status (admin only)
+// Get single feedback (admin only)
+router.get('/:id', auth_1.default, async (req, res) => {
+    try {
+        const user = req.user;
+        if ((user === null || user === void 0 ? void 0 : user.role) !== 'admin') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const feedback = await Feedback_1.Feedback.findById(req.params.id);
+        if (!feedback) {
+            return res.status(404).json({ error: 'Feedback not found' });
+        }
+        res.json({
+            success: true,
+            data: feedback
+        });
+    }
+    catch (error) {
+        console.error('Fetch feedback error:', error);
+        res.status(500).json({
+            error: error.message || 'Failed to fetch feedback'
+        });
+    }
+});
+// Update feedback status (admin only) - WITH NOTIFICATION
 router.patch('/:id/status', auth_1.default, async (req, res) => {
     try {
         const user = req.user;
@@ -192,6 +250,35 @@ router.patch('/:id/status', auth_1.default, async (req, res) => {
         const feedback = await Feedback_1.Feedback.findByIdAndUpdate(req.params.id, { status }, { new: true, runValidators: true });
         if (!feedback) {
             return res.status(404).json({ error: 'Feedback not found' });
+        }
+        // ✅ NOTIFICATION: When admin resolves feedback
+        if (status === 'resolved') {
+            try {
+                const otherAdmins = await User_1.default.find({
+                    role: 'admin',
+                    isActive: true,
+                    _id: { $ne: user.userId }
+                });
+                if (otherAdmins.length > 0) {
+                    const notificationPromises = otherAdmins.map(admin => (0, notification_service_1.createNotification)({
+                        userId: admin._id.toString(),
+                        type: 'system',
+                        title: '✅ Feedback Resolved',
+                        message: `${user.email || user.name} resolved feedback from ${feedback.name} (${feedback.rating}/5)`,
+                        actionUrl: `/dashboard/feedback/${feedback._id}`,
+                        metadata: {
+                            feedbackId: feedback._id.toString(),
+                            resolvedBy: user.email || user.name,
+                            resolvedAt: new Date().toISOString(),
+                            rating: feedback.rating
+                        }
+                    }));
+                    await Promise.all(notificationPromises);
+                }
+            }
+            catch (notificationErr) {
+                console.error('Failed to send feedback resolution notification:', notificationErr);
+            }
         }
         res.json({
             success: true,

@@ -140,7 +140,8 @@ class PaymentService {
         if (status === 'completed')
             transaction.paidAt = new Date();
         await transaction.save();
-        if (status === 'completed') {
+        // ✅ FIX: Check if orderId exists before updating
+        if (status === 'completed' && transaction.orderId) {
             await this.updateOrderPaymentSummary(transaction.orderId.toString());
         }
         return transaction;

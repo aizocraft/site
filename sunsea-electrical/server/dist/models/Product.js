@@ -1,5 +1,4 @@
 "use strict";
-// src/models/Product.ts - Updated with proper method typing
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -36,15 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSKU = generateSKU;
 const mongoose_1 = __importStar(require("mongoose"));
-// SKU Generation Function
 function generateSKU(category, existingSkus = []) {
-    // Get first 3 letters of category (uppercase)
     let prefix = (category || 'GEN').substring(0, 3).toUpperCase();
-    // Ensure prefix is exactly 3 characters
     if (prefix.length < 3) {
         prefix = prefix.padEnd(3, 'X');
     }
-    // Generate sequential number (3 digits)
     const existingNumbers = existingSkus
         .filter(sku => sku.startsWith(`${prefix}-`))
         .map(sku => parseInt(sku.split('-')[1] || '0'))
@@ -77,9 +72,9 @@ const ImageSchema = new mongoose_1.Schema({
 });
 const productSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
-    slug: { type: String, required: false, unique: true, sparse: true },
-    sku: { type: String, required: true, unique: true },
-    category: { type: String, required: false, index: true },
+    slug: { type: String, required: false, unique: true, sparse: true }, // unique creates index automatically
+    sku: { type: String, required: true, unique: true }, // unique creates index automatically
+    category: { type: String, required: false },
     brand: { type: String, required: false },
     type: { type: String, required: false },
     price: { type: Number, required: true },
@@ -100,25 +95,25 @@ const productSchema = new mongoose_1.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
-// Virtual for profit margin percentage
+// Only define NON-unique indexes here
+// DO NOT redefine indexes for fields that already have 'unique: true'
+productSchema.index({ category: 1 });
+// Virtuals
 productSchema.virtual('profitMargin').get(function () {
     if (this.buyingPrice && this.price) {
         return ((this.price - this.buyingPrice) / this.price) * 100;
     }
     return 0;
 });
-// Virtual for profit amount
 productSchema.virtual('profitAmount').get(function () {
     return (this.price || 0) - (this.buyingPrice || 0);
 });
-// Virtual for margin percentage (based on cost)
 productSchema.virtual('marginPercentage').get(function () {
     if (this.buyingPrice && this.price) {
         return ((this.price - this.buyingPrice) / this.buyingPrice) * 100;
     }
     return 0;
 });
-// Virtual for image URLs
 productSchema.virtual('imageUrls').get(function () {
     return this.images.map(img => {
         if (img.type === 'url')
@@ -129,24 +124,21 @@ productSchema.virtual('imageUrls').get(function () {
         return '';
     }).filter(Boolean);
 });
-// Virtual for discount percentage
 productSchema.virtual('discountPercent').get(function () {
     if (this.compareAtPrice && this.compareAtPrice > this.price) {
         return Math.round(((this.compareAtPrice - this.price) / this.compareAtPrice) * 100);
     }
     return 0;
 });
-// Method to update buying price with history tracking
+// Method
 productSchema.methods.updateBuyingPrice = async function (newPrice, userId, reason) {
     if (this.buyingPrice === newPrice) {
         return false;
     }
-    // Close current price history
     const currentHistory = this.buyingPriceHistory.find(h => !h.effectiveTo);
     if (currentHistory) {
         currentHistory.effectiveTo = new Date();
     }
-    // Add new price history
     this.buyingPriceHistory.push({
         price: newPrice,
         effectiveFrom: new Date(),
@@ -157,11 +149,10 @@ productSchema.methods.updateBuyingPrice = async function (newPrice, userId, reas
     await this.save();
     return true;
 };
-// Pre-save hook to generate SKU if not provided
+// Pre-save hook
 productSchema.pre('save', async function (next) {
     if (!this.sku) {
         const ProductModel = mongoose_1.default.model('Product');
-        // Get existing SKUs for this category
         const existingProducts = await ProductModel.find({
             category: this.category,
             sku: { $regex: `^${(this.category || 'GEN').substring(0, 3).toUpperCase()}-` }
@@ -171,7 +162,6 @@ productSchema.pre('save', async function (next) {
     }
     next();
 });
-// Create and export the model with proper typing
 const ProductModel = mongoose_1.default.model('Product', productSchema);
 exports.default = ProductModel;
 //# sourceMappingURL=Product.js.map

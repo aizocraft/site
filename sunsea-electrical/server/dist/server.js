@@ -37,6 +37,7 @@ const payment_routes_1 = __importDefault(require("./routes/payment.routes"));
 const inventory_routes_1 = __importDefault(require("./routes/inventory.routes"));
 const supplier_routes_1 = __importDefault(require("./routes/supplier.routes"));
 const profit_routes_1 = __importDefault(require("./routes/profit.routes"));
+const mpesa_routes_1 = __importDefault(require("./routes/mpesa.routes"));
 dotenv_1.default.config();
 // Connect to DB and initialize GridFS
 (0, db_1.default)().then(() => {
@@ -69,7 +70,7 @@ app.use((0, cors_1.default)({
 app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ extended: true }));
 // Apply audit middleware (retained)
-app.use(auditMiddleware_1.auditContextMiddleware); // This adds requestId and startTime
+app.use(auditMiddleware_1.auditContextMiddleware);
 app.use((0, auditMiddleware_1.autoAuditMiddleware)({
     excludePaths: [
         '/health',
@@ -103,8 +104,9 @@ app.use('/api/sales', sales_routes_1.default);
 app.use('/api/payments', payment_routes_1.default);
 app.use('/api/inventory', inventory_routes_1.default);
 app.use('/api/suppliers', supplier_routes_1.default);
-app.use('/api/profit', profit_routes_1.default);
+app.use('/api/profits', profit_routes_1.default);
 app.use('/api/notifications', notification_routes_1.default);
+app.use('/api/mpesa', mpesa_routes_1.default);
 app.use('/', healthz_routes_1.default);
 // Health check (excluded from audit)
 app.get('/api/health', (req, res) => {

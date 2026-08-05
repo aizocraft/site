@@ -29,6 +29,9 @@ export interface IQuotation extends Document {
     customerLocation?: string;
     createdBy: mongoose.Types.ObjectId;
     createdByName?: string;
+    invoiceId?: mongoose.Types.ObjectId | string;
+    invoiceNumber?: string;
+    lastInvoiceCreatedAt?: Date;
     items: IQuotationItem[];
     subtotal: number;
     totalCost: number;

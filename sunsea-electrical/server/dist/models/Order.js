@@ -39,7 +39,7 @@ const orderItemSchema = new mongoose_1.Schema({
     productId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'Product', required: true },
     name: { type: String, required: true },
     slug: { type: String, required: true },
-    image: { type: String, required: true },
+    image: { type: String },
     sellingPrice: { type: Number, required: true },
     buyingPrice: { type: Number, default: 0 },
     profit: { type: Number, default: 0 },
@@ -47,7 +47,7 @@ const orderItemSchema = new mongoose_1.Schema({
     description: { type: String }
 }, { _id: false });
 const orderSchema = new mongoose_1.Schema({
-    userId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'User', required: false, index: true },
+    userId: { type: mongoose_1.SchemaTypes.ObjectId, ref: 'User', required: false },
     guestInfo: {
         email: { type: String, lowercase: true, trim: true },
         phone: { type: String, trim: true },
@@ -55,8 +55,8 @@ const orderSchema = new mongoose_1.Schema({
     },
     items: [orderItemSchema],
     subtotal: { type: Number, required: true },
-    totalCost: { type: Number, default: 0 }, // Add this
-    totalProfit: { type: Number, default: 0 }, // Add this
+    totalCost: { type: Number, default: 0 },
+    totalProfit: { type: Number, default: 0 },
     shippingCost: { type: Number, default: 0 },
     tax: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
@@ -82,8 +82,8 @@ const orderSchema = new mongoose_1.Schema({
         paidAt: { type: Date },
         phoneNumber: { type: String }
     },
-    invoiceNumber: { type: String, unique: true, sparse: true, index: true },
-    quotationNumber: { type: String, index: true },
+    invoiceNumber: { type: String, unique: true, sparse: true }, // REMOVED index:true
+    quotationNumber: { type: String }, // REMOVED index:true from field
     invoiceDate: { type: Date, default: Date.now },
     dueDate: { type: Date },
     invoiceSentAt: Date,
@@ -113,12 +113,13 @@ const orderSchema = new mongoose_1.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
-// Indexes
+// All indexes defined here - NO duplicates
+orderSchema.index({ userId: 1 });
 orderSchema.index({ createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ 'guestInfo.email': 1 });
-orderSchema.index({ invoiceNumber: 1 });
-orderSchema.index({ quotationNumber: 1 });
+orderSchema.index({ invoiceNumber: 1 }); // Now only defined once
+orderSchema.index({ quotationNumber: 1 }); // Now only defined once
 // Virtual for order number
 orderSchema.virtual('orderNumber').get(function () {
     return `ORD-${this._id.toString().slice(-8).toUpperCase()}`;

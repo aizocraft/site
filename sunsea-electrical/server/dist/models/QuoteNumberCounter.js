@@ -35,12 +35,12 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const quoteNumberCounterSchema = new mongoose_1.Schema({
-    year: { type: Number, required: true, index: true },
-    month: { type: Number, required: true, index: true },
+    year: { type: Number, required: true },
+    month: { type: Number, required: true },
     sequence: { type: Number, required: true, default: 0 },
     type: { type: String, required: true, enum: ['quotation', 'invoice'], default: 'quotation' },
 }, { timestamps: true });
-// Enforce single counter doc per year/month/type
+// Single unique compound index - no duplicates
 quoteNumberCounterSchema.index({ year: 1, month: 1, type: 1 }, { unique: true });
 const QuoteNumberCounterModel = mongoose_1.default.model('QuoteNumberCounter', quoteNumberCounterSchema);
 exports.default = QuoteNumberCounterModel;

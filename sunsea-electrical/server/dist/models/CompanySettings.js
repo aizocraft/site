@@ -98,7 +98,9 @@ const companySettingsSchema = new mongoose_1.Schema({
         default: 0.16,
         min: [0, 'Tax rate cannot be negative'],
         max: [1, 'Tax rate cannot exceed 100%']
-    }, logo: {
+    },
+    taxExemptCategories: { type: [String], default: ['Solar Panels', 'Solar Lights', 'Inverters'] },
+    logo: {
         type: LogoSchema,
         default: () => ({
             type: 'url',
@@ -108,10 +110,26 @@ const companySettingsSchema = new mongoose_1.Schema({
     favicon: {
         type: FaviconSchema,
         default: null
+    },
+    themeColors: {
+        light: {
+            primary: { type: String, default: '#000063', trim: true },
+            primaryForeground: { type: String, default: '#ffffff', trim: true },
+            primaryMid: { type: String, default: '#0043b3', trim: true },
+            primaryLight: { type: String, default: '#009dff', trim: true }
+        },
+        dark: {
+            primary: { type: String, default: '#000063', trim: true },
+            primaryForeground: { type: String, default: '#ffffff', trim: true },
+            primaryMid: { type: String, default: '#0043b3', trim: true },
+            primaryLight: { type: String, default: '#009dff', trim: true }
+        }
     }
 }, {
     timestamps: true,
-    minimize: false
+    minimize: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 });
 companySettingsSchema.index({ updatedAt: -1 });
 companySettingsSchema.statics.getSingleton = async function () {

@@ -63,7 +63,7 @@ router.post('/contact', async (req, res) => {
         else {
             res.status(500).json({
                 success: false,
-                error: result.error
+                error: result.error || 'Failed to send message'
             });
         }
     }
@@ -138,7 +138,7 @@ router.post('/send-welcome', async (req, res) => {
         else {
             res.status(500).json({
                 success: false,
-                error: result.error
+                error: result.error || 'Failed to send welcome email'
             });
         }
     }

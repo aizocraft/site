@@ -6,13 +6,15 @@ import {
   X, 
   ArrowRight, 
   Shield, 
-  Zap
+  Zap,
+  Gauge,
+  Building2,
+  Camera,
+  Wrench
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { BoreholeIcon } from "@/components/icons/BoreholeIcon";
-import { WaterTowerIcon } from "@/components/icons/WaterTowerIcon";
 
 interface Service {
   id: number;
@@ -72,7 +74,7 @@ const services: Service[] = [
   },
   {
     id: 3,
-    Icon: Zap,
+    Icon: Gauge,
     title: "Generator Systems",
     description: "Diesel, gas, and hybrid gensets with synchronisation and grid paralleling.",
     longDescription: "Our generator systems service delivers reliable backup and prime power through diesel, gas, and hybrid gensets. We design, supply, install, and commission complete generator systems with automatic synchronisation and grid paralleling for commercial, industrial, and residential applications—ensuring uninterrupted power whenever you need it.",
@@ -94,7 +96,7 @@ const services: Service[] = [
   },
   {
     id: 4,
-    Icon: Zap,
+    Icon: Building2,
     title: "Smart Building Systems",
     description: "IoT-enabled lighting, security, and climate control systems for modern, efficient commercial buildings.",
     longDescription: "Our smart building systems service delivers intelligent, IoT-enabled solutions for lighting, security, and climate control. We design and integrate automated systems that reduce energy consumption, enhance occupant comfort, and provide centralized monitoring and control for modern commercial and residential buildings.",
@@ -116,7 +118,7 @@ const services: Service[] = [
   },
   {
     id: 5,
-    Icon: Zap,
+    Icon: Camera,
     title: "CCTV & Networking",
     description: "Comprehensive security systems and structured cabling for enterprise networks.",
     longDescription: "Our CCTV & Networking service delivers comprehensive security systems and structured cabling for enterprise networks. We design and install high-definition CCTV surveillance, access control, and structured data cabling that keep your premises secure and your business connected—with reliable, future-ready network infrastructure.",
@@ -138,7 +140,7 @@ const services: Service[] = [
   },
   {
     id: 6,
-    Icon: Zap,
+    Icon: Wrench,
     title: "Maintenance Contracts",
     description: "Regular maintenance and emergency repair services for all electrical systems.",
     longDescription: "Our maintenance contracts service provides regular preventive maintenance and emergency repair for all electrical systems. We keep your power infrastructure—panels, switchgear, generators, and solar systems—running at peak performance with scheduled inspections, testing, and rapid-response repairs, protecting your investment and reducing costly downtime.",
@@ -274,13 +276,7 @@ const Services = () => {
   };
 
   return (
-    <section className="relative py-20 sm:py-24 lg:py-32 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-950 dark:to-blue-950/20">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl" />
-      </div>
-
+    <section id="services" className="relative py-20 sm:py-24 lg:py-32 overflow-hidden bg-white dark:bg-gray-950">
       {/* Content */}
     <div className="px-2 sm:px-4 lg:max-w-8xl lg:mx-8 relative z-10">
         {/* Header */}
@@ -293,7 +289,7 @@ const Services = () => {
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-5">
             Our{" "}
-            <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">
+            <span className="text-blue-600 dark:text-blue-400">
               Services
             </span>
           </h2>
@@ -316,7 +312,7 @@ const Services = () => {
               >
                 <TiltCard3D>
                   <div 
-                    className="group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200 dark:border-gray-800"
+                    className="group relative overflow-hidden rounded-2xl bg-slate-50 dark:bg-gray-900 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200 dark:border-gray-800"
                     onClick={() => openModal(service)}
                   >
                     {/* Image Section - Taller for better visibility */}
@@ -326,20 +322,20 @@ const Services = () => {
                         alt={service.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-black/30" />
                     </div>
                     
                     {/* Content - Larger padding for bigger cards */}
                     <div className="p-8">
                       <div className="flex items-start gap-4 mb-5">
-                        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                        <div className="w-14 h-14 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
                           <Icon className="h-7 w-7 text-white" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
                             {service.title}
                           </h3>
-                          <div className="w-16 h-0.5 bg-gradient-to-r from-blue-500 to-blue-400 rounded-full mt-2 transition-all duration-300 group-hover:w-24" />
+                          <div className="w-16 h-0.5 bg-blue-600 rounded-full mt-2 transition-all duration-300 group-hover:w-24" />
                         </div>
                       </div>
                       
@@ -353,7 +349,7 @@ const Services = () => {
                           e.stopPropagation();
                           openModal(service);
                         }}
-                        className="w-full h-12 mt-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-semibold text-base rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-md hover:shadow-lg"
+                        className="w-full h-12 mt-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group/btn shadow-md hover:shadow-lg"
                       >
                         <span>Explore Service</span>
                         <ArrowRight className="h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
@@ -379,7 +375,7 @@ const Services = () => {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
-                  className="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-500 bg-white dark:bg-gray-900 hover:scale-[1.02] cursor-pointer h-full"
+                  className="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg hover:shadow-xl transition-all duration-500 bg-slate-50 dark:bg-gray-900 hover:scale-[1.02] cursor-pointer h-full"
                   onClick={() => openModal(service)}
                 >
                   <div className="relative h-52 overflow-hidden">
@@ -392,7 +388,7 @@ const Services = () => {
 
                   <CardContent className="p-6 space-y-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+                      <div className="w-12 h-12 rounded-lg bg-blue-600 flex items-center justify-center shadow-md">
                         <Icon className="h-6 w-6 text-white" />
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white">{service.title}</h3>
@@ -405,7 +401,7 @@ const Services = () => {
                     <ul className="space-y-2">
                       {service.features.slice(0, 3).map((feature, i) => (
                         <li key={i} className="flex items-center text-gray-700 dark:text-gray-300 text-sm">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 mr-2 flex-shrink-0" />
+                          <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 mr-2 flex-shrink-0" />
                           <span className="truncate">{feature}</span>
                         </li>
                       ))}
@@ -416,7 +412,7 @@ const Services = () => {
                         e.stopPropagation();
                         openModal(service);
                       }}
-                      className="w-full h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-lg flex items-center justify-center gap-2 group/btn"
+                      className="w-full h-10 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-2 group/btn"
                     >
                       <span>Learn More</span>
                       <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
@@ -441,7 +437,7 @@ const Services = () => {
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
                 <Card
-                  className="group overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all duration-500 bg-white dark:bg-gray-900 cursor-pointer"
+                  className="group overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-lg transition-all duration-500 bg-slate-50 dark:bg-gray-900 cursor-pointer"
                   onClick={() => openModal(service)}
                 >
                   <div className="relative h-48 overflow-hidden">
@@ -454,7 +450,7 @@ const Services = () => {
 
                   <CardContent className="p-5 space-y-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
                         <Icon className="h-5 w-5 text-white" />
                       </div>
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white">{service.title}</h3>
@@ -469,7 +465,7 @@ const Services = () => {
                         e.stopPropagation();
                         openModal(service);
                       }}
-                      className="w-full h-9 text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-lg flex items-center justify-center gap-2"
+                      className="w-full h-9 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center gap-2"
                     >
                       Details
                       <ArrowRight className="h-3.5 w-3.5" />
@@ -503,10 +499,10 @@ const Services = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
-                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-blue-50 to-white dark:from-blue-950/20 dark:to-gray-900">
+                <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-800 bg-slate-50 dark:bg-gray-900">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg flex-shrink-0">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg flex-shrink-0">
                         <selectedService.Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -561,7 +557,7 @@ const Services = () => {
                             transition={{ delay: i * 0.05 }}
                             className="flex items-start group/feature"
                           >
-                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mr-2 sm:mr-3 mt-0.5 flex-shrink-0 transition-transform group-hover/feature:scale-110" />
+                            <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 mr-2 sm:mr-3 mt-0.5 flex-shrink-0 transition-transform group-hover/feature:scale-110" />
                             <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{feature}</span>
                           </motion.div>
                         ))}
@@ -571,7 +567,7 @@ const Services = () => {
                     {/* CTA Button */}
                     <Button
                       size="lg"
-                      className="w-full h-11 sm:h-14 text-sm sm:text-base font-bold bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group"
+                      className="w-full h-11 sm:h-14 text-sm sm:text-base font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group"
                       onClick={() => {
                         closeModal();
                         setTimeout(() => {

@@ -169,11 +169,10 @@ export default function Footer() {
   </h4>
 
   <ul className="space-y-2.5">
-    {[
+{[
       { name: 'Home', path: '/' },
       { name: 'About', path: '/about' },
-      { name: 'Solar Solutions', path: '/solar-solutions' },
-      { name: 'Borehole Services', path: '/borehole-services' },
+      { name: 'Services', path: '/#services' },
       { name: 'Products', path: '/products' },
       { name: 'Orders', path: '/orders' },
       { name: 'Projects', path: '/projects' },

@@ -12,6 +12,7 @@ export interface ContactEmailData {
 }
 export interface OrderEmailData {
     orderId: string;
+    orderNumber?: string;
     customerName: string;
     customerEmail: string;
     subtotal: number;
@@ -29,6 +30,7 @@ export interface OrderEmailData {
 }
 export interface AdminOrderNotificationData {
     orderId: string;
+    orderNumber: string;
     customerName: string;
     customerEmail: string;
     customerPhone: string;
@@ -48,118 +50,20 @@ export interface AdminOrderNotificationData {
     }>;
     orderDate: Date;
 }
-/**
- * Send general email
- */
-export declare const sendEmail: (options: EmailOptions) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send email with attachment using Resend
- */
-export declare const sendEmailWithAttachment: (options: EmailOptions & {
-    attachments?: Array<{
-        filename: string;
-        content: string;
-        contentType?: string;
-    }>;
-}) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send contact form email (to admin + auto-reply to user)
- */
-export declare const sendContactEmail: (data: ContactEmailData) => Promise<{
-    success: boolean;
-    adminResult: {
-        success: boolean;
-        messageId: string;
-        error?: undefined;
-    } | {
-        success: boolean;
-        error: any;
-        messageId?: undefined;
-    };
-    userResult: {
-        success: boolean;
-        messageId: string;
-        error?: undefined;
-    } | {
-        success: boolean;
-        error: any;
-        messageId?: undefined;
-    };
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    adminResult?: undefined;
-    userResult?: undefined;
-}>;
-/**
- * Send order confirmation email to customer
- */
-export declare const sendOrderConfirmation: (data: OrderEmailData) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send admin notification for new order
- */
-export declare const sendAdminOrderNotification: (data: AdminOrderNotificationData) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send welcome email to new user
- */
-export declare const sendWelcomeEmail: (email: string, name: string) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send password reset email
- */
-export declare const sendPasswordResetEmail: (email: string, resetToken: string) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send payment confirmation email
- */
-export declare const sendPaymentConfirmation: (data: {
+export interface WelcomeEmailData {
+    email: string;
+    name: string;
+    template?: 'new-user' | 'sales-team' | 'vip' | 'partner';
+}
+export interface OrderStatusUpdateData {
+    to: string;
+    orderNumber: string;
+    status: string;
+    trackingNumber?: string;
+    estimatedDelivery?: string;
+    notes?: string;
+}
+export interface PaymentConfirmationData {
     email: string;
     customerName: string;
     orderNumber: string;
@@ -171,37 +75,15 @@ export declare const sendPaymentConfirmation: (data: {
         quantity: number;
         price: number;
     }>;
-}) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send payment failed notification
- */
-export declare const sendPaymentFailedNotification: (data: {
+}
+export interface PaymentFailedData {
     email: string;
     customerName: string;
     orderNumber: string;
     amount: number;
     reason?: string;
-}) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send quotation email to customer - Premium Professional Design
- */
-export declare const sendQuotation: (data: {
+}
+export interface QuotationData {
     to: string;
     customerName: string;
     quoteNumber: string;
@@ -220,31 +102,14 @@ export declare const sendQuotation: (data: {
         description?: string;
     };
     estimatedDelivery?: string;
-    shippingInfo?: {
-        areaName: string;
-        cost: number;
-        freeThreshold?: number;
-        estimatedDelivery?: string;
-    };
     discount?: number;
-    discountType?: "percentage" | "fixed";
+    discountType?: 'percentage' | 'fixed';
     tax?: number;
     subtotal?: number;
     notes?: string;
     terms?: string;
-}) => Promise<{
-    success: boolean;
-    messageId: string;
-    error?: undefined;
-} | {
-    success: boolean;
-    error: any;
-    messageId?: undefined;
-}>;
-/**
- * Send invoice email to customer - Premium Professional Design
- */
-export declare const sendInvoice: (data: {
+}
+export interface InvoiceData {
     to: string;
     customerName: string;
     invoiceNumber: string;
@@ -264,14 +129,116 @@ export declare const sendInvoice: (data: {
     };
     estimatedDelivery?: string;
     discount?: number;
-    discountType?: "percentage" | "fixed";
+    discountType?: 'percentage' | 'fixed';
     tax?: number;
     subtotal?: number;
     notes?: string;
     terms?: string;
     amountPaid?: number;
     balanceDue?: number;
+}
+export declare const sendEmail: (options: EmailOptions) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendEmailWithAttachment: (options: EmailOptions & {
+    attachments?: Array<{
+        filename: string;
+        content: string;
+        contentType?: string;
+    }>;
 }) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendContactEmail: (data: ContactEmailData) => Promise<{
+    success: boolean;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+}>;
+export declare const sendOrderConfirmation: (data: OrderEmailData) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendAdminOrderNotification: (data: AdminOrderNotificationData) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendWelcomeEmail: (email: string, name: string) => Promise<{
+    success: boolean;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+}>;
+export declare const sendPasswordResetEmail: (email: string, resetToken: string) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendOrderStatusUpdate: (data: OrderStatusUpdateData) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendPaymentConfirmation: (data: PaymentConfirmationData) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendPaymentFailedNotification: (data: PaymentFailedData) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendQuotation: (data: QuotationData) => Promise<{
+    success: boolean;
+    messageId: string;
+    error?: undefined;
+} | {
+    success: boolean;
+    error: any;
+    messageId?: undefined;
+}>;
+export declare const sendInvoice: (data: InvoiceData) => Promise<{
     success: boolean;
     messageId: string;
     error?: undefined;

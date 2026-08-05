@@ -33,56 +33,193 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+// src/models/Transaction.ts
 const mongoose_1 = __importStar(require("mongoose"));
 const transactionSchema = new mongoose_1.Schema({
     orderId: {
-        type: mongoose_1.default.SchemaTypes.ObjectId,
+        type: mongoose_1.Schema.Types.ObjectId,
         ref: 'Order',
-        required: true,
+        required: false,
         index: true
     },
-    invoiceNumber: { type: String, index: true },
-    quotationNumber: { type: String, index: true },
-    userId: { type: mongoose_1.default.SchemaTypes.ObjectId, ref: 'User' },
-    guestEmail: String,
-    guestPhone: String,
-    customerName: { type: String, required: true },
-    amount: { type: Number, required: true, min: 0 },
-    currency: { type: String, default: 'KES' },
+    orderNumber: {
+        type: String,
+        index: true,
+        trim: true
+    },
+    invoiceId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'Invoice',
+        required: false,
+        index: true
+    },
+    invoiceNumber: {
+        type: String,
+        index: true,
+        trim: true
+    },
+    quotationNumber: {
+        type: String,
+        index: true,
+        trim: true
+    },
+    userId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+        index: true
+    },
+    guestEmail: {
+        type: String,
+        lowercase: true,
+        trim: true,
+        index: true
+    },
+    guestPhone: {
+        type: String,
+        trim: true,
+        index: true
+    },
+    customerName: {
+        type: String,
+        required: true,
+        trim: true,
+        index: true
+    },
+    amount: {
+        type: Number,
+        required: true,
+        min: 0
+    },
+    currency: {
+        type: String,
+        default: 'KES'
+    },
     paymentMethod: {
         type: String,
         enum: ['mpesa', 'card', 'cod', 'cash', 'bank_transfer', 'cheque'],
-        required: true
+        required: true,
+        index: true
     },
     status: {
         type: String,
         enum: ['pending', 'completed', 'failed', 'refunded'],
-        default: 'pending'
+        default: 'pending',
+        index: true
     },
-    transactionId: { type: String, required: true, unique: true },
-    mpesaReceipt: String,
+    transactionId: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    },
+    mpesaReceipt: {
+        type: String,
+        index: true
+    },
     cardLast4: String,
     cardBrand: String,
-    reference: String,
-    notes: String,
-    recordedBy: { type: mongoose_1.default.SchemaTypes.ObjectId, ref: 'User' },
-    recordedByName: String,
+    reference: {
+        type: String,
+        index: true
+    },
+    phoneNumber: {
+        type: String,
+        trim: true
+    },
+    notes: {
+        type: String,
+        trim: true
+    },
+    recordedBy: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'User',
+        index: true
+    },
+    recordedByName: {
+        type: String,
+        trim: true
+    },
     source: {
         type: String,
-        enum: ['checkout', 'quotation', 'admin', 'manual'],
+        enum: ['checkout', 'quotation', 'admin', 'manual', 'invoice', 'order', 'pos'],
         required: true,
-        default: 'manual'
+        default: 'manual',
+        index: true
     },
-    isPartialPayment: { type: Boolean, default: false },
-    paidAt: { type: Date }
-}, { timestamps: true });
-// Indexes
-transactionSchema.index({ status: 1 });
-transactionSchema.index({ paymentMethod: 1 });
-transactionSchema.index({ createdAt: -1 });
+    isPartialPayment: {
+        type: Boolean,
+        default: false
+    },
+    paidAt: {
+        type: Date,
+        index: true
+    },
+    // Refund tracking fields
+    refundedAmount: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
+    refundedAt: Date,
+    refundReason: {
+        type: String,
+        trim: true
+    },
+    parentTransactionId: {
+        type: String,
+        index: true
+    }
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+// Compound indexes for common queries
 transactionSchema.index({ orderId: 1, status: 1 });
-transactionSchema.index({ invoiceNumber: 1 });
-transactionSchema.index({ source: 1 });
+transactionSchema.index({ orderNumber: 1, status: 1 });
+transactionSchema.index({ invoiceNumber: 1, status: 1 });
+transactionSchema.index({ createdAt: -1 });
+transactionSchema.index({ paymentMethod: 1, status: 1 });
+transactionSchema.index({ source: 1, status: 1 });
+// Virtual for formatted amount
+transactionSchema.virtual('formattedAmount').get(function () {
+    return new Intl.NumberFormat('en-KE', {
+        style: 'currency',
+        currency: this.currency || 'KES'
+    }).format(this.amount);
+});
+// Virtual for isRefund
+transactionSchema.virtual('isRefund').get(function () {
+    return this.status === 'refunded' || this.amount < 0;
+});
+// Pre-save middleware to ensure orderNumber is populated
+transactionSchema.pre('save', async function (next) {
+    // If orderId is present but orderNumber is missing, fetch it
+    if (this.orderId && !this.orderNumber) {
+        try {
+            const OrderModel = mongoose_1.default.model('Order');
+            const order = await OrderModel.findById(this.orderId).select('orderNumber');
+            if (order && order.orderNumber) {
+                this.orderNumber = order.orderNumber;
+            }
+        }
+        catch (error) {
+            console.error('Failed to populate orderNumber:', error);
+        }
+    }
+    // Set paidAt if status is completed and not already set
+    if (this.status === 'completed' && !this.paidAt) {
+        this.paidAt = new Date();
+    }
+    next();
+});
+// ✅ Static method to generate transaction ID
+transactionSchema.statics.generateTransactionId = function (prefix = 'TXN', source = 'manual') {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const sourcePrefix = source.substring(0, 3).toUpperCase();
+    return `${prefix}-${sourcePrefix}-${timestamp}-${random}`;
+};
 const TransactionModel = mongoose_1.default.model('Transaction', transactionSchema);
 exports.default = TransactionModel;
 //# sourceMappingURL=Transaction.js.map

@@ -27,6 +27,21 @@ export interface ICompanySettings extends Document {
         url: string;
     }>;
     taxRate: number;
+    taxExemptCategories: string[];
+    themeColors: {
+        light: {
+            primary: string;
+            primaryForeground: string;
+            primaryMid: string;
+            primaryLight: string;
+        };
+        dark: {
+            primary: string;
+            primaryForeground: string;
+            primaryMid: string;
+            primaryLight: string;
+        };
+    };
     createdAt: Date;
     updatedAt: Date;
 }

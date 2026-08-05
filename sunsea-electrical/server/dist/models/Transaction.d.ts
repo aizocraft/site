@@ -1,6 +1,8 @@
 import mongoose, { Document, Model } from 'mongoose';
 export interface ITransaction extends Document {
-    orderId: mongoose.Types.ObjectId;
+    orderId?: mongoose.Types.ObjectId;
+    orderNumber?: string;
+    invoiceId?: mongoose.Types.ObjectId;
     invoiceNumber?: string;
     quotationNumber?: string;
     userId?: mongoose.Types.ObjectId;
@@ -16,16 +18,22 @@ export interface ITransaction extends Document {
     cardLast4?: string;
     cardBrand?: string;
     reference?: string;
+    phoneNumber?: string;
     notes?: string;
     recordedBy?: mongoose.Types.ObjectId;
     recordedByName?: string;
-    source: 'checkout' | 'quotation' | 'admin' | 'manual';
+    source: 'checkout' | 'quotation' | 'admin' | 'manual' | 'invoice' | 'order' | 'pos';
     isPartialPayment: boolean;
     paidAt?: Date;
+    refundedAmount?: number;
+    refundedAt?: Date;
+    refundReason?: string;
+    parentTransactionId?: string;
     createdAt: Date;
     updatedAt: Date;
 }
 interface TransactionModel extends Model<ITransaction> {
+    generateTransactionId(prefix?: string, source?: string): string;
 }
 declare const TransactionModel: TransactionModel;
 export default TransactionModel;

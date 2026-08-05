@@ -36,7 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // src/models/Supplier.ts
 const mongoose_1 = __importStar(require("mongoose"));
 const SupplierSchema = new mongoose_1.Schema({
-    name: { type: String, required: true, unique: true, index: true },
+    name: { type: String, required: true, unique: true }, // REMOVED index:true
     email: { type: String, lowercase: true, trim: true },
     phone: { type: String, trim: true },
     address: {
@@ -48,7 +48,7 @@ const SupplierSchema = new mongoose_1.Schema({
     },
     taxId: { type: String },
     paymentTerms: { type: String, default: 'Net 30' },
-    leadTime: { type: Number, default: 7 }, // Days
+    leadTime: { type: Number, default: 7 },
     notes: { type: String },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
     productsSupplied: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Product' }],
@@ -58,6 +58,10 @@ const SupplierSchema = new mongoose_1.Schema({
 }, {
     timestamps: true
 });
+// Define indexes here (unique:true already creates index for 'name')
+SupplierSchema.index({ email: 1 });
+SupplierSchema.index({ phone: 1 });
+SupplierSchema.index({ status: 1 });
 const SupplierModel = mongoose_1.default.model('Supplier', SupplierSchema);
 exports.default = SupplierModel;
 //# sourceMappingURL=Supplier.js.map

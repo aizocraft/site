@@ -179,15 +179,28 @@ router.get('/admin/overview', auth_1.default, async (req, res) => {
                 },
                 { $sort: { _id: 1 } }
             ]),
-            // Top 10 products by revenue
+            // Top 10 products by total profit (paid/completed orders only)
             Order_1.default.aggregate([
-                { $match: { createdAt: { $gte: periodStart } } },
+                {
+                    $match: {
+                        createdAt: { $gte: periodStart },
+                        paymentStatus: 'completed'
+                    }
+                },
                 { $unwind: '$items' },
                 {
                     $group: {
                         _id: '$items.productId',
                         name: { $first: '$items.name' },
-                        revenue: { $sum: { $multiply: ['$items.price', '$items.qty'] } },
+                        // Use profit if available, otherwise fall back to sellingPrice - buyingPrice
+                        revenue: {
+                            $sum: {
+                                $multiply: [
+                                    { $ifNull: ['$items.profit', { $subtract: ['$items.sellingPrice', '$items.buyingPrice'] }] },
+                                    '$items.qty'
+                                ]
+                            }
+                        },
                         quantity: { $sum: '$items.qty' },
                         orders: { $sum: 1 }
                     }
@@ -515,11 +528,21 @@ router.get('/admin/overview', auth_1.default, async (req, res) => {
                     quotationTrends: quotationTrendsChart,
                     paymentMethods: paymentMethodData,
                     hourlyDistribution: hourlyChart,
-                    categorySales: categorySales.map((cat) => ({
-                        category: cat._id,
-                        revenue: cat.revenue,
-                        quantity: cat.quantity
-                    }))
+                    categorySales: (() => {
+                        const raw = (categorySales || []).map((cat) => ({
+                            category: cat._id,
+                            revenue: cat.revenue,
+                            quantity: cat.quantity,
+                        }));
+                        const totalRevenue = raw.reduce((sum, c) => sum + (Number(c.revenue) || 0), 0);
+                        return raw.map((c) => {
+                            const share = totalRevenue > 0 ? ((Number(c.revenue) || 0) / totalRevenue) * 100 : 0;
+                            return {
+                                ...c,
+                                percentage: share,
+                            };
+                        });
+                    })()
                 },
                 topProducts: topProducts.map(p => ({
                     id: p._id,
@@ -1141,6 +1164,455 @@ router.get('/export', auth_1.default, async (req, res) => {
     catch (error) {
         console.error('Export analytics error:', error);
         return res.status(500).json({ error: 'Failed to export analytics' });
+    }
+});
+// ==================== PROFIT ANALYTICS ENDPOINTS ====================
+/**
+ * GET /api/analytics/profit/overview
+ * Get comprehensive profit overview with trends
+ */
+router.get('/profit/overview', auth_1.default, async (req, res) => {
+    try {
+        if (!isAdminOrSales(req.user)) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        const { period = 'month', startDate, endDate } = req.query;
+        const dateFilter = getDateFilter(period);
+        const { start: periodStart, end: periodEnd } = getDateRange(period);
+        const isAdminUser = isAdmin(req.user);
+        const salesUserId = !isAdminUser ? req.user.userId : null;
+        // Build match conditions
+        const matchConditions = { ...dateFilter };
+        if (salesUserId) {
+            matchConditions.createdBy = salesUserId;
+        }
+        // Parallel queries for profit analysis
+        const [orderProfitAgg, productProfitAgg, categoryProfitAgg, profitTrends, topProfitProducts, profitSummary, previousPeriodProfit] = await Promise.all([
+            // Order profit summary
+            Order_1.default.aggregate([
+                { $match: { ...dateFilter, paymentStatus: 'completed' } },
+                {
+                    $group: {
+                        _id: null,
+                        totalRevenue: { $sum: '$total' },
+                        totalCost: { $sum: '$totalCost' },
+                        totalProfit: { $sum: '$totalProfit' },
+                        totalOrders: { $sum: 1 },
+                        averageMargin: { $avg: { $multiply: [{ $divide: ['$totalProfit', '$total'] }, 100] } }
+                    }
+                }
+            ]),
+            // Product profit breakdown
+            Order_1.default.aggregate([
+                { $match: { ...dateFilter, paymentStatus: 'completed' } },
+                { $unwind: '$items' },
+                {
+                    $group: {
+                        _id: '$items.productId',
+                        productName: { $first: '$items.name' },
+                        totalRevenue: { $sum: { $multiply: ['$items.sellingPrice', '$items.qty'] } },
+                        totalCost: { $sum: { $multiply: ['$items.buyingPrice', '$items.qty'] } },
+                        totalProfit: { $sum: { $multiply: ['$items.profit', '$items.qty'] } },
+                        totalUnits: { $sum: '$items.qty' },
+                        totalOrders: { $sum: 1 }
+                    }
+                },
+                { $addFields: { margin: { $multiply: [{ $divide: ['$totalProfit', '$totalRevenue'] }, 100] } } },
+                { $sort: { totalProfit: -1 } },
+                { $limit: 20 }
+            ]),
+            // Category profit breakdown
+            Order_1.default.aggregate([
+                { $match: { ...dateFilter, paymentStatus: 'completed' } },
+                { $unwind: '$items' },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'items.productId',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                { $unwind: '$product' },
+                {
+                    $group: {
+                        _id: '$product.category',
+                        totalRevenue: { $sum: { $multiply: ['$items.sellingPrice', '$items.qty'] } },
+                        totalCost: { $sum: { $multiply: ['$items.buyingPrice', '$items.qty'] } },
+                        totalProfit: { $sum: { $multiply: ['$items.profit', '$items.qty'] } },
+                        totalUnits: { $sum: '$items.qty' }
+                    }
+                },
+                { $addFields: { margin: { $multiply: [{ $divide: ['$totalProfit', '$totalRevenue'] }, 100] } } },
+                { $sort: { totalProfit: -1 } }
+            ]),
+            // Profit trends over time
+            Order_1.default.aggregate([
+                {
+                    $match: {
+                        createdAt: { $gte: periodStart, $lte: periodEnd },
+                        paymentStatus: 'completed'
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+                        revenue: { $sum: '$total' },
+                        cost: { $sum: '$totalCost' },
+                        profit: { $sum: '$totalProfit' },
+                        orders: { $sum: 1 }
+                    }
+                },
+                { $sort: { _id: 1 } }
+            ]),
+            // Top profit products
+            Order_1.default.aggregate([
+                { $match: { ...dateFilter, paymentStatus: 'completed' } },
+                { $unwind: '$items' },
+                {
+                    $group: {
+                        _id: '$items.productId',
+                        name: { $first: '$items.name' },
+                        sku: { $first: '$items.sku' },
+                        totalRevenue: { $sum: { $multiply: ['$items.sellingPrice', '$items.qty'] } },
+                        totalCost: { $sum: { $multiply: ['$items.buyingPrice', '$items.qty'] } },
+                        totalProfit: { $sum: { $multiply: ['$items.profit', '$items.qty'] } },
+                        totalUnits: { $sum: '$items.qty' },
+                        orders: { $sum: 1 }
+                    }
+                },
+                { $addFields: { margin: { $multiply: [{ $divide: ['$totalProfit', '$totalRevenue'] }, 100] } } },
+                { $sort: { totalProfit: -1 } },
+                { $limit: 10 }
+            ]),
+            // Profit summary stats
+            Order_1.default.aggregate([
+                { $match: { ...dateFilter, paymentStatus: 'completed' } },
+                {
+                    $group: {
+                        _id: null,
+                        totalRevenue: { $sum: '$total' },
+                        totalCost: { $sum: '$totalCost' },
+                        totalProfit: { $sum: '$totalProfit' },
+                        avgOrderProfit: { $avg: '$totalProfit' },
+                        maxOrderProfit: { $max: '$totalProfit' },
+                        minOrderProfit: { $min: '$totalProfit' },
+                        totalOrders: { $sum: 1 },
+                        totalItems: { $sum: { $sum: '$items.qty' } }
+                    }
+                }
+            ]),
+            // Previous period for growth calculation
+            Order_1.default.aggregate([
+                {
+                    $match: {
+                        createdAt: { $gte: getPreviousPeriodRange(period).start, $lte: getPreviousPeriodRange(period).end },
+                        paymentStatus: 'completed'
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalRevenue: { $sum: '$total' },
+                        totalProfit: { $sum: '$totalProfit' }
+                    }
+                }
+            ])
+        ]);
+        const currentProfit = profitSummary[0] || {
+            totalRevenue: 0,
+            totalCost: 0,
+            totalProfit: 0,
+            avgOrderProfit: 0,
+            totalOrders: 0,
+            totalItems: 0
+        };
+        const previousProfit = previousPeriodProfit[0] || { totalRevenue: 0, totalProfit: 0 };
+        const revenueGrowth = previousProfit.totalRevenue > 0
+            ? ((currentProfit.totalRevenue - previousProfit.totalRevenue) / previousProfit.totalRevenue) * 100
+            : 0;
+        const profitGrowth = previousProfit.totalProfit > 0
+            ? ((currentProfit.totalProfit - previousProfit.totalProfit) / previousProfit.totalProfit) * 100
+            : 0;
+        return res.json({
+            success: true,
+            data: {
+                period: {
+                    from: periodStart,
+                    to: periodEnd,
+                    label: period
+                },
+                summary: {
+                    totalRevenue: currentProfit.totalRevenue,
+                    totalCost: currentProfit.totalCost,
+                    totalProfit: currentProfit.totalProfit,
+                    profitMargin: currentProfit.totalRevenue > 0
+                        ? (currentProfit.totalProfit / currentProfit.totalRevenue) * 100
+                        : 0,
+                    avgOrderProfit: currentProfit.avgOrderProfit || 0,
+                    maxOrderProfit: currentProfit.maxOrderProfit || 0,
+                    minOrderProfit: currentProfit.minOrderProfit || 0,
+                    totalOrders: currentProfit.totalOrders,
+                    totalItems: currentProfit.totalItems,
+                    revenueGrowth: revenueGrowth.toFixed(1),
+                    profitGrowth: profitGrowth.toFixed(1)
+                },
+                products: productProfitAgg.map(p => ({
+                    id: p._id,
+                    name: p.productName,
+                    revenue: p.totalRevenue,
+                    cost: p.totalCost,
+                    profit: p.totalProfit,
+                    margin: p.margin || 0,
+                    units: p.totalUnits,
+                    orders: p.totalOrders
+                })),
+                categories: categoryProfitAgg.map(c => ({
+                    category: c._id || 'Uncategorized',
+                    revenue: c.totalRevenue,
+                    cost: c.totalCost,
+                    profit: c.totalProfit,
+                    margin: c.margin || 0,
+                    units: c.totalUnits
+                })),
+                trends: profitTrends.map(t => ({
+                    date: t._id,
+                    revenue: t.revenue,
+                    cost: t.cost,
+                    profit: t.profit,
+                    orders: t.orders,
+                    margin: t.revenue > 0 ? (t.profit / t.revenue) * 100 : 0
+                })),
+                topProducts: topProfitProducts.map(p => ({
+                    id: p._id,
+                    name: p.name,
+                    sku: p.sku,
+                    revenue: p.totalRevenue,
+                    profit: p.totalProfit,
+                    margin: p.margin || 0,
+                    units: p.totalUnits,
+                    orders: p.orders
+                }))
+            }
+        });
+    }
+    catch (error) {
+        console.error('Profit analytics error:', error);
+        return res.status(500).json({ error: 'Failed to fetch profit analytics' });
+    }
+});
+/**
+ * GET /api/analytics/inventory/valuation
+ * Get detailed inventory valuation with profit potential
+ */
+router.get('/inventory/valuation', auth_1.default, async (req, res) => {
+    try {
+        if (!isAdmin(req.user)) {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const products = await Product_1.default.find({}).lean();
+        const valuation = products.reduce((acc, p) => {
+            const costValue = (p.buyingPrice || 0) * (p.stock || 0);
+            const retailValue = (p.price || 0) * (p.stock || 0);
+            const potentialProfit = retailValue - costValue;
+            acc.totalCost += costValue;
+            acc.totalRetail += retailValue;
+            acc.totalProfit += potentialProfit;
+            acc.totalUnits += p.stock || 0;
+            if (p.stock > 0) {
+                acc.productsWithStock++;
+                acc.itemBreakdown.push({
+                    name: p.name,
+                    sku: p.sku,
+                    category: p.category,
+                    stock: p.stock,
+                    costValue,
+                    retailValue,
+                    potentialProfit,
+                    margin: retailValue > 0 ? (potentialProfit / retailValue) * 100 : 0
+                });
+            }
+            return acc;
+        }, {
+            totalCost: 0,
+            totalRetail: 0,
+            totalProfit: 0,
+            totalUnits: 0,
+            productsWithStock: 0,
+            itemBreakdown: []
+        });
+        // Sort by value
+        valuation.itemBreakdown.sort((a, b) => b.retailValue - a.retailValue);
+        return res.json({
+            success: true,
+            data: {
+                summary: {
+                    totalCostValue: valuation.totalCost,
+                    totalRetailValue: valuation.totalRetail,
+                    totalPotentialProfit: valuation.totalProfit,
+                    averageMargin: valuation.totalRetail > 0
+                        ? (valuation.totalProfit / valuation.totalRetail) * 100
+                        : 0,
+                    totalUnits: valuation.totalUnits,
+                    productsWithStock: valuation.productsWithStock,
+                    totalProducts: products.length
+                },
+                topItems: valuation.itemBreakdown.slice(0, 10),
+                categoryBreakdown: await getCategoryValuation(),
+                generatedAt: new Date()
+            }
+        });
+    }
+    catch (error) {
+        console.error('Inventory valuation error:', error);
+        return res.status(500).json({ error: 'Failed to fetch inventory valuation' });
+    }
+});
+// Helper function for category valuation
+async function getCategoryValuation() {
+    return await Product_1.default.aggregate([
+        {
+            $group: {
+                _id: '$category',
+                totalCost: { $sum: { $multiply: ['$buyingPrice', '$stock'] } },
+                totalRetail: { $sum: { $multiply: ['$price', '$stock'] } },
+                totalUnits: { $sum: '$stock' },
+                productCount: { $sum: 1 }
+            }
+        },
+        {
+            $addFields: {
+                totalProfit: { $subtract: ['$totalRetail', '$totalCost'] },
+                margin: {
+                    $cond: [
+                        { $gt: ['$totalRetail', 0] },
+                        { $multiply: [{ $divide: [{ $subtract: ['$totalRetail', '$totalCost'] }, '$totalRetail'] }, 100] },
+                        0
+                    ]
+                }
+            }
+        },
+        { $sort: { totalRetail: -1 } }
+    ]);
+}
+/**
+ * GET /api/analytics/sales/performance
+ * Get sales team performance metrics
+ */
+router.get('/sales/performance', auth_1.default, async (req, res) => {
+    try {
+        if (!isAdmin(req.user)) {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const { period = 'month' } = req.query;
+        const { start: periodStart } = getDateRange(period);
+        const salesReps = await User_1.default.find({ role: 'sales', isActive: true });
+        const performance = await Promise.all(salesReps.map(async (rep) => {
+            const [quotations, orders, customers] = await Promise.all([
+                Quotation_1.default.aggregate([
+                    { $match: { createdBy: rep._id, createdAt: { $gte: periodStart } } },
+                    {
+                        $group: {
+                            _id: null,
+                            total: { $sum: 1 },
+                            converted: { $sum: { $cond: [{ $eq: ['$status', 'converted'] }, 1, 0] } },
+                            accepted: { $sum: { $cond: [{ $eq: ['$status', 'accepted'] }, 1, 0] } },
+                            totalValue: { $sum: '$total' }
+                        }
+                    }
+                ]),
+                Order_1.default.aggregate([
+                    {
+                        $lookup: {
+                            from: 'salescustomers',
+                            localField: 'salesCustomerId',
+                            foreignField: '_id',
+                            as: 'sc'
+                        }
+                    },
+                    { $unwind: '$sc' },
+                    { $match: { 'sc.createdBy': rep._id, createdAt: { $gte: periodStart } } },
+                    {
+                        $group: {
+                            _id: null,
+                            totalOrders: { $sum: 1 },
+                            totalRevenue: { $sum: '$total' },
+                            totalProfit: { $sum: '$totalProfit' },
+                            paidOrders: { $sum: { $cond: [{ $eq: ['$paymentStatus', 'completed'] }, 1, 0] } }
+                        }
+                    }
+                ]),
+                SalesCustomer_1.default.aggregate([
+                    { $match: { createdBy: rep._id } },
+                    {
+                        $group: {
+                            _id: null,
+                            total: { $sum: 1 },
+                            active: { $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] } },
+                            totalSpent: { $sum: '$totalSpent' }
+                        }
+                    }
+                ])
+            ]);
+            const quoteData = quotations[0] || { total: 0, converted: 0, accepted: 0, totalValue: 0 };
+            const orderData = orders[0] || { totalOrders: 0, totalRevenue: 0, totalProfit: 0, paidOrders: 0 };
+            const customerData = customers[0] || { total: 0, active: 0, totalSpent: 0 };
+            return {
+                id: rep._id,
+                name: rep.name,
+                email: rep.email,
+                avatar: rep.avatar,
+                metrics: {
+                    quotations: {
+                        total: quoteData.total,
+                        converted: quoteData.converted,
+                        accepted: quoteData.accepted,
+                        conversionRate: quoteData.total > 0 ? (quoteData.converted / quoteData.total) * 100 : 0,
+                        acceptanceRate: quoteData.total > 0 ? (quoteData.accepted / quoteData.total) * 100 : 0,
+                        totalValue: quoteData.totalValue
+                    },
+                    orders: {
+                        total: orderData.totalOrders,
+                        revenue: orderData.totalRevenue,
+                        profit: orderData.totalProfit,
+                        margin: orderData.totalRevenue > 0 ? (orderData.totalProfit / orderData.totalRevenue) * 100 : 0,
+                        paid: orderData.paidOrders,
+                        averageValue: orderData.totalOrders > 0 ? orderData.totalRevenue / orderData.totalOrders : 0
+                    },
+                    customers: {
+                        total: customerData.total,
+                        active: customerData.active,
+                        totalValue: customerData.totalSpent,
+                        avgValue: customerData.total > 0 ? customerData.totalSpent / customerData.total : 0
+                    }
+                }
+            };
+        }));
+        // Sort by revenue
+        const sorted = performance.sort((a, b) => b.metrics.orders.revenue - a.metrics.orders.revenue);
+        return res.json({
+            success: true,
+            data: {
+                period,
+                salesRepPerformance: sorted.map((rep, index) => ({
+                    ...rep,
+                    rank: index + 1
+                })),
+                teamSummary: {
+                    totalRevenue: sorted.reduce((sum, rep) => sum + rep.metrics.orders.revenue, 0),
+                    totalProfit: sorted.reduce((sum, rep) => sum + rep.metrics.orders.profit, 0),
+                    totalOrders: sorted.reduce((sum, rep) => sum + rep.metrics.orders.total, 0),
+                    totalQuotes: sorted.reduce((sum, rep) => sum + rep.metrics.quotations.total, 0),
+                    totalCustomers: sorted.reduce((sum, rep) => sum + rep.metrics.customers.total, 0),
+                    avgConversionRate: sorted.reduce((sum, rep) => sum + rep.metrics.quotations.conversionRate, 0) / (sorted.length || 1),
+                    topPerformer: sorted.length > 0 ? sorted[0] : null
+                }
+            }
+        });
+    }
+    catch (error) {
+        console.error('Sales performance error:', error);
+        return res.status(500).json({ error: 'Failed to fetch sales performance' });
     }
 });
 exports.default = router;

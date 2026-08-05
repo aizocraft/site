@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// src/routes/sales.ts - Updated with profit tracking
+// src/routes/sales.ts - Complete with all notifications
 const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
 const auth_1 = __importDefault(require("../middleware/auth"));
@@ -49,6 +49,8 @@ const auditMiddleware_1 = require("../middleware/auditMiddleware");
 const Transaction_1 = __importDefault(require("../models/Transaction"));
 const CompanySettings_1 = require("../models/CompanySettings");
 const email_service_1 = require("../services/email.service");
+const notification_service_1 = require("../services/notification.service");
+const User_1 = __importDefault(require("../models/User"));
 const router = (0, express_1.Router)();
 const isAdminOrSales = (user) => user && (user.role === 'admin' || user.role === 'sales');
 const requireSalesRole = (req, res, next) => {
@@ -57,8 +59,31 @@ const requireSalesRole = (req, res, next) => {
     }
     next();
 };
+// Helper to send notifications to all admins
+const notifyAdmins = async (title, message, actionUrl, metadata = {}) => {
+    try {
+        const adminUsers = await User_1.default.find({ role: 'admin', isActive: true });
+        if (adminUsers.length > 0) {
+            await Promise.all(adminUsers.map(admin => (0, notification_service_1.createNotification)({
+                userId: admin._id.toString(),
+                type: 'system',
+                title,
+                message,
+                actionUrl,
+                metadata: {
+                    ...metadata,
+                    timestamp: new Date().toISOString()
+                }
+            })));
+            console.log(`✅ Sales notification sent to ${adminUsers.length} admin(s): ${title}`);
+        }
+    }
+    catch (error) {
+        console.error('Failed to send admin notification:', error);
+    }
+};
 // Helper function to create order from invoice with profit tracking
-async function createOrderFromInvoice(invoice, user) {
+async function createOrderFromInvoice(invoice, user, paymentMethod) {
     var _a, _b, _c;
     try {
         if (invoice.orderId) {
@@ -118,6 +143,26 @@ async function createOrderFromInvoice(invoice, user) {
             email: invoice.customerEmail || ''
         };
         const transportCost = invoice.transportCost || ((_a = invoice.transportInfo) === null || _a === void 0 ? void 0 : _a.cost) || 0;
+        // ✅ Determine the correct payment method
+        let orderPaymentMethod = paymentMethod || 'cod';
+        // If no payment method was passed, try to get it from the invoice payments
+        if (!paymentMethod && invoice.payments && invoice.payments.length > 0) {
+            const lastPayment = invoice.payments[invoice.payments.length - 1];
+            if (lastPayment.method) {
+                const methodMap = {
+                    'mpesa': 'mpesa',
+                    'm-pesa': 'mpesa',
+                    'M-PESA': 'mpesa',
+                    'cash': 'cash',
+                    'bank_transfer': 'bank_transfer',
+                    'bank transfer': 'bank_transfer',
+                    'card': 'card',
+                    'credit card': 'card',
+                    'cheque': 'cheque'
+                };
+                orderPaymentMethod = methodMap[lastPayment.method.toLowerCase()] || 'cod';
+            }
+        }
         const order = await Order_1.default.create({
             invoiceId: invoice._id,
             invoiceNumber: invoice.invoiceNumber,
@@ -133,7 +178,7 @@ async function createOrderFromInvoice(invoice, user) {
             tax: invoice.tax,
             discount: invoice.discount,
             total: invoice.total,
-            paymentMethod: 'cod',
+            paymentMethod: orderPaymentMethod, // ✅ Now uses the correct payment method
             paymentStatus: invoice.paymentStatus,
             amountPaid: invoice.amountPaid,
             balanceDue: invoice.balanceDue,
@@ -164,7 +209,7 @@ async function createOrderFromInvoice(invoice, user) {
     }
 }
 // =====================
-// Customers
+// Customers with Notifications
 // =====================
 router.post('/customers', auth_1.default, requireSalesRole, async (req, res) => {
     try {
@@ -199,6 +244,16 @@ router.post('/customers', auth_1.default, requireSalesRole, async (req, res) => 
             resourceId: customer._id.toString(),
             details: `Sales customer created: ${customer.name}`,
             skipIfNoUser: false,
+        });
+        // ✅ NOTIFICATION: New customer created
+        await notifyAdmins('👤 New Customer Added', `${req.user.email || req.user.name} added customer: ${customer.name}`, `/dashboard/sales/customers/${customer._id}`, {
+            action: 'create_customer',
+            createdBy: req.user.email || req.user.name,
+            customerId: customer._id,
+            customerName: customer.name,
+            customerEmail: customer.email,
+            customerPhone: customer.phone,
+            customerLocation: customer.location
         });
         res.status(201).json({ customer });
     }
@@ -254,6 +309,19 @@ router.patch('/customers/:id', auth_1.default, requireSalesRole, async (req, res
         if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
             return res.status(403).json({ error: 'Not allowed' });
         }
+        const changes = [];
+        if (name !== undefined && name !== customer.name)
+            changes.push(`name: "${customer.name}" → "${name}"`);
+        if (email !== undefined && email !== customer.email)
+            changes.push(`email: "${customer.email}" → "${email}"`);
+        if (phone !== undefined && phone !== customer.phone)
+            changes.push(`phone: "${customer.phone}" → "${phone}"`);
+        if (location !== undefined && location !== customer.location)
+            changes.push(`location updated`);
+        if (notes !== undefined && notes !== customer.notes)
+            changes.push(`notes updated`);
+        if (status !== undefined && status !== customer.status)
+            changes.push(`status: ${customer.status} → ${status}`);
         if (name !== undefined)
             customer.name = String(name).trim();
         if (email !== undefined)
@@ -267,6 +335,16 @@ router.patch('/customers/:id', auth_1.default, requireSalesRole, async (req, res
         if (status !== undefined)
             customer.status = status;
         await customer.save();
+        // ✅ NOTIFICATION: Customer updated
+        if (changes.length > 0) {
+            await notifyAdmins('✏️ Customer Updated', `${req.user.email || req.user.name} updated customer "${customer.name}": ${changes.join(', ')}`, `/dashboard/sales/customers/${customer._id}`, {
+                action: 'update_customer',
+                updatedBy: req.user.email || req.user.name,
+                customerId: customer._id,
+                customerName: customer.name,
+                changes
+            });
+        }
         res.json({ customer });
     }
     catch (e) {
@@ -275,7 +353,7 @@ router.patch('/customers/:id', auth_1.default, requireSalesRole, async (req, res
     }
 });
 // =====================
-// Quotations with Profit Tracking
+// Quotations with Notifications
 // =====================
 router.post('/quotations', auth_1.default, requireSalesRole, async (req, res) => {
     var _a, _b;
@@ -289,11 +367,12 @@ router.post('/quotations', auth_1.default, requireSalesRole, async (req, res) =>
         const customer = await SalesCustomer_1.default.findById(customerId);
         if (!customer)
             return res.status(404).json({ error: 'Customer not found' });
-        if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
-            return res.status(403).json({ error: 'Not allowed for this customer' });
-        }
+        // if (req.user!.role === 'sales' && customer.createdBy.toString() !== req.user!.userId) {
+        //  return res.status(403).json({ error: 'Not allowed for this customer' });
+        //  }
         const settings = await CompanySettings_1.CompanySettings.findOne();
         const taxRate = (_a = settings === null || settings === void 0 ? void 0 : settings.taxRate) !== null && _a !== void 0 ? _a : 0.16;
+        const taxExemptCategories = ((settings === null || settings === void 0 ? void 0 : settings.taxExemptCategories) || []).map((c) => String(c).trim());
         let subtotal = 0;
         let totalCost = 0;
         let totalProfit = 0;
@@ -314,14 +393,16 @@ router.post('/quotations', auth_1.default, requireSalesRole, async (req, res) =>
             totalCost += itemCost;
             totalProfit += itemProfit;
             let itemTax = 0;
-            const isTaxable = it.taxable !== false;
+            const productCategory = product.category;
+            const isCategoryExempt = productCategory && taxExemptCategories.includes(String(productCategory).trim());
+            const isTaxable = it.taxable !== false && !isCategoryExempt;
             if (taxPerItem && isTaxable) {
                 itemTax = itemTotal * taxRate;
                 totalItemTax += itemTax;
             }
             processedItems.push({
                 productId: product._id,
-                name: product.name,
+                name: it.name && it.name.trim() ? it.name : product.name,
                 slug: product.slug,
                 qty,
                 price,
@@ -393,6 +474,17 @@ router.post('/quotations', auth_1.default, requireSalesRole, async (req, res) =>
             details: `Quotation created: ${quote.quoteNumber} for ${quote.customerName}`,
             skipIfNoUser: false
         });
+        // ✅ NOTIFICATION: New quotation created
+        await notifyAdmins('📄 New Quotation Created', `${req.user.email || req.user.name} created quotation ${quoteNumber} for ${customer.name} (KES ${total.toLocaleString()})`, `/dashboard/sales/quotations/${quote._id}`, {
+            action: 'create_quotation',
+            createdBy: req.user.email || req.user.name,
+            quotationId: quote._id,
+            quoteNumber,
+            customerId: customer._id,
+            customerName: customer.name,
+            total,
+            itemCount: processedItems.length
+        });
         const populatedQuote = await Quotation_1.default.findById(quote._id).lean();
         res.status(201).json({ success: true, quotation: populatedQuote });
     }
@@ -404,13 +496,20 @@ router.post('/quotations', auth_1.default, requireSalesRole, async (req, res) =>
 // GET /api/sales/quotations - List quotations
 router.get('/quotations', auth_1.default, requireSalesRole, async (req, res) => {
     try {
-        const { search, status, page = '1', limit = '20', sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+        const { search, status, page = '1', limit = '20', sortBy = 'createdAt', sortOrder = 'desc', startDate, endDate } = req.query;
         const p = Number(page);
         const l = Number(limit);
         const skip = (p - 1) * l;
         const query = {};
         if (status)
             query.status = status;
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate)
+                query.createdAt.$gte = new Date(startDate);
+            if (endDate)
+                query.createdAt.$lte = new Date(endDate);
+        }
         if (req.user.role === 'sales') {
             query.createdBy = req.user.userId;
         }
@@ -484,17 +583,26 @@ router.patch('/quotations/:id', auth_1.default, requireSalesRole, async (req, re
             return res.status(403).json({ error: 'Not allowed' });
         }
         const { status, notes, terms, items, discount, discountType, validUntil, taxPerItem, transport, estimatedDelivery } = req.body;
+        const changes = [];
         if (status && ['draft', 'sent', 'accepted', 'rejected', 'expired'].includes(status)) {
+            if (status !== quotation.status) {
+                changes.push(`status: ${quotation.status} → ${status}`);
+            }
             if (status === 'sent' && quotation.status !== 'sent')
                 quotation.sentAt = new Date();
-            if (status === 'accepted' && quotation.status !== 'accepted')
+            if (status === 'accepted' && quotation.status !== 'accepted') {
                 quotation.acceptedAt = new Date();
+            }
             if (status === 'rejected' && quotation.status !== 'rejected')
                 quotation.rejectedAt = new Date();
             quotation.status = status;
         }
+        if (notes !== undefined && notes !== quotation.notes)
+            changes.push('notes updated');
         if (notes !== undefined)
             quotation.notes = notes;
+        if (terms !== undefined && terms !== quotation.terms)
+            changes.push('terms updated');
         if (terms !== undefined)
             quotation.terms = terms;
         if (validUntil !== undefined)
@@ -515,6 +623,7 @@ router.patch('/quotations/:id', auth_1.default, requireSalesRole, async (req, re
                 };
                 quotation.transportCost = transport.cost || 0;
                 quotation.transportDescription = transport.description || '';
+                changes.push('transport info updated');
             }
             else {
                 quotation.transportInfo = undefined;
@@ -523,8 +632,10 @@ router.patch('/quotations/:id', auth_1.default, requireSalesRole, async (req, re
             }
         }
         if (items && Array.isArray(items)) {
+            changes.push('items updated');
             const settings = await CompanySettings_1.CompanySettings.findOne();
             const taxRate = (_a = settings === null || settings === void 0 ? void 0 : settings.taxRate) !== null && _a !== void 0 ? _a : 0.16;
+            const taxExemptCategories = ((settings === null || settings === void 0 ? void 0 : settings.taxExemptCategories) || []).map((c) => String(c).trim());
             const updatedItems = [];
             let subtotal = 0;
             let totalCost = 0;
@@ -545,14 +656,16 @@ router.patch('/quotations/:id', auth_1.default, requireSalesRole, async (req, re
                 totalCost += itemCost;
                 totalProfit += itemProfit;
                 let itemTax = 0;
-                const isTaxable = it.taxable !== false;
+                const productCategory = product.category;
+                const isCategoryExempt = productCategory && taxExemptCategories.includes(String(productCategory).trim());
+                const isTaxable = it.taxable !== false && !isCategoryExempt;
                 if (quotation.taxPerItem && isTaxable) {
                     itemTax = itemTotal * taxRate;
                     totalItemTax += itemTax;
                 }
                 updatedItems.push({
                     productId: product._id,
-                    name: product.name,
+                    name: it.name && it.name.trim() ? it.name : product.name,
                     slug: product.slug,
                     qty,
                     price,
@@ -594,6 +707,16 @@ router.patch('/quotations/:id', auth_1.default, requireSalesRole, async (req, re
             details: `Quotation updated: ${quotation.quoteNumber}`,
             skipIfNoUser: false
         });
+        // ✅ NOTIFICATION: Quotation updated (only if significant changes)
+        if (changes.length > 0) {
+            await notifyAdmins('✏️ Quotation Updated', `${req.user.email || req.user.name} updated quotation ${quotation.quoteNumber}: ${changes.join(', ')}`, `/dashboard/sales/quotations/${quotation._id}`, {
+                action: 'update_quotation',
+                updatedBy: req.user.email || req.user.name,
+                quotationId: quotation._id,
+                quoteNumber: quotation.quoteNumber,
+                changes
+            });
+        }
         const updatedQuote = await Quotation_1.default.findById(quotation._id).lean();
         res.json({ success: true, quotation: updatedQuote });
     }
@@ -656,6 +779,15 @@ router.post('/quotations/:id/send', auth_1.default, requireSalesRole, async (req
             details: `Quotation sent to ${quotation.customerEmail}`,
             skipIfNoUser: false
         });
+        // ✅ NOTIFICATION: Quotation sent
+        await notifyAdmins('✉️ Quotation Sent', `Quotation ${quotation.quoteNumber} sent to ${quotation.customerEmail} for ${quotation.customerName}`, `/dashboard/sales/quotations/${quotation._id}`, {
+            action: 'send_quotation',
+            sentBy: req.user.email || req.user.name,
+            quotationId: quotation._id,
+            quoteNumber: quotation.quoteNumber,
+            customerEmail: quotation.customerEmail,
+            customerName: quotation.customerName
+        });
         res.json({
             success: true,
             message: 'Quotation sent successfully via email',
@@ -687,6 +819,14 @@ router.post('/quotations/:id/accept', auth_1.default, requireSalesRole, async (r
         if (new Date() > new Date(quotation.validUntil)) {
             quotation.status = 'expired';
             await quotation.save();
+            // ✅ NOTIFICATION: Quotation expired
+            await notifyAdmins('⏰ Quotation Expired', `Quotation ${quotation.quoteNumber} for ${quotation.customerName} has expired.`, `/dashboard/sales/quotations/${quotation._id}`, {
+                action: 'quotation_expired',
+                quotationId: quotation._id,
+                quoteNumber: quotation.quoteNumber,
+                customerName: quotation.customerName,
+                validUntil: quotation.validUntil
+            });
             return res.status(400).json({ error: 'Quotation has expired' });
         }
         quotation.status = 'accepted';
@@ -749,6 +889,17 @@ router.post('/quotations/:id/accept', auth_1.default, requireSalesRole, async (r
             details: `Quotation ${quotation.quoteNumber} accepted and invoice ${invoiceNumber} created`,
             skipIfNoUser: false
         });
+        // ✅ NOTIFICATION: Quotation accepted and invoice created
+        await notifyAdmins('✅ Quotation Accepted & Invoice Created', `${req.user.email || req.user.name} accepted quotation ${quotation.quoteNumber} from ${quotation.customerName}. Invoice ${invoiceNumber} created for KES ${quotation.total.toLocaleString()}`, `/dashboard/sales/invoices/${invoice._id}`, {
+            action: 'accept_quotation',
+            acceptedBy: req.user.email || req.user.name,
+            quotationId: quotation._id,
+            quoteNumber: quotation.quoteNumber,
+            invoiceId: invoice._id,
+            invoiceNumber,
+            customerName: quotation.customerName,
+            total: quotation.total
+        });
         res.json({
             success: true,
             message: 'Quotation accepted and invoice created',
@@ -789,13 +940,23 @@ router.delete('/quotations/:id', auth_1.default, requireSalesRole, async (req, r
         if (req.user.role === 'sales' && quotation.createdBy.toString() !== req.user.userId) {
             return res.status(403).json({ error: 'Not allowed' });
         }
+        const quoteNumber = quotation.quoteNumber;
+        const customerName = quotation.customerName;
         await Quotation_1.default.deleteOne({ _id: quotation._id });
         await (0, auditMiddleware_1.createAuditLog)(req, {
             action: 'delete',
             resource: 'quotation',
             resourceId: quotation._id.toString(),
-            details: `Quotation deleted: ${quotation.quoteNumber}`,
+            details: `Quotation deleted: ${quoteNumber}`,
             skipIfNoUser: false
+        });
+        // ✅ NOTIFICATION: Quotation deleted
+        await notifyAdmins('🗑️ Quotation Deleted', `${req.user.email || req.user.name} deleted quotation ${quoteNumber} for ${customerName}`, '/dashboard/sales/quotations', {
+            action: 'delete_quotation',
+            deletedBy: req.user.email || req.user.name,
+            quotationId: id,
+            quoteNumber,
+            customerName
         });
         res.json({ success: true, message: 'Quotation deleted successfully' });
     }
@@ -804,12 +965,131 @@ router.delete('/quotations/:id', auth_1.default, requireSalesRole, async (req, r
         res.status(500).json({ error: 'Failed to delete quotation' });
     }
 });
+// POST /api/sales/quotations/:id/create-invoice - Create new invoice from edited accepted quotation
+router.post('/quotations/:id/create-invoice', auth_1.default, requireSalesRole, async (req, res) => {
+    var _a;
+    try {
+        const { id } = req.params;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid quotation ID' });
+        }
+        const quotation = await Quotation_1.default.findById(id);
+        if (!quotation) {
+            return res.status(404).json({ error: 'Quotation not found' });
+        }
+        if (req.user.role === 'sales' && quotation.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Not allowed' });
+        }
+        if (quotation.status !== 'accepted') {
+            return res.status(400).json({ error: 'Can only create invoice from accepted quotations' });
+        }
+        if (!quotation.items || quotation.items.length === 0) {
+            return res.status(400).json({ error: 'Quotation has no items' });
+        }
+        const invoiceNumber = await (0, Invoice_1.generateInvoiceNumber)();
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        const invoice = await Invoice_1.default.create({
+            quotationId: quotation._id,
+            quotationNumber: quotation.quoteNumber,
+            customerId: quotation.customerId,
+            customerName: quotation.customerName,
+            customerEmail: quotation.customerEmail,
+            customerPhone: quotation.customerPhone,
+            customerLocation: quotation.customerLocation,
+            createdBy: req.user.userId,
+            createdByName: req.user.name || req.user.email,
+            items: quotation.items.map((item) => ({
+                productId: item.productId,
+                name: item.name,
+                slug: item.slug,
+                qty: item.qty,
+                price: item.price,
+                buyingPrice: item.buyingPrice || 0,
+                profitPerItem: item.profitPerItem || (item.price - (item.buyingPrice || 0)),
+                totalProfit: item.totalProfit || ((item.price - (item.buyingPrice || 0)) * item.qty),
+                total: item.total || (item.price * item.qty),
+                tax: item.tax || 0,
+                taxable: item.taxable !== false,
+                description: item.description || ''
+            })),
+            subtotal: quotation.subtotal,
+            totalCost: quotation.totalCost || 0,
+            totalProfit: quotation.totalProfit || 0,
+            taxRate: quotation.taxRate,
+            tax: quotation.tax,
+            taxPerItem: quotation.taxPerItem || false,
+            discount: quotation.discount,
+            discountType: quotation.discountType || 'fixed',
+            transportInfo: quotation.transportInfo,
+            transportCost: quotation.transportCost || 0,
+            transportDescription: quotation.transportDescription || '',
+            total: quotation.total,
+            invoiceNumber,
+            status: 'sent',
+            paymentStatus: 'unpaid',
+            amountPaid: 0,
+            balanceDue: quotation.total,
+            issueDate: new Date(),
+            dueDate,
+            notes: `Invoice created from edited accepted quotation ${quotation.quoteNumber}\n\nOriginal quotation was accepted on ${(_a = quotation.acceptedAt) === null || _a === void 0 ? void 0 : _a.toLocaleDateString()}\n\n${quotation.notes || ''}`,
+            terms: quotation.terms,
+            sentAt: new Date()
+        });
+        quotation.invoiceId = invoice._id;
+        quotation.invoiceNumber = invoice.invoiceNumber;
+        quotation.lastInvoiceCreatedAt = new Date();
+        await quotation.save();
+        await (0, auditMiddleware_1.createAuditLog)(req, {
+            action: 'create',
+            resource: 'invoice',
+            resourceId: invoice._id.toString(),
+            details: `New invoice ${invoiceNumber} created from edited accepted quotation ${quotation.quoteNumber}`,
+            skipIfNoUser: false
+        });
+        // ✅ NOTIFICATION: New invoice created from edited quotation
+        await notifyAdmins('🧾 New Invoice Created from Quotation', `${req.user.email || req.user.name} created invoice ${invoiceNumber} for ${quotation.customerName} from edited accepted quotation ${quotation.quoteNumber} (KES ${quotation.total.toLocaleString()})`, `/dashboard/sales/invoices/${invoice._id}`, {
+            action: 'create_invoice_from_quotation',
+            createdBy: req.user.email || req.user.name,
+            quotationId: quotation._id,
+            quoteNumber: quotation.quoteNumber,
+            invoiceId: invoice._id,
+            invoiceNumber,
+            customerName: quotation.customerName,
+            total: quotation.total
+        });
+        res.json({
+            success: true,
+            message: 'New invoice created successfully from quotation',
+            invoice: {
+                _id: invoice._id,
+                invoiceNumber: invoice.invoiceNumber,
+                total: invoice.total,
+                balanceDue: invoice.balanceDue,
+                dueDate: invoice.dueDate
+            },
+            quotation: {
+                _id: quotation._id,
+                quoteNumber: quotation.quoteNumber,
+                invoiceId: quotation.invoiceId,
+                invoiceNumber: quotation.invoiceNumber
+            }
+        });
+    }
+    catch (error) {
+        console.error('Create invoice from quotation error:', error);
+        res.status(500).json({
+            error: error.message || 'Failed to create invoice from quotation',
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});
 // =====================
-// Invoices
+// Invoices with Notifications
 // =====================
 router.get('/invoices', auth_1.default, requireSalesRole, async (req, res) => {
     try {
-        const { search, status, paymentStatus, page = '1', limit = '20', sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+        const { search, status, paymentStatus, page = '1', limit = '20', sortBy = 'createdAt', sortOrder = 'desc', startDate, endDate } = req.query;
         const p = Number(page);
         const l = Number(limit);
         const skip = (p - 1) * l;
@@ -818,6 +1098,13 @@ router.get('/invoices', auth_1.default, requireSalesRole, async (req, res) => {
             query.status = status;
         if (paymentStatus)
             query.paymentStatus = paymentStatus;
+        if (startDate || endDate) {
+            query.issueDate = {};
+            if (startDate)
+                query.issueDate.$gte = new Date(startDate);
+            if (endDate)
+                query.issueDate.$lte = new Date(endDate);
+        }
         if (req.user.role === 'sales') {
             query.createdBy = req.user.userId;
         }
@@ -927,6 +1214,16 @@ router.post('/invoices/:id/send', auth_1.default, requireSalesRole, async (req, 
             details: `Invoice sent to ${invoice.customerEmail}`,
             skipIfNoUser: false
         });
+        // ✅ NOTIFICATION: Invoice sent
+        await notifyAdmins('✉️ Invoice Sent', `Invoice ${invoice.invoiceNumber} sent to ${invoice.customerEmail} for ${invoice.customerName} (KES ${invoice.total.toLocaleString()})`, `/dashboard/sales/invoices/${invoice._id}`, {
+            action: 'send_invoice',
+            sentBy: req.user.email || req.user.name,
+            invoiceId: invoice._id,
+            invoiceNumber: invoice.invoiceNumber,
+            customerEmail: invoice.customerEmail,
+            customerName: invoice.customerName,
+            total: invoice.total
+        });
         res.json({
             success: true,
             message: 'Invoice sent successfully via email'
@@ -937,10 +1234,12 @@ router.post('/invoices/:id/send', auth_1.default, requireSalesRole, async (req, 
         res.status(500).json({ error: error.message || 'Failed to send invoice' });
     }
 });
+// Record payment
 router.post('/invoices/:id/payments', auth_1.default, requireSalesRole, async (req, res) => {
     try {
         const { id } = req.params;
         const { amount, method, reference, notes } = req.body;
+        console.log(`📝 Recording payment for invoice ${id}:`, { amount, method, reference });
         if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ error: 'Invalid invoice ID' });
         }
@@ -960,43 +1259,19 @@ router.post('/invoices/:id/payments', auth_1.default, requireSalesRole, async (r
                 error: `Payment amount exceeds balance due. Balance: KES ${invoice.balanceDue.toLocaleString()}`
             });
         }
-        const transactionId = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 8)}`;
-        const transaction = await Transaction_1.default.create({
-            orderId: invoice.orderId || null,
-            invoiceId: invoice._id,
-            invoiceNumber: invoice.invoiceNumber,
-            quotationNumber: invoice.quotationNumber,
-            userId: invoice.customerId,
-            customerName: invoice.customerName,
-            guestEmail: invoice.customerEmail,
-            guestPhone: invoice.customerPhone,
-            amount: paymentAmount,
-            currency: 'KES',
-            paymentMethod: method === 'bank_transfer' ? 'bank_transfer' :
-                method === 'mpesa' ? 'mpesa' :
-                    method === 'card' ? 'card' : 'cash',
-            status: 'completed',
-            transactionId: transactionId,
-            reference: reference || null,
-            notes: notes || null,
-            recordedBy: req.user.userId,
-            recordedByName: req.user.name || req.user.email,
-            source: 'invoice',
-            isPartialPayment: paymentAmount < invoice.balanceDue,
-            paidAt: new Date()
-        });
+        const transactionId = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+        // Add payment to invoice
         invoice.payments.push({
             amount: paymentAmount,
             method,
             reference,
             date: new Date(),
             recordedBy: req.user.userId,
-            transactionId: transaction.transactionId
+            transactionId: transactionId
         });
-        invoice.amountPaid += paymentAmount;
-        invoice.balanceDue = invoice.total - invoice.amountPaid;
-        let wasFullyPaid = false;
-        let createdOrder = null;
+        invoice.amountPaid = (invoice.amountPaid || 0) + paymentAmount;
+        invoice.balanceDue = Math.max(0, invoice.total - invoice.amountPaid);
+        const oldPaymentStatus = invoice.paymentStatus;
         if (invoice.amountPaid === 0) {
             invoice.paymentStatus = 'unpaid';
         }
@@ -1006,27 +1281,115 @@ router.post('/invoices/:id/payments', auth_1.default, requireSalesRole, async (r
                 invoice.status = 'partially_paid';
             }
         }
-        else if (invoice.amountPaid === invoice.total) {
+        else if (invoice.amountPaid >= invoice.total) {
             invoice.paymentStatus = 'paid';
             invoice.status = 'paid';
-            wasFullyPaid = true;
-        }
-        else {
-            invoice.paymentStatus = 'overpaid';
         }
         await invoice.save();
-        if (wasFullyPaid && !invoice.orderId) {
-            createdOrder = await createOrderFromInvoice(invoice, req.user);
+        console.log(`✅ Invoice ${invoice.invoiceNumber} updated: amountPaid=${invoice.amountPaid}, balanceDue=${invoice.balanceDue}, status=${invoice.paymentStatus}`);
+        // ✅ Create transaction with source: 'invoice' and include invoiceId
+        let createdTransaction = null;
+        try {
+            const methodMap = {
+                'mpesa': 'mpesa',
+                'm-pesa': 'mpesa',
+                'M-PESA': 'mpesa',
+                'cash': 'cash',
+                'bank_transfer': 'bank_transfer',
+                'bank transfer': 'bank_transfer',
+                'card': 'card',
+                'credit card': 'card',
+                'cheque': 'cheque'
+            };
+            const txPaymentMethod = methodMap[method === null || method === void 0 ? void 0 : method.toLowerCase()] || 'cash';
+            createdTransaction = await Transaction_1.default.create({
+                orderId: invoice.orderId || null,
+                invoiceId: invoice._id, // ✅ Now this field exists in the schema
+                invoiceNumber: invoice.invoiceNumber,
+                quotationNumber: invoice.quotationNumber,
+                userId: invoice.customerId,
+                customerName: invoice.customerName,
+                guestEmail: invoice.customerEmail,
+                guestPhone: invoice.customerPhone,
+                amount: paymentAmount,
+                currency: 'KES',
+                paymentMethod: txPaymentMethod,
+                status: 'completed',
+                transactionId: transactionId,
+                reference: reference || null,
+                notes: notes || `Payment recorded for invoice ${invoice.invoiceNumber}`,
+                recordedBy: req.user.userId,
+                recordedByName: req.user.name || req.user.email,
+                source: 'invoice', // ✅ Now 'invoice' is valid in the enum
+                isPartialPayment: paymentAmount < invoice.balanceDue || paymentAmount < invoice.total,
+                paidAt: new Date()
+            });
+            console.log(`✅ Transaction created: ${transactionId} for invoice ${invoice.invoiceNumber}`);
         }
-        await (0, auditMiddleware_1.createAuditLog)(req, {
-            action: 'payment',
-            resource: 'invoice',
-            resourceId: invoice._id.toString(),
-            details: `Payment of KES ${paymentAmount.toLocaleString()} recorded for invoice ${invoice.invoiceNumber}`,
-            skipIfNoUser: false
+        catch (txError) {
+            console.error('❌ Transaction creation failed:', txError.message);
+        }
+        // ✅ Create order if invoice is fully paid - PASS THE PAYMENT METHOD
+        let createdOrder = null;
+        if (invoice.paymentStatus === 'paid' && !invoice.orderId) {
+            try {
+                // ✅ Pass the payment method to createOrderFromInvoice
+                createdOrder = await createOrderFromInvoice(invoice, req.user, method);
+                if (createdOrder) {
+                    // ✅ Update the transaction with the orderId
+                    if (createdTransaction) {
+                        await Transaction_1.default.findByIdAndUpdate(createdTransaction._id, {
+                            orderId: createdOrder._id
+                        });
+                    }
+                    await notifyAdmins('📦 Order Created from Paid Invoice', `Order ${createdOrder.orderNumber} was automatically created from paid invoice ${invoice.invoiceNumber} for ${invoice.customerName}`, `/dashboard/orders/${createdOrder._id}`, {
+                        action: 'order_created_from_invoice',
+                        invoiceId: invoice._id,
+                        invoiceNumber: invoice.invoiceNumber,
+                        orderId: createdOrder._id,
+                        orderNumber: createdOrder.orderNumber,
+                        customerName: invoice.customerName,
+                        total: invoice.total,
+                        paymentMethod: method // ✅ Include the payment method
+                    });
+                }
+            }
+            catch (orderError) {
+                console.error('Auto-create order failed:', orderError.message);
+            }
+        }
+        try {
+            await (0, auditMiddleware_1.createAuditLog)(req, {
+                action: 'update',
+                resource: 'invoice',
+                resourceId: invoice._id.toString(),
+                details: `Payment of KES ${paymentAmount.toLocaleString()} recorded for invoice ${invoice.invoiceNumber}. New payment status: ${invoice.paymentStatus}`,
+                severity: 'info',
+                status: 'success',
+                skipIfNoUser: false
+            });
+        }
+        catch (auditError) {
+            console.error('Audit log creation failed:', auditError.message);
+        }
+        const isLargePayment = paymentAmount >= 50000;
+        const notificationTitle = isLargePayment ? '💰 Large Payment Received' : '💵 Payment Received';
+        await notifyAdmins(notificationTitle, `${isLargePayment ? 'LARGE PAYMENT: ' : ''}${req.user.email || req.user.name} recorded payment of KES ${paymentAmount.toLocaleString()} for invoice ${invoice.invoiceNumber} from ${invoice.customerName}. Payment status: ${invoice.paymentStatus}`, `/dashboard/sales/invoices/${invoice._id}`, {
+            action: 'record_payment',
+            recordedBy: req.user.email || req.user.name,
+            invoiceId: invoice._id,
+            invoiceNumber: invoice.invoiceNumber,
+            customerName: invoice.customerName,
+            paymentAmount,
+            paymentMethod: method,
+            isLargePayment,
+            oldPaymentStatus,
+            newPaymentStatus: invoice.paymentStatus,
+            balanceRemaining: invoice.balanceDue
         });
         res.json({
             success: true,
+            message: 'Payment recorded successfully',
             invoice: {
                 _id: invoice._id,
                 invoiceNumber: invoice.invoiceNumber,
@@ -1034,25 +1397,29 @@ router.post('/invoices/:id/payments', auth_1.default, requireSalesRole, async (r
                 amountPaid: invoice.amountPaid,
                 balanceDue: invoice.balanceDue
             },
-            transaction: {
-                _id: transaction._id,
-                transactionId: transaction.transactionId,
-                amount: transaction.amount,
-                paymentMethod: transaction.paymentMethod,
-                status: transaction.status,
-                paidAt: transaction.paidAt
-            },
+            transaction: createdTransaction ? {
+                id: createdTransaction._id,
+                transactionId: createdTransaction.transactionId,
+                amount: createdTransaction.amount,
+                method: createdTransaction.paymentMethod,
+                source: createdTransaction.source,
+                orderId: createdTransaction.orderId
+            } : null,
             order: createdOrder ? {
                 _id: createdOrder._id,
                 orderNumber: createdOrder.orderNumber,
                 status: createdOrder.status,
-                total: createdOrder.total
+                total: createdOrder.total,
+                paymentMethod: createdOrder.paymentMethod // ✅ Returns the correct payment method
             } : null
         });
     }
     catch (error) {
-        console.error('Record payment error:', error);
-        res.status(500).json({ error: 'Failed to record payment' });
+        console.error('❌ Record payment error:', error);
+        res.status(500).json({
+            error: error.message || 'Failed to record payment',
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 // =====================
@@ -1110,6 +1477,7 @@ router.get('/products', auth_1.default, requireSalesRole, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch products' });
     }
 });
+// Create order from invoice
 router.post('/invoices/:id/create-order', auth_1.default, requireSalesRole, async (req, res) => {
     try {
         const { id } = req.params;
@@ -1136,7 +1504,21 @@ router.post('/invoices/:id/create-order', auth_1.default, requireSalesRole, asyn
                 });
             }
         }
-        const createdOrder = await createOrderFromInvoice(invoice, req.user);
+        // ✅ Pass the payment method to createOrderFromInvoice
+        const createdOrder = await createOrderFromInvoice(invoice, req.user, paymentMethod);
+        if (createdOrder) {
+            await notifyAdmins('📦 Order Created from Invoice', `${req.user.email || req.user.name} manually created order ${createdOrder.orderNumber} from invoice ${invoice.invoiceNumber} for ${invoice.customerName}`, `/dashboard/orders/${createdOrder._id}`, {
+                action: 'manual_order_creation',
+                createdBy: req.user.email || req.user.name,
+                invoiceId: invoice._id,
+                invoiceNumber: invoice.invoiceNumber,
+                orderId: createdOrder._id,
+                orderNumber: createdOrder.orderNumber,
+                customerName: invoice.customerName,
+                total: invoice.total,
+                paymentMethod // ✅ Include payment method
+            });
+        }
         res.json({
             success: true,
             message: 'Order created successfully from invoice',
@@ -1146,7 +1528,8 @@ router.post('/invoices/:id/create-order', auth_1.default, requireSalesRole, asyn
                 total: createdOrder.total,
                 totalProfit: createdOrder.totalProfit,
                 paymentStatus: createdOrder.paymentStatus,
-                status: createdOrder.status
+                status: createdOrder.status,
+                paymentMethod: createdOrder.paymentMethod // ✅ Return the correct payment method
             } : null
         });
     }
@@ -1156,6 +1539,383 @@ router.post('/invoices/:id/create-order', auth_1.default, requireSalesRole, asyn
             error: error.message || 'Failed to create order from invoice',
             details: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
+    }
+});
+// ==================== ENHANCED SALES CUSTOMER ENDPOINTS ====================
+// GET /api/sales/customers/:id - Get single customer
+router.get('/customers/:id', auth_1.default, requireSalesRole, async (req, res) => {
+    var _a;
+    try {
+        const { id } = req.params;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid customer ID' });
+        }
+        const customer = await SalesCustomer_1.default.findById(id).lean();
+        if (!customer) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+        if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        // Get customer statistics
+        const [orders, quotations, invoices] = await Promise.all([
+            Order_1.default.find({ salesCustomerId: customer._id }).sort({ createdAt: -1 }).limit(5).lean(),
+            Quotation_1.default.find({ customerId: customer._id }).sort({ createdAt: -1 }).limit(5).lean(),
+            Invoice_1.default.find({ customerId: customer._id }).sort({ createdAt: -1 }).limit(5).lean()
+        ]);
+        const orderCount = await Order_1.default.countDocuments({ salesCustomerId: customer._id });
+        const quotationCount = await Quotation_1.default.countDocuments({ customerId: customer._id });
+        const invoiceCount = await Invoice_1.default.countDocuments({ customerId: customer._id });
+        const totalRevenue = await Order_1.default.aggregate([
+            { $match: { salesCustomerId: customer._id, paymentStatus: 'completed' } },
+            { $group: { _id: null, total: { $sum: '$total' } } }
+        ]);
+        res.json({
+            success: true,
+            customer: {
+                ...customer,
+                stats: {
+                    orderCount,
+                    quotationCount,
+                    invoiceCount,
+                    totalRevenue: ((_a = totalRevenue[0]) === null || _a === void 0 ? void 0 : _a.total) || 0,
+                    recentOrders: orders,
+                    recentQuotations: quotations,
+                    recentInvoices: invoices
+                }
+            }
+        });
+    }
+    catch (error) {
+        console.error('Fetch customer error:', error);
+        res.status(500).json({ error: 'Failed to fetch customer' });
+    }
+});
+// GET /api/sales/customers/:id/orders - Get customer orders
+router.get('/customers/:id/orders', auth_1.default, requireSalesRole, async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid customer ID' });
+        }
+        const customer = await SalesCustomer_1.default.findById(id);
+        if (!customer) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+        if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        const { page = '1', limit = '10', status } = req.query;
+        const p = Number(page);
+        const l = Number(limit);
+        const skip = (p - 1) * l;
+        const query = { salesCustomerId: customer._id };
+        if (status)
+            query.status = status;
+        const [orders, total] = await Promise.all([
+            Order_1.default.find(query)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(l)
+                .lean(),
+            Order_1.default.countDocuments(query)
+        ]);
+        res.json({
+            success: true,
+            customer: { _id: customer._id, name: customer.name },
+            orders,
+            pagination: { current: p, limit: l, total, pages: Math.ceil(total / l) }
+        });
+    }
+    catch (error) {
+        console.error('Fetch customer orders error:', error);
+        res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+});
+// GET /api/sales/customers/:id/quotations - Get customer quotations
+router.get('/customers/:id/quotations', auth_1.default, requireSalesRole, async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid customer ID' });
+        }
+        const customer = await SalesCustomer_1.default.findById(id);
+        if (!customer) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+        if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        const { page = '1', limit = '10', status } = req.query;
+        const p = Number(page);
+        const l = Number(limit);
+        const skip = (p - 1) * l;
+        const query = { customerId: customer._id };
+        if (status)
+            query.status = status;
+        const [quotations, total] = await Promise.all([
+            Quotation_1.default.find(query)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(l)
+                .lean(),
+            Quotation_1.default.countDocuments(query)
+        ]);
+        res.json({
+            success: true,
+            customer: { _id: customer._id, name: customer.name },
+            quotations,
+            pagination: { current: p, limit: l, total, pages: Math.ceil(total / l) }
+        });
+    }
+    catch (error) {
+        console.error('Fetch customer quotations error:', error);
+        res.status(500).json({ error: 'Failed to fetch quotations' });
+    }
+});
+// GET /api/sales/customers/:id/invoices - Get customer invoices
+router.get('/customers/:id/invoices', auth_1.default, requireSalesRole, async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid customer ID' });
+        }
+        const customer = await SalesCustomer_1.default.findById(id);
+        if (!customer) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+        if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+        const { page = '1', limit = '10', status, paymentStatus } = req.query;
+        const p = Number(page);
+        const l = Number(limit);
+        const skip = (p - 1) * l;
+        const query = { customerId: customer._id };
+        if (status)
+            query.status = status;
+        if (paymentStatus)
+            query.paymentStatus = paymentStatus;
+        const [invoices, total] = await Promise.all([
+            Invoice_1.default.find(query)
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(l)
+                .lean(),
+            Invoice_1.default.countDocuments(query)
+        ]);
+        res.json({
+            success: true,
+            customer: { _id: customer._id, name: customer.name },
+            invoices,
+            pagination: { current: p, limit: l, total, pages: Math.ceil(total / l) }
+        });
+    }
+    catch (error) {
+        console.error('Fetch customer invoices error:', error);
+        res.status(500).json({ error: 'Failed to fetch invoices' });
+    }
+});
+// GET /api/sales/customers/active - Get active customers
+router.get('/customers/active', auth_1.default, requireSalesRole, async (req, res) => {
+    try {
+        const { limit = '20', search } = req.query;
+        const query = { status: 'active' };
+        if (req.user.role === 'sales') {
+            query.createdBy = req.user.userId;
+        }
+        if (search && typeof search === 'string') {
+            query.$or = [
+                { name: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+                { phone: { $regex: search, $options: 'i' } }
+            ];
+        }
+        const customers = await SalesCustomer_1.default.find(query)
+            .sort({ totalSpent: -1 })
+            .limit(parseInt(limit))
+            .lean();
+        res.json({
+            success: true,
+            customers,
+            count: customers.length
+        });
+    }
+    catch (error) {
+        console.error('Fetch active customers error:', error);
+        res.status(500).json({ error: 'Failed to fetch active customers' });
+    }
+});
+// GET /api/sales/customers/top - Get top customers by spending
+router.get('/customers/top', auth_1.default, requireSalesRole, async (req, res) => {
+    try {
+        const { limit = '10' } = req.query;
+        const query = {};
+        if (req.user.role === 'sales') {
+            query.createdBy = req.user.userId;
+        }
+        const customers = await SalesCustomer_1.default.find(query)
+            .sort({ totalSpent: -1 })
+            .limit(parseInt(limit))
+            .lean();
+        res.json({
+            success: true,
+            customers,
+            count: customers.length
+        });
+    }
+    catch (error) {
+        console.error('Fetch top customers error:', error);
+        res.status(500).json({ error: 'Failed to fetch top customers' });
+    }
+});
+// GET /api/sales/customers/stats/overview - Customer statistics
+router.get('/customers/stats/overview', auth_1.default, requireSalesRole, async (req, res) => {
+    var _a, _b;
+    try {
+        const query = {};
+        if (req.user.role === 'sales') {
+            query.createdBy = req.user.userId;
+        }
+        const [totalCustomers, activeCustomers, totalRevenue, avgCustomerValue, newCustomersThisMonth] = await Promise.all([
+            SalesCustomer_1.default.countDocuments(query),
+            SalesCustomer_1.default.countDocuments({ ...query, status: 'active' }),
+            SalesCustomer_1.default.aggregate([
+                { $match: query },
+                { $group: { _id: null, total: { $sum: '$totalSpent' } } }
+            ]),
+            SalesCustomer_1.default.aggregate([
+                { $match: query },
+                { $group: { _id: null, avg: { $avg: '$totalSpent' } } }
+            ]),
+            SalesCustomer_1.default.countDocuments({
+                ...query,
+                createdAt: { $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) }
+            })
+        ]);
+        // Customer growth over last 12 months
+        const growthData = await SalesCustomer_1.default.aggregate([
+            { $match: query },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { '_id.year': 1, '_id.month': 1 } },
+            { $limit: 12 }
+        ]);
+        res.json({
+            success: true,
+            stats: {
+                totalCustomers,
+                activeCustomers,
+                inactiveCustomers: totalCustomers - activeCustomers,
+                totalRevenue: ((_a = totalRevenue[0]) === null || _a === void 0 ? void 0 : _a.total) || 0,
+                avgCustomerValue: ((_b = avgCustomerValue[0]) === null || _b === void 0 ? void 0 : _b.avg) || 0,
+                newCustomersThisMonth,
+                growthData: growthData.map(item => ({
+                    month: `${item._id.year}-${String(item._id.month).padStart(2, '0')}`,
+                    count: item.count
+                }))
+            }
+        });
+    }
+    catch (error) {
+        console.error('Fetch customer stats error:', error);
+        res.status(500).json({ error: 'Failed to fetch customer stats' });
+    }
+});
+// PATCH /api/sales/customers/:id/status - Toggle customer status
+router.patch('/customers/:id/status', auth_1.default, requireSalesRole, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        if (!status || !['active', 'inactive'].includes(status)) {
+            return res.status(400).json({ error: 'Invalid status' });
+        }
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid customer ID' });
+        }
+        const customer = await SalesCustomer_1.default.findById(id);
+        if (!customer) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+        if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Not allowed' });
+        }
+        const oldStatus = customer.status;
+        customer.status = status;
+        await customer.save();
+        await (0, auditMiddleware_1.createAuditLog)(req, {
+            action: 'update_status',
+            resource: 'customer',
+            resourceId: customer._id.toString(),
+            details: `Customer status changed from ${oldStatus} to ${status}`,
+            skipIfNoUser: false
+        });
+        // ✅ NOTIFICATION: Customer status changed
+        await notifyAdmins(`${status === 'active' ? '✅' : '⛔'} Customer Status Changed`, `${req.user.email || req.user.name} changed customer "${customer.name}" status from ${oldStatus} to ${status}`, `/dashboard/sales/customers/${customer._id}`, {
+            action: 'change_customer_status',
+            changedBy: req.user.email || req.user.name,
+            customerId: customer._id,
+            customerName: customer.name,
+            oldStatus,
+            newStatus: status
+        });
+        res.json({ success: true, customer });
+    }
+    catch (error) {
+        console.error('Update customer status error:', error);
+        res.status(500).json({ error: 'Failed to update customer status' });
+    }
+});
+// DELETE /api/sales/customers/:id - Delete customer (soft delete)
+router.delete('/customers/:id', auth_1.default, requireSalesRole, async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'Invalid customer ID' });
+        }
+        const customer = await SalesCustomer_1.default.findById(id);
+        if (!customer) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+        if (req.user.role === 'sales' && customer.createdBy.toString() !== req.user.userId) {
+            return res.status(403).json({ error: 'Not allowed' });
+        }
+        // Check if customer has orders
+        const orderCount = await Order_1.default.countDocuments({ salesCustomerId: customer._id });
+        if (orderCount > 0) {
+            return res.status(400).json({
+                error: `Cannot delete customer with ${orderCount} linked orders. Archive or reassign orders first.`,
+                orderCount
+            });
+        }
+        const customerName = customer.name;
+        await SalesCustomer_1.default.findByIdAndDelete(id);
+        await (0, auditMiddleware_1.createAuditLog)(req, {
+            action: 'delete',
+            resource: 'customer',
+            resourceId: customer._id.toString(),
+            details: `Customer deleted: ${customerName}`,
+            skipIfNoUser: false
+        });
+        // ✅ NOTIFICATION: Customer deleted
+        await notifyAdmins('🗑️ Customer Deleted', `${req.user.email || req.user.name} deleted customer "${customerName}"`, '/dashboard/sales/customers', {
+            action: 'delete_customer',
+            deletedBy: req.user.email || req.user.name,
+            customerId: id,
+            customerName
+        });
+        res.json({ success: true, message: 'Customer deleted successfully' });
+    }
+    catch (error) {
+        console.error('Delete customer error:', error);
+        res.status(500).json({ error: 'Failed to delete customer' });
     }
 });
 exports.default = router;

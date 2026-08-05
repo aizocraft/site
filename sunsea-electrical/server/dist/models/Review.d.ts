@@ -4,7 +4,6 @@ export interface IReview extends Document {
     userId: Types.ObjectId | mongoose.Types.ObjectId;
     rating: number;
     review?: string;
-    isApproved: boolean;
     status: 'pending' | 'approved' | 'rejected';
     createdAt: Date;
     updatedAt: Date;
