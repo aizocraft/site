@@ -49,7 +49,7 @@ const services: Service[] = [
       "Free annual maintenance",
       "Emergency response team"
     ],
-    image: "/images/solar.jpg",
+    image: "/installation.jpg",
   },
   {
     id: 2,
@@ -93,7 +93,7 @@ const services: Service[] = [
       "Backup during outages",
       "Emergency response team"
     ],
-    image: "/images/watertower.jpg",
+    image: "/generator.jpg",
   },
   {
     id: 4,
@@ -115,7 +115,7 @@ const services: Service[] = [
       "Enhanced security & safety",
       "Free system assessment"
     ],
-    image: "/images/watertower.jpg",
+    image: "/smart.jpg",
   },
   {
     id: 5,
@@ -137,7 +137,7 @@ const services: Service[] = [
       "Reliable network infrastructure",
       "Free site assessment"
     ],
-    image: "/images/solar.jpg",
+    image: "/cctv.jpg",
   },
   {
     id: 6,
@@ -159,7 +159,7 @@ const services: Service[] = [
       "Predictable maintenance costs",
       "Priority emergency response"
     ],
-    image: "/images/watertower.jpg",
+    image: "/services1.jpg",
   },
 ];
 

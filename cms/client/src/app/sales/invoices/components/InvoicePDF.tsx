@@ -14,9 +14,16 @@ export async function generateInvoicePDF(
   const mpesaLogoUrl = '/mpesa-logo.png';
   const kcbLogoUrl = '/kcb-logo.png';
   const footerLogoUrl = '/logo.png';
-  
-const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
-  const companySlogan = settings?.slogan || 'Reliable Electrical & Energy Solutions';
+
+  const companyName = settings?.companyName || 'AIZO TECH SOLUTIONS';
+  const companySlogan = settings?.slogan || 'Reliable Digital & Business Solutions';
+  const companyAddress = settings?.address || 'Kenya';
+  const companyPhone = settings?.phone || '0741653862';
+  const companyEmail = settings?.email || 'isaacngatho.dev@gmail.com';
+  const footerServices = (settings?.footerText || 'CCTV Installation | Website Development | App Development | ERP & IOT Support')
+    .split(/[\n|,]/)
+    .map((service: string) => service.trim())
+    .filter(Boolean);
   const taxRate = invoice.taxRate || 0.16;
   
   // Get transport info
@@ -116,11 +123,11 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
   const getHeaderHTML = () => `
     <div class="header">
       <div class="company-info">
-<div class="company-name">${escapeHtml(companyName)}</div>
-        <div class="company-address">Kianjokoma, Embu</div>
-        <div class="company-location">EMBU, KENYA</div>
-        <div class="company-tel">TEL: 0784909466</div>
-        <div class="company-email">Email: sunseaelectrical@gmail.com</div>
+        <div class="company-name">${escapeHtml(companyName)}</div>
+        <div class="company-address">${escapeHtml(companyAddress)}</div>
+        <div class="company-location">${escapeHtml(companyAddress)}</div>
+        <div class="company-tel">TEL: ${escapeHtml(companyPhone)}</div>
+        <div class="company-email">Email: ${escapeHtml(companyEmail)}</div>
       </div>
       <div class="logo-area">
         <img src="${finalLogoUrl}" class="company-logo" alt="Logo" crossorigin="anonymous" />
@@ -269,16 +276,11 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       <div class="footer-main">
         <div class="footer-services">
           <div class="services-list">
-            <span class="service-item">Borehole Services</span>
-            <span class="service-item">Water Pumps</span>
-            <span class="service-item">Solar Solutions</span>
-            <span class="service-item">Water Treatment</span>
-            <span class="service-item">Generators</span>
-            <span class="service-item">Irrigation Systems</span>
+            ${footerServices.map((service: string) => `<span class="service-item">${escapeHtml(service)}</span>`).join('')}
           </div>
         </div>
         <div class="footer-logo-section">
-<img src="${footerLogoUrl}" class="footer-logo" alt="Sun Sea Electrical" crossorigin="anonymous" onerror="this.style.display='none'" />
+          <img src="${footerLogoUrl}" class="footer-logo" alt="${escapeHtml(companyName)}" crossorigin="anonymous" onerror="this.style.display='none'" />
         </div>
         <div class="footer-slogan">${escapeHtml(companySlogan)}  |  © ${new Date().getFullYear()} ${escapeHtml(companyName)}. All rights reserved.</div>
       </div>
@@ -312,7 +314,7 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
             <div class="info-content">
               <div class="customer-name">${escapeHtml(invoice.customerName)}</div>
               ${invoice.customerEmail ? `
-                <div class="detail-row">
+                <div class="detail-row" style="display:none;">
                   <div class="contact-item">
                     <span class="detail-label">Email</span>
                     <span class="detail-value">${escapeHtml(invoice.customerEmail)}</span>
@@ -537,11 +539,11 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
 
       .doc-title-section.doc-title-invoice {
         height: 22px !important; 
-        background: #0b355e !important;
+        background: #606062 !important;
         width: 100% !important;
         border-top: 1px solid #ffffff !important;
         border-bottom: 1px solid #ffffff !important;
-        box-shadow: 0 0 0 1px #0b355e !important;
+        box-shadow: 0 0 0 1px #606062 !important;
       }
 
       .doc-title-container {
@@ -569,8 +571,8 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       }
 
       .doc-title-text.text-invoice {
-        color: #0b355e !important;
-        border: 1.5px solid #0b355e !important;
+        color: #606062 !important;
+        border: 1.5px solid #606062 !important;
       }
       
       .status-badge-container {
@@ -679,7 +681,7 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       .customer-name {
         font-size: 22px;
         font-weight: 700;
-        color: #0a2540;
+        color: #7c9870;
         margin-bottom: 7px;
       }
 
@@ -816,7 +818,7 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       .total-row.grand-total {
         padding-top: 16px;
         margin-top: 8px;
-        border-top: 2px solid #0a2540;
+        border-top: 2px solid #7c9870;
         border-bottom: none;
       }
       
@@ -840,7 +842,7 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       .grand-total-amount {
         font-size: 20px;
         font-weight: 800;
-        color: #0a2540;
+        color: #7c9870;
         letter-spacing: -0.5px;
       }
       
@@ -869,7 +871,7 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       }
 
       .payment-header {
-        background: #0a2540;
+        background: #7c9870;
         padding: 18px 28px;
       }
 
@@ -911,7 +913,7 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       .payment-method-title {
         font-size: 18px;
         font-weight: 700;
-        color: #0a2540;
+        color: #7c9870;
       }
 
       .payment-method-sub {
@@ -966,7 +968,7 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
         padding: 18px 24px;
         border-radius: 16px;
         margin-bottom: 0;
-        border-left: 4px solid #e6a017;
+        border-left: 4px solid #7c9870;
         height: 100%;
         display: flex;
         flex-direction: column;

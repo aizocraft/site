@@ -1,0 +1,21 @@
+"use client";
+
+import { useTheme } from "@/context/ThemeContext";
+
+export default function Hero() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  return (
+    <section className="relative overflow-hidden bg-[hsl(var(--background))] px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-12 lg:py-12">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,157,255,0.12),transparent_55%)]" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent" />
+
+      <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center text-center">
+        <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}>
+          Our Project Gallery
+        </h1>
+      </div>
+    </section>
+  );
+}

@@ -13,18 +13,25 @@ export async function generateQuotationPDF(
   // Logo paths
   const finalLogoUrl = logoUrl || '/logo1.png';
   const mpesaLogoUrl = '/mpesa-logo.png';
-  const kcbLogoUrl = '/kcb-logo.png';
+  const equityLogo = '/logos/Equity_Group_Logo.png';
   const footerLogoUrl = '/logo.png';
-  
-const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
-  const companySlogan = settings?.slogan || 'Reliable Electrical & Energy Solutions';
+
+  const companyName = settings?.companyName || 'AIZO TECH SOLUTIONS';
+  const companySlogan = settings?.slogan || 'Reliable Digital & Business Solutions';
+  const companyAddress = settings?.address || 'Kenya';
+  const companyPhone = settings?.phone || '0741653862';
+  const companyEmail = settings?.email || 'isaacngatho.dev@gmail.com';
+  const footerServices = (settings?.footerText || 'CCTV Installation | Website Development | App Development | ERP & IOT Support')
+    .split(/[\n|,]/)
+    .map((service: string) => service.trim())
+    .filter(Boolean);
   const taxRate = quote.taxRate || 0.16;
-  const partnerLogos = [
-    { src: '/logo/dayliff.png', name: 'Dayliff' },
-    { src: '/logo/taflo.png', name: 'Taflo' },
-    { src: '/logo/pedrollo.png', name: 'Pedrollo' },
-    { src: '/logo/grundfos.png', name: 'Grundfos' },
-  ];
+  //const partnerLogos = [
+    //{ src: '/logo/dayliff.png', name: 'Dayliff' },
+    //{ src: '/logo/taflo.png', name: 'Taflo' },
+    //{ src: '/logo/pedrollo.png', name: 'Pedrollo' },
+    //{ src: '/logo/grundfos.png', name: 'Grundfos' },
+  //];
 
   // Get transport info
   const transportCost = quote.transportCost || quote.transportInfo?.cost || 0;
@@ -98,11 +105,10 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
   const getHeaderHTML = () => `
     <div class="header">
       <div class="company-info">
-<div class="company-name">SUN SEA ELECTRICAL</div>
-        <div class="company-address">Kianjokoma, Embu</div>
-        <div class="company-location">EMBU, KENYA</div>
-        <div class="company-tel">TEL: 0784909466</div>
-        <div class="company-email">Email: sunseaelectrical@gmail.com</div>
+        <div class="company-name">${escapeHtml(companyName)}</div>
+        <div class="company-address">${escapeHtml(companyAddress)}</div>
+        <div class="company-tel">TEL: ${escapeHtml(companyPhone)}</div>
+        <div class="company-email">Email: ${escapeHtml(companyEmail)}</div>
       </div>
       <div class="logo-area">
         <img src="${finalLogoUrl}" class="company-logo" alt="Logo" crossorigin="anonymous" />
@@ -204,16 +210,16 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
       <div class="payment-body">
         <div class="payment-method">
           <div class="payment-method-header">
-            <img src="${kcbLogoUrl}" class="payment-logo" alt="KCB Bank" crossorigin="anonymous" onerror="this.style.display='none'" />
+            <img src="${equityLogo}" class="payment-logo" alt="Equity Bank" crossorigin="anonymous" onerror="this.style.display='none'" />
             <div>
-              <div class="payment-method-title">KCB Bank Kenya</div>
+              <div class="payment-method-title">Equity Bank Kenya</div>
               <div class="payment-method-sub">Bank Transfer</div>
             </div>
           </div>
           <div class="payment-details">
-<div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">SUN SEA ELECTRICAL</span></div>
-            <div class="payment-detail"><span class="payment-detail-key">Account Number</span><span class="payment-detail-value">1312281278</span></div>
-            <div class="payment-detail"><span class="payment-detail-key">Branch</span><span class="payment-detail-value">Embu</span></div>
+<div class="payment-detail"><span class="payment-detail-key">PayBill Number</span><span class="payment-detail-value">247 247</span></div>
+            <div class="payment-detail"><span class="payment-detail-key">Account Number</span><span class="payment-detail-value"> 0190181336886 </span></div>
+            <div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">Isaac Ngatho Kariuki</span></div>
           </div>
         </div>
         <div class="payment-method">
@@ -226,8 +232,8 @@ const companyName = settings?.companyName || 'SUN SEA ELECTRICAL';
           </div>
           <div class="payment-details">
             <div class="payment-detail"><span class="payment-detail-key">Lipa na M-PESA</span><span class="payment-detail-value">Buy Goods & Services</span></div>
-<div class="payment-detail"><span class="payment-detail-key">Till No.</span><span class="payment-detail-value">9114123</span></div>
-            <div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">SUN SEA ELECTRICAL</span></div>
+<div class="payment-detail"><span class="payment-detail-key">Till No.</span><span class="payment-detail-value">3636724</span></div>
+            <div class="payment-detail"><span class="payment-detail-key">Account Name</span><span class="payment-detail-value">Isaac Kariuki</span></div>
           </div>
         </div>
       </div>
@@ -257,17 +263,11 @@ const getFooterHTML = () => `
     <div class="footer-main">
       <div class="footer-services">
         <div class="services-list">
-          <span class="service-item">Borehole Services</span>
-          <span class="service-item">Water Pumps</span>
-          <span class="service-item">Solar Solutions</span>
-          <span class="service-item">Water Treatment</span>
-          <span class="service-item">Generators</span>
-          <span class="service-item">Irrigation Systems</span>
-   
+          ${footerServices.map((service: string) => `<span class="service-item">${escapeHtml(service)}</span>`).join('')}
         </div>
       </div>
       <div class="footer-logo-section">
-<img src="${footerLogoUrl}" class="footer-logo" alt="Sun Sea Electrical" crossorigin="anonymous" onerror="this.style.display='none'" />
+        <img src="${footerLogoUrl}" class="footer-logo" alt="${escapeHtml(companyName)}" crossorigin="anonymous" onerror="this.style.display='none'" />
       </div>
       <div class="footer-slogan">${escapeHtml(companySlogan)}  |  © ${new Date().getFullYear()} ${escapeHtml(companyName)}. All rights reserved.</div>
     </div>
@@ -295,7 +295,7 @@ const getFooterHTML = () => `
             </div>
             <div class="info-content">
               <div class="customer-name">${escapeHtml(customer.name)}</div>
-              <div class="detail-row">    
+              <div class="detail-row" style="display:none;">    
                 ${customer.email ? `
                   <div class="contact-item">
                     <span class="detail-label">Email</span>
@@ -512,11 +512,11 @@ const getFooterHTML = () => `
 
       .doc-title-section.doc-title-quotation {
         height: 22px !important; 
-        background: #0b355e !important;
+        background: #606062 !important;
         width: 100% !important;
         border-top: 1px solid #ffffff !important;
         border-bottom: 1px solid #ffffff !important;
-        box-shadow: 0 0 0 1px #0b355e !important;
+        box-shadow: 0 0 0 1px #606062 !important;
       }
 
       .doc-title-container {
@@ -544,8 +544,8 @@ const getFooterHTML = () => `
 }
 
       .doc-title-text.text-quotation {
-        color: #0b355e !important;
-        border: 1.5px solid #0b355e !important;
+        color: #606062 !important;
+        border: 1.5px solid #606062 !important;
       }
       
       .info-section {
@@ -585,7 +585,7 @@ const getFooterHTML = () => `
       .customer-name {
         font-size: 22px;
         font-weight: 700;
-        color: #0a2540;
+        color: #7c9870;
         margin-bottom: 7px;
       }
 
@@ -722,7 +722,7 @@ const getFooterHTML = () => `
       .total-row.grand-total {
         padding-top: 16px;
         margin-top: 8px;
-        border-top: 2px solid #0a2540;
+        border-top: 2px solid #7c9870;
         border-bottom: none;
       }
 
@@ -735,7 +735,7 @@ const getFooterHTML = () => `
       .grand-total-amount {
         font-size: 20px;
         font-weight: 800;
-        color: #0a2540;
+        color: #7c9870;
         letter-spacing: -0.5px;
       }
 
@@ -747,7 +747,7 @@ const getFooterHTML = () => `
       }
 
       .payment-header {
-        background: #0a2540;
+        background: #7c9870;
         padding: 18px 28px;
       }
 
@@ -789,7 +789,7 @@ const getFooterHTML = () => `
       .payment-method-title {
         font-size: 18px;
         font-weight: 700;
-        color: #0a2540;
+        color: #7c9870;
       }
 
       .payment-method-sub {
@@ -843,7 +843,7 @@ const getFooterHTML = () => `
         padding: 18px 24px;
         border-radius: 16px;
         margin-bottom: 0;
-        border-left: 4px solid #e6a017;
+        border-left: 4px solid #7c9870;
         height: 100%;
         display: flex;
         flex-direction: column;

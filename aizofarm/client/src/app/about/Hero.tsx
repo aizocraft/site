@@ -1,0 +1,328 @@
+'use client';
+
+import { useMemo, useEffect, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import {
+  Phone,
+  Mail,
+  Eye,
+  Target,
+  ArrowRight,
+  Download,
+  Loader2,
+} from 'lucide-react';
+
+interface HeroProps {
+  onOpenProfile: () => void;
+}
+
+const stagger = (i: number, base = 0.08) => ({ delay: i * base });
+
+export default function Hero({ onOpenProfile }: HeroProps) {
+  const [mounted, setMounted] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const { scrollY } = useScroll();
+  const indicatorOpacity = useTransform(scrollY, [0, 150], [1, 0]);
+  const indicatorY = useTransform(scrollY, [0, 150], [0, 20]);
+
+  const opacity = useTransform(scrollY, [0, 300], [1, 0.95]);
+  const scale = useTransform(scrollY, [0, 300], [1, 0.98]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    setDownloadProgress(0);
+    
+    try {
+      const progressInterval = setInterval(() => {
+        setDownloadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 100);
+
+      const response = await fetch('/profile.pdf');
+      
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+      
+      const blob = await response.blob();
+      
+      clearInterval(progressInterval);
+      setDownloadProgress(100);
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'SunSea_Electrical_Profile.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      setTimeout(() => {
+        setIsDownloading(false);
+        setDownloadProgress(0);
+      }, 500);
+      
+    } catch (error) {
+      console.error('Download failed:', error);
+      setIsDownloading(false);
+      setDownloadProgress(0);
+      alert('Download failed. Please try again later.');
+    }
+  };
+
+const cards = useMemo(
+    () => [
+      {
+        icon: Eye,
+        label: 'Vision',
+        text: 'To be East Africa\u2019s most trusted electrical engineering partner, leading the region\u2019s transition to smart, clean, and resilient energy infrastructure.',
+      },
+      {
+        icon: Target,
+        label: 'Mission',
+        text: 'To deliver reliable, innovative, and sustainable electrical solutions that empower homes, businesses, and industries\u2014ensuring safety, efficiency, and uninterrupted power for every client we serve.',
+      },
+    ],
+    []
+  );
+
+  if (!mounted) return null;
+
+return (
+    <section className="relative min-h-[85vh] md:min-h-[90vh] lg:min-h-[92vh] flex flex-col justify-center overflow-hidden bg-[#00225c]">
+      {/* ===== BACKGROUND IMAGE ===== */}
+      <div className="absolute inset-0" aria-hidden="true">
+        <img
+          src="/banner.png"
+          alt="SunSea Electrical banner"
+          className="w-full h-full object-cover object-center"
+          loading="eager"
+        />
+        {/* Responsive overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#00225c]/95 via-[#00225c]/70 to-[#00225c]/40" />
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
+
+      {/* ===== MAIN CONTENT ===== */}
+      <motion.div
+        style={{ opacity, scale }}
+        className="container mx-auto px-6 lg:px-20 relative z-10 pt-12 pb-24 md:pt-2 md:pb-32"
+      >
+        <div className="max-w-5xl mx-auto text-center">
+          {/* Eyebrow Section */}
+          <motion.div
+            className="mt-2 flex items-center justify-center gap-4 mb-8 sm:mt-3"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="w-12 h-px bg-[#00c2ff]" />
+            <span className="text-xs font-bold tracking-[0.3em] uppercase text-[#00c2ff]">
+              Since 2010
+            </span>
+            <div className="w-12 h-px bg-[#00c2ff]" />
+          </motion.div>
+
+          {/* Main Headline */}
+          <motion.h1
+            className="font-bold leading-[1.2] mb-6 text-white"
+            style={{
+              fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
+              letterSpacing: '-0.02em',
+            }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            Engineering
+            <br />
+            <span className="text-[#00c2ff] inline-block mt-2">
+              Excellence
+            </span>
+            <br />
+
+          </motion.h1>
+
+          {/* Description */}
+          <motion.p
+            className="text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto text-white/85"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            SunSea Electrical delivers comprehensive, ISO-standard engineering for power and energy
+            challenges across the region.
+          </motion.p>
+
+          {/* CTA Actions */}
+          <motion.div
+            className="flex flex-wrap gap-4 items-center justify-center mb-16"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.4 }}
+          >
+            {/* Primary CTA - Download Button */}
+            <div className="relative">
+              <motion.button
+                onClick={handleDownload}
+                disabled={isDownloading}
+                className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white bg-[#0089d1] hover:bg-[#009dff] transition-all duration-300 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                whileHover={!isDownloading ? { scale: 1.02, y: -2 } : {}}
+                whileTap={!isDownloading ? { scale: 0.98 } : {}}
+              >
+                {isDownloading ? (
+                  <>
+                    <Loader2 size={17} className="animate-spin" />
+                    <span>Downloading... {downloadProgress}%</span>
+                  </>
+                ) : (
+                  <>
+                    <Download size={17} strokeWidth={1.8} />
+                    <span>Download Company Profile</span>
+                    <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform duration-200" />
+                  </>
+                )}
+              </motion.button>
+
+              {/* Progress Bar */}
+              {isDownloading && (
+                <motion.div
+                  className="absolute -bottom-2 left-0 right-0 h-1 bg-white/30 rounded-full overflow-hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <motion.div
+                    className="h-full bg-[#00c2ff] rounded-full"
+                    initial={{ width: '0%' }}
+                    animate={{ width: `${downloadProgress}%` }}
+                  />
+                </motion.div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="w-px h-6 bg-white/30 hidden sm:block" />
+
+            {/* Contact Icons */}
+            <div className="flex gap-3">
+              <motion.a
+                href="tel:+254728749722"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/25 hover:bg-white hover:text-[#00225c] transition-all duration-300 backdrop-blur-sm"
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Phone size={14} className="text-[#00c2ff]" />
+                <span className="text-xs font-medium text-white hidden sm:inline">+254 728 749 722</span>
+              </motion.a>
+
+              <motion.a
+                href="mailto:sunseaelectrical@gmail.com"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/25 hover:bg-white hover:text-[#00225c] transition-all duration-300 backdrop-blur-sm"
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Mail size={14} className="text-[#00c2ff]" />
+                <span className="text-xs font-medium text-white hidden lg:inline">Email Us</span>
+              </motion.a>
+            </div>
+          </motion.div>
+
+          {/* Vision & Mission Cards */}
+          <motion.div
+            className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+          >
+            {cards.map((card, i) => {
+              const Icon = card.icon;
+              return (
+                <motion.div
+                  key={card.label}
+                  className="group relative rounded-xl p-6 bg-white/95 border border-white/30 hover:border-[#00c2ff] transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={stagger(i, 0.1)}
+                  whileHover={{ y: -4 }}
+                >
+                  <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-lg bg-[#0089d1] flex items-center justify-center">
+                        <Icon size={18} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#0089d1]">
+                          {card.label}
+                        </p>
+                        <p className="text-gray-900 font-bold text-base leading-tight">
+                          Our {card.label}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-sm leading-relaxed text-gray-600">
+                      {card.text}
+                    </p>
+
+                    <div className="mt-4 h-px w-12 bg-[#00c2ff] group-hover:w-20 transition-all duration-300" />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </motion.div>
+
+  <motion.div
+  className="hidden lg:flex absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex-col items-center gap-3 pointer-events-none"
+  style={{
+    opacity: indicatorOpacity,
+    y: indicatorY,
+  }}
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ delay: 1.2, duration: 0.8 }}
+>
+<span className="text-[11px] uppercase tracking-[0.3em] text-white/70">
+    Scroll Down
+  </span>
+
+  <div className="w-7 h-12 border-2 border-[#00c2ff]/80 rounded-full flex justify-center p-1">
+    <motion.div
+      className="w-1.5 h-3 rounded-full bg-[#00c2ff]"
+      animate={{
+        y: [0, 16, 0],
+        opacity: [1, 0.3, 1],
+      }}
+      transition={{
+        duration: 1.6,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+    />
+  </div>
+</motion.div>
+
+      {/* ===== BOTTOM WAVE ===== */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none">
+        <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full h-16 md:h-20">
+          <path
+            d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,53.3C672,53,768,75,864,80C960,85,1056,75,1152,69.3C1248,64,1344,64,1392,64L1440,64L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"
+            className="fill-gray-100 dark:fill-gray-900"
+          />
+        </svg>
+      </div>
+    </section>
+  );
+}
