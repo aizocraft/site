@@ -66,3 +66,19 @@ export function useSuppliers(params?: { search?: string }) {
     staleTime: 30000,
   });
 }
+
+export function useConstructionSettings() {
+  return useQuery({
+    queryKey: ['construction-settings'],
+    queryFn: () => constructionApi.getSettings(),
+    staleTime: 30000,
+  });
+}
+
+export function useQuotes(params?: { type?: string }) {
+  return useQuery({
+    queryKey: ['construction-quotes', params],
+    queryFn: () => constructionApi.getQuotes(params),
+    staleTime: 30000,
+  });
+}

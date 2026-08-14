@@ -86,6 +86,19 @@ const getActivePageFromPath = (path: string) => {
 
   const canAccessDashboard = isAdmin || isEngineer
 
+  useEffect(() => {
+    if (authLoading || !user) return
+
+    if (user.role === 'engineer' && pathname === '/dashboard') {
+      router.replace('/dashboard/construction')
+      return
+    }
+
+    if (user.role === 'engineer' && pathname !== '/dashboard/construction' && pathname.startsWith('/dashboard')) {
+      router.replace('/dashboard/construction')
+    }
+  }, [user, pathname, authLoading, router])
+
   // Improved auth redirect - prevents infinite loops
   useEffect(() => {
     if (authLoading) return
@@ -124,22 +137,26 @@ const getActivePageFromPath = (path: string) => {
     }, 2500)
   }
 
-const navigation = [
-    { name: 'Overview', icon: LayoutDashboard, page: 'overview' as const, path: '/dashboard', color: 'text-blue-500' },
-    { name: 'Construction', icon: Building2, page: 'construction' as const, path: '/dashboard/construction', color: 'text-emerald-600' },
-    { name: 'Products', icon: Package, page: 'products' as const, path: '/dashboard/products', color: 'text-emerald-500' },
-   
-    { name: 'Sales', icon: Receipt, page: 'sales' as const, path: '/dashboard/sales', color: 'text-rose-500' },
-    { name: 'Shipping', icon: Truck, page: 'shipping' as const, path: '/dashboard/shipping', color: 'text-indigo-500' },
-   
-    { name: 'Users', icon: Users, page: 'users' as const, path: '/dashboard/users', color: 'text-orange-500' },
-    { name: 'Reviews', icon: MessageSquare, page: 'reviews' as const, path: '/dashboard/reviews', color: 'text-pink-500' },
-    { name: 'Submissions', icon: Star, page: 'submissions' as const, path: '/dashboard/submissions', color: 'text-yellow-500' },
-    { name: 'Emails', icon: Mail, page: 'emails' as const, path: '/dashboard/emails', color: 'text-indigo-500' },
-    { name: 'Audit Log', icon: ClipboardList, page: 'auditlog' as const, path: '/dashboard/auditlog', color: 'text-indigo-500' },
-    { name: 'Notifications', icon: Bell, page: 'notifications' as const, path: '/dashboard/notifications', color: 'text-blue-500' },
-    { name: 'Settings', icon: Settings, page: 'settings' as const, path: '/dashboard/settings', color: 'text-gray-500' },
-  ]
+const navigation = user?.role === 'engineer'
+    ? [
+        { name: 'Construction', icon: Building2, page: 'construction' as const, path: '/dashboard/construction', color: 'text-emerald-600' },
+      ]
+    : [
+        { name: 'Overview', icon: LayoutDashboard, page: 'overview' as const, path: '/dashboard', color: 'text-blue-500' },
+        { name: 'Construction', icon: Building2, page: 'construction' as const, path: '/dashboard/construction', color: 'text-emerald-600' },
+        { name: 'Products', icon: Package, page: 'products' as const, path: '/dashboard/products', color: 'text-emerald-500' },
+      
+        { name: 'Sales', icon: Receipt, page: 'sales' as const, path: '/dashboard/sales', color: 'text-rose-500' },
+        { name: 'Shipping', icon: Truck, page: 'shipping' as const, path: '/dashboard/shipping', color: 'text-indigo-500' },
+      
+        { name: 'Users', icon: Users, page: 'users' as const, path: '/dashboard/users', color: 'text-orange-500' },
+        { name: 'Reviews', icon: MessageSquare, page: 'reviews' as const, path: '/dashboard/reviews', color: 'text-pink-500' },
+        { name: 'Submissions', icon: Star, page: 'submissions' as const, path: '/dashboard/submissions', color: 'text-yellow-500' },
+        { name: 'Emails', icon: Mail, page: 'emails' as const, path: '/dashboard/emails', color: 'text-indigo-500' },
+        { name: 'Audit Log', icon: ClipboardList, page: 'auditlog' as const, path: '/dashboard/auditlog', color: 'text-indigo-500' },
+        { name: 'Notifications', icon: Bell, page: 'notifications' as const, path: '/dashboard/notifications', color: 'text-blue-500' },
+        { name: 'Settings', icon: Settings, page: 'settings' as const, path: '/dashboard/settings', color: 'text-gray-500' },
+      ]
 
   const handleNavigation = (path: string, page: typeof activePage) => {
     setActivePage(page)

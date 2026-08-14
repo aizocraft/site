@@ -119,6 +119,70 @@ export interface ConstructionSupplier {
   createdAt: string;
 }
 
+export interface ConstructionDocItem {
+  name: string;
+  description?: string;
+  qty: number;
+  unit: string;
+  price: number;
+  total: number;
+}
+
+export interface ConstructionQuote {
+  _id: string;
+  docNumber: string;
+  type: 'quotation' | 'invoice';
+  engineer?: string;
+  ownedBy?: string;
+  site?: string;
+  siteName?: string;
+  clientName: string;
+  clientPhone?: string;
+  clientEmail?: string;
+  clientAddress?: string;
+  items: ConstructionDocItem[];
+  subtotal: number;
+  taxRate: number;
+  tax: number;
+  discount: number;
+  discountType: 'percentage' | 'fixed';
+  transport: number;
+  total: number;
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'paid' | 'partially_paid' | 'overdue' | 'cancelled';
+  paymentStatus?: 'unpaid' | 'partially_paid' | 'paid';
+  amountPaid?: number;
+  balanceDue?: number;
+  issueDate?: string;
+  dueDate?: string;
+  notes?: string;
+  terms?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface EngineerSettings {
+  _id?: string;
+  companyName: string;
+  slogan: string;
+  logo?: string;
+  address: string;
+  phone: string;
+  email: string;
+  website: string;
+  taxRate: number;
+  currency: string;
+  quotePrefix: string;
+  invoicePrefix: string;
+  terms: string;
+  notes: string;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  tillNumber: string;
+  mpesaNumber: string;
+  signatureName: string;
+}
+
 export interface DashboardOverview {
   stats: {
     activeSites: number;
@@ -265,17 +329,44 @@ export const constructionApi = {
   deleteSupplier: async (id: string): Promise<void> => {
     await api.delete(`/construction/suppliers/${id}`);
   },
+
+  // Engineer settings
+  getSettings: async (): Promise<EngineerSettings> => {
+    const response = await api.get('/construction/settings');
+    return response.data.settings;
+  },
+  saveSettings: async (data: Partial<EngineerSettings>): Promise<EngineerSettings> => {
+    const response = await api.put('/construction/settings', data);
+    return response.data.settings;
+  },
+
+  // Quotes & invoices
+  getQuotes: async (params?: { type?: string }): Promise<ConstructionQuote[]> => {
+    const response = await api.get('/construction/quotes', { params });
+    return response.data.quotes;
+  },
+  createQuote: async (data: Partial<ConstructionQuote>): Promise<ConstructionQuote> => {
+    const response = await api.post('/construction/quotes', data);
+    return response.data.quote;
+  },
+  updateQuote: async (id: string, data: Partial<ConstructionQuote>): Promise<ConstructionQuote> => {
+    const response = await api.put(`/construction/quotes/${id}`, data);
+    return response.data.quote;
+  },
+  deleteQuote: async (id: string): Promise<void> => {
+    await api.delete(`/construction/quotes/${id}`);
+  },
 };
 
 // ============ FORMATTING HELPERS ============
 export const formatNaira = (amount: number): string => {
-  return `₦${(amount || 0).toLocaleString()}`;
+  return `KSh ${(amount || 0).toLocaleString()}`;
 };
 
 export const formatNairaCompact = (amount: number): string => {
-  if (amount >= 1000000) return `₦${(amount / 1000000).toFixed(1)}M`;
-  if (amount >= 1000) return `₦${(amount / 1000).toFixed(1)}K`;
-  return `₦${amount || 0}`;
+  if (amount >= 1000000) return `KSh ${(amount / 1000000).toFixed(1)}M`;
+  if (amount >= 1000) return `KSh ${(amount / 1000).toFixed(1)}K`;
+  return `KSh ${amount || 0}`;
 };
 
 export const getInitials = (firstName: string, lastName: string): string => {

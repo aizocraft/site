@@ -24,15 +24,23 @@ const isAdmin = (req: Request & { user?: any }) => req.user?.role === 'admin';
 const isEngineer = (req: Request & { user?: any }) => req.user?.role === 'engineer';
 const canAccessConstructionData = (req: Request & { user?: any }) => isAdmin(req) || isEngineer(req);
 
+const getConstructionAccessFilter = (req: Request & { user?: any }, extraFilter: Record<string, any> = {}) => {
+  const owner = ownedBy(req);
+  if (isAdmin(req)) {
+    return extraFilter;
+  }
+  return { ...extraFilter, ownedBy: owner };
+};
+
 // ============================================================================
 // DASHBOARD STATS
 // ============================================================================
 router.get('/dashboard/stats', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
 
-    // Admins and engineers see all, others see only their own
+    // Admins see all; engineers and other roles only see their own records
     const siteFilter = isAdministrator ? {} : { ownedBy: owner };
     const match = isAdministrator ? {} : { ownedBy: owner };
 
@@ -136,7 +144,7 @@ router.get('/dashboard/stats', async (req: Request & { user?: any }, res: Respon
 router.get('/sites', async (req: Request & { user?: any }, res: Response) => {
   try {
 const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = isAdministrator ? {} : { ownedBy: owner };
     const { status, search } = req.query;
     if (status) filter.status = status;
@@ -157,7 +165,7 @@ const owner = ownedBy(req);
 router.get('/sites/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const site = await ConstructionSiteModel.findOne(filter).lean();
@@ -207,7 +215,7 @@ router.post('/sites', async (req: Request & { user?: any }, res: Response) => {
 router.put('/sites/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
 
@@ -235,7 +243,7 @@ router.put('/sites/:id', async (req: Request & { user?: any }, res: Response) =>
 router.delete('/sites/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const site = await ConstructionSiteModel.findOneAndDelete(filter);
@@ -252,7 +260,7 @@ router.delete('/sites/:id', async (req: Request & { user?: any }, res: Response)
 router.get('/engineers', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter = isAdministrator ? {} : { ownedBy: owner };
     const engineers = await ConstructionEngineerModel.find(filter).sort({ createdAt: -1 }).lean();
     res.json({ success: true, engineers });
@@ -290,7 +298,7 @@ router.post('/engineers', async (req: Request & { user?: any }, res: Response) =
 router.put('/engineers/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const engineer = await ConstructionEngineerModel.findOneAndUpdate(filter, req.body, { new: true, runValidators: true });
@@ -304,7 +312,7 @@ router.put('/engineers/:id', async (req: Request & { user?: any }, res: Response
 router.delete('/engineers/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const engineer = await ConstructionEngineerModel.findOneAndDelete(filter);
@@ -321,7 +329,7 @@ router.delete('/engineers/:id', async (req: Request & { user?: any }, res: Respo
 router.get('/workers', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = isAdministrator ? {} : { ownedBy: owner };
     const { site, role, status, search } = req.query;
     if (site) filter.site = site;
@@ -371,7 +379,7 @@ router.post('/workers', async (req: Request & { user?: any }, res: Response) => 
 router.put('/workers/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const body = req.body;
@@ -390,7 +398,7 @@ router.put('/workers/:id', async (req: Request & { user?: any }, res: Response) 
 router.delete('/workers/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const worker = await ConstructionWorkerModel.findOneAndDelete(filter);
@@ -407,7 +415,7 @@ router.delete('/workers/:id', async (req: Request & { user?: any }, res: Respons
 router.get('/attendance', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = isAdministrator ? {} : { ownedBy: owner };
     const { site, date, worker } = req.query;
     if (site) filter.site = site;
@@ -476,7 +484,7 @@ router.post('/attendance', async (req: Request & { user?: any }, res: Response) 
 router.get('/payments', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = isAdministrator ? {} : { ownedBy: owner };
     const { status, type, site, search } = req.query;
     if (status) filter.status = status;
@@ -530,7 +538,7 @@ router.post('/payments', async (req: Request & { user?: any }, res: Response) =>
 router.patch('/payments/:id/status', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const payment = await ConstructionPaymentModel.findOneAndUpdate(filter, { status: req.body.status, payDate: req.body.status === 'paid' ? new Date() : undefined }, { new: true, runValidators: true });
@@ -544,7 +552,7 @@ router.patch('/payments/:id/status', async (req: Request & { user?: any }, res: 
 router.delete('/payments/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const payment = await ConstructionPaymentModel.findOneAndDelete(filter);
@@ -561,7 +569,7 @@ router.delete('/payments/:id', async (req: Request & { user?: any }, res: Respon
 router.get('/materials', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = isAdministrator ? {} : { ownedBy: owner };
     const { site, status, category, search } = req.query;
     if (site) filter.site = site;
@@ -605,7 +613,7 @@ router.post('/materials', async (req: Request & { user?: any }, res: Response) =
 router.put('/materials/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const body = req.body;
@@ -624,7 +632,7 @@ router.put('/materials/:id', async (req: Request & { user?: any }, res: Response
 router.delete('/materials/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const material = await ConstructionMaterialModel.findOneAndDelete(filter);
@@ -641,7 +649,7 @@ router.delete('/materials/:id', async (req: Request & { user?: any }, res: Respo
 router.get('/suppliers', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = isAdministrator ? {} : { ownedBy: owner };
     const suppliers = await ConstructionSupplierModel.find(filter).sort({ createdAt: -1 }).lean();
     res.json({ success: true, suppliers });
@@ -668,7 +676,7 @@ router.post('/suppliers', async (req: Request & { user?: any }, res: Response) =
 router.put('/suppliers/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const supplier = await ConstructionSupplierModel.findOneAndUpdate(filter, req.body, { new: true, runValidators: true });
@@ -682,7 +690,7 @@ router.put('/suppliers/:id', async (req: Request & { user?: any }, res: Response
 router.delete('/suppliers/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const supplier = await ConstructionSupplierModel.findOneAndDelete(filter);
@@ -702,7 +710,10 @@ router.get('/settings', async (req: Request & { user?: any }, res: Response) => 
     const owner = ownedBy(req);
     let settings = await EngineerSettingsModel.findOne({ ownedBy: owner });
     if (!settings) {
-      settings = new EngineerSettingsModel({ ownedBy: owner });
+      settings = new EngineerSettingsModel({ ownedBy: owner, currency: 'KES' });
+      await settings.save();
+    } else if (!settings.currency) {
+      settings.currency = 'KES';
       await settings.save();
     }
     res.json({ success: true, settings });
@@ -715,10 +726,11 @@ router.put('/settings', async (req: Request & { user?: any }, res: Response) => 
   try {
     const owner = ownedBy(req);
     let settings = await EngineerSettingsModel.findOne({ ownedBy: owner });
+    const nextSettings = { ...req.body, ownedBy: owner, currency: req.body.currency || 'KES' };
     if (!settings) {
-      settings = new EngineerSettingsModel({ ...req.body, ownedBy: owner });
+      settings = new EngineerSettingsModel(nextSettings);
     } else {
-      Object.assign(settings, req.body);
+      Object.assign(settings, nextSettings);
     }
     await settings.save();
     res.json({ success: true, settings });
@@ -731,12 +743,39 @@ router.put('/settings', async (req: Request & { user?: any }, res: Response) => 
 router.get('/quotes', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = isAdministrator ? {} : { ownedBy: owner };
     const { type } = req.query;
     if (type) filter.type = type;
     const quotes = await ConstructionQuoteModel.find(filter).sort({ createdAt: -1 }).limit(200).lean();
     res.json({ success: true, quotes });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/quotes/:id', async (req: Request & { user?: any }, res: Response) => {
+  try {
+    const owner = ownedBy(req);
+    const isAdministrator = isAdmin(req);
+    const filter: any = { _id: req.params.id };
+    if (!isAdministrator) filter.ownedBy = owner;
+
+    const quote = await ConstructionQuoteModel.findOne(filter);
+    if (!quote) return res.status(404).json({ error: 'Document not found' });
+
+    const sanitizedBody = { ...req.body };
+    if (sanitizedBody.items && Array.isArray(sanitizedBody.items)) {
+      sanitizedBody.items = sanitizedBody.items.map((item: any) => ({
+        ...item,
+        description: item.description ?? '',
+        total: Number(item.qty || 0) * Number(item.price || 0),
+      }));
+    }
+
+    Object.assign(quote, sanitizedBody);
+    await quote.save();
+    res.json({ success: true, quote });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -766,7 +805,7 @@ router.post('/quotes', async (req: Request & { user?: any }, res: Response) => {
 router.patch('/quotes/:id/status', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const quote = await ConstructionQuoteModel.findOneAndUpdate(filter, { status: req.body.status }, { new: true, runValidators: true });
@@ -780,7 +819,7 @@ router.patch('/quotes/:id/status', async (req: Request & { user?: any }, res: Re
 router.delete('/quotes/:id', async (req: Request & { user?: any }, res: Response) => {
   try {
     const owner = ownedBy(req);
-    const isAdministrator = canAccessConstructionData(req);
+    const isAdministrator = isAdmin(req);
     const filter: any = { _id: req.params.id };
     if (!isAdministrator) filter.ownedBy = owner;
     const quote = await ConstructionQuoteModel.findOneAndDelete(filter);

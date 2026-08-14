@@ -55,6 +55,7 @@ export default function Navbar() {
     { href: '/', label: 'Home', icon: Home },
     { href: '/about', label: 'About', icon: Briefcase },
     { href: '/#services', label: 'Services', icon: Wrench },
+    { href: '/pos', label: 'POS', icon: ShoppingCart },
   ]
 
   // Additional nav items

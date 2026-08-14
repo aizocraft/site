@@ -39,7 +39,7 @@ const engineerSettingsSchema = new Schema<IEngineerSettings>({
   email: { type: String, trim: true, lowercase: true, default: '' },
   website: { type: String, trim: true, default: '' },
   taxRate: { type: Number, default: 0.075, min: 0, max: 1 },
-  currency: { type: String, default: 'NGN' },
+  currency: { type: String, default: 'KES' },
   quotePrefix: { type: String, default: 'BC-Q' },
   invoicePrefix: { type: String, default: 'BC-INV' },
   terms: { type: String, default: 'Payment due within 30 days of invoice date.' },

@@ -19,6 +19,8 @@ const navItems = [
   { name: 'Attendance', icon: ClipboardCheck, path: '/dashboard/construction/attendance', color: 'text-rose-500' },
   { name: 'Payments', icon: Wallet, path: '/dashboard/construction/payments', color: 'text-purple-500' },
   { name: 'Suppliers', icon: Truck, path: '/dashboard/construction/suppliers', color: 'text-cyan-500' },
+  { name: 'Quotes & Invoices', icon: ClipboardCheck, path: '/dashboard/construction/quotes', color: 'text-fuchsia-500' },
+  { name: 'Settings', icon: Wallet, path: '/dashboard/construction/settings', color: 'text-slate-500' },
 ];
 
 export default function ConstructionLayout({ children }: { children: React.ReactNode }) {
