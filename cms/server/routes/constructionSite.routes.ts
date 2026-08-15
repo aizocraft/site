@@ -48,8 +48,8 @@ router.get('/overview', async (req: Request & { user?: any }, res: Response) => 
     ]);
 
     const activeSites = sites.filter(s => s.status === 'active');
-    const totalBudget = sites.reduce((sum, s) => sum + (s.budget || 0), 0);
-    const totalSpent = sites.reduce((sum, s) => sum + (s.amountSpent || 0), 0);
+    const totalBudget = sites.reduce((sum, s) => sum + Number(s.budget?.total || 0), 0);
+    const totalSpent = sites.reduce((sum, s) => sum + Number(s.budget?.spent || 0), 0);
     const pendingAmount = payments.filter(p => p.status === 'pending').reduce((sum, p) => sum + (p.amount || 0), 0);
     const overdueAmount = payments.filter(p => p.status === 'overdue').reduce((sum, p) => sum + (p.amount || 0), 0);
     const paidCount = payments.filter(p => p.status === 'paid').length;

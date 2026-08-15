@@ -43,8 +43,8 @@ constructionEngineerSchema.index({ status: 1 });
 
 constructionEngineerSchema.pre('save', async function(next) {
   if (!this.engineerCode) {
-    const lastEngineer = await mongoose.models.ConstructionEngineer
-      ?.findOne({}).sort({ createdAt: -1 }).lean();
+    const lastEngineer = await (mongoose.models.ConstructionEngineer as any)
+      ?.findOne({}).sort({ createdAt: -1 }).lean() as { engineerCode?: string } | null;
     const lastNum = lastEngineer ? Number((lastEngineer.engineerCode || 'E000').replace(/\D/g, '')) || 0 : 0;
     this.engineerCode = `E${String(lastNum + 1).padStart(3, '0')}`;
   }
