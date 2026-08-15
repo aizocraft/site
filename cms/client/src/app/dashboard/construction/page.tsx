@@ -59,7 +59,7 @@ export default function ConstructionDashboard() {
     { name: 'Active Sites', value: stats?.activeSites ?? 0, subtitle: `${stats?.totalSites ?? 0} total sites`, icon: Building2, color: 'from-blue-500 to-indigo-600', trend: 'up', change: '+1 site' },
     { name: 'Active Workers', value: stats?.activeWorkers ?? 0, subtitle: 'Across all sites', icon: Users, color: 'from-emerald-500 to-green-600', trend: 'up', change: `+${stats?.activeWorkers ?? 0} workers` },
     { name: 'Total Budget', value: formatNairaCompact(stats?.totalBudget ?? 0), subtitle: 'All projects combined', icon: Wallet, color: 'from-amber-500 to-orange-600', trend: 'up', change: '+5%' },
-    { name: 'Pending Payments', value: formatNairaCompact(stats?.pendingPayments ?? 0), subtitle: 'Requires action', icon: AlertTriangle, color: 'from-rose-500 to-red-600', trend: 'down', change: stats?.overdueAmount ? `₦${(stats.overdueAmount/1000).toFixed(0)}K` : '₦0' },
+    { name: 'Pending Payments', value: formatNairaCompact(stats?.pendingPayments ?? 0), subtitle: 'Requires action', icon: AlertTriangle, color: 'from-rose-500 to-red-600', trend: 'down', change: stats?.overdueAmount ? `KSh ${(stats.overdueAmount/1000).toFixed(0)}K` : 'KSh 0' },
   ];
 
   return (
@@ -127,7 +127,7 @@ export default function ConstructionDashboard() {
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tickFormatter={(v) => `₦${(v/1000000).toFixed(1)}M`} tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `KSh ${(v/1000000).toFixed(1)}M`} tick={{ fontSize: 12 }} />
                 <Tooltip formatter={(v: any) => formatNaira(v)} labelStyle={{ color: '#111' }} />
                 <Bar dataKey="amount" fill="#2563eb" radius={[6,6,0,0]} />
               </BarChart>

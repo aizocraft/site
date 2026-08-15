@@ -29,6 +29,7 @@ export default function DashboardLayout({
   const { data: companySettings, isLoading: settingsLoading } = useCompanySettings()
   const { theme, toggleTheme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   
@@ -280,14 +281,16 @@ const navigation = user?.role === 'engineer'
 
         {/* Sidebar */}
         <div className={`
-          fixed inset-y-0 left-0 z-50 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/70 dark:border-gray-800/50 shadow-xl
+          fixed inset-y-0 left-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/70 dark:border-gray-800/50 shadow-xl
           transform transition-transform duration-300 ease-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:relative lg:translate-x-0 flex flex-col
+          ${sidebarCollapsed ? 'lg:w-24' : 'lg:w-72'}
+          ${!sidebarCollapsed ? 'w-80' : 'w-72'}
         `}>
           {/* Logo Section - Using Company Settings */}
-          <div className="flex h-20 items-center justify-between px-6 border-b border-gray-200/50 dark:border-gray-800/50 shrink-0">
-            <Link href="/" className="flex items-center gap-3 group">
+          <div className="flex h-20 items-center justify-between px-4 border-b border-gray-200/50 dark:border-gray-800/50 shrink-0">
+            <Link href="/" className={`flex items-center gap-3 group ${sidebarCollapsed ? 'justify-center w-full' : ''}`}>
               <div className="relative">
                 <div className="h-10 w-10 rounded-xl bg-white dark:bg-gray-800 shadow-lg group-hover:scale-105 transition-transform duration-200 overflow-hidden flex items-center justify-center border border-gray-200 dark:border-gray-700">
                   {faviconUrl ? (
@@ -306,13 +309,22 @@ const navigation = user?.role === 'engineer'
                   )}
                 </div>
               </div>
-              <div>
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-200 cursor-pointer" onClick={() => router.push('/')}>
-                  {companyName}
-                </span>
-                <span className="text-xs text-gray-500 block -mt-1">{companyTagline}</span>
-              </div>
+              {!sidebarCollapsed && (
+                <div>
+                  <span className="text-xl font-bold text-slate-900 dark:text-white group-hover:scale-105 transition-transform duration-200 cursor-pointer" onClick={() => router.push('/')}>
+                    {companyName}
+                  </span>
+                  <span className="text-xs text-gray-500 block -mt-1">{companyTagline}</span>
+                </div>
+              )}
             </Link>
+            <button
+              className="hidden lg:flex p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {sidebarCollapsed ? <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-300" /> : <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-300 rotate-180" />}
+            </button>
             <button 
               className="lg:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
               onClick={() => setSidebarOpen(false)}
@@ -337,20 +349,20 @@ const navigation = user?.role === 'engineer'
                     className={`
                       group relative flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 w-full
                       ${isActive 
-                        ? 'bg-gradient-to-r from-blue-600/10 to-indigo-600/10 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-700 dark:text-blue-400 shadow-sm' 
+                        ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100 shadow-sm' 
                         : 'text-gray-700 hover:bg-gray-100/80 dark:text-gray-300 dark:hover:bg-gray-800/60'
                       }
                     `}
                   >
                     <Icon className={`h-5 w-5 transition-all ${isActive ? item.color : 'text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300'}`} />
-                    <span>{item.name}</span>
+                    {!sidebarCollapsed && <span>{item.name}</span>}
                     {showBadge && (
                       <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
                         {unreadCount > 99 ? '99+' : unreadCount}
                       </span>
                     )}
                     {isActive && (
-                      <div className="absolute left-0 w-1 h-8 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-r-full" />
+                      <div className="absolute left-0 w-1 h-8 bg-slate-900 dark:bg-slate-100 rounded-r-full" />
                     )}
                   </button>
                 )

@@ -268,7 +268,7 @@ function MaterialModal({ material, sites, suppliers, onClose, onSaved }: {
               </select>
             </Field>
             <Field label="Reorder Level"><input type="number" value={form.reorderLevel} onChange={(e) => setForm({ ...form, reorderLevel: e.target.value })} className={inputClass} placeholder="200" /></Field>
-            <Field label="Unit Cost (₦) *"><input required type="number" value={form.unitCost} onChange={(e) => setForm({ ...form, unitCost: e.target.value })} className={inputClass} placeholder="4200" /></Field>
+            <Field label="Unit Cost (KSh) *"><input required type="number" value={form.unitCost} onChange={(e) => setForm({ ...form, unitCost: e.target.value })} className={inputClass} placeholder="4200" /></Field>
             <Field label="Last Delivery Date"><input type="date" value={form.lastDelivery} onChange={(e) => setForm({ ...form, lastDelivery: e.target.value })} className={inputClass} /></Field>
             <Field label="Supplier">
               <select value={form.supplier} onChange={(e) => setForm({ ...form, supplier: e.target.value })} className={inputClass}>

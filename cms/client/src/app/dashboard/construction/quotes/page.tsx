@@ -5,13 +5,13 @@ import { jsPDF } from 'jspdf';
 import toast from 'react-hot-toast';
 import { FileText, Search, Download, PencilLine, Plus, Trash2, Save, X } from 'lucide-react';
 import { constructionApi, ConstructionQuote } from '@/lib/construction';
-import { useQuotes } from '@/lib/useConstructionData';
+import { useConstructionSettings, useQuotes } from '@/lib/useConstructionData';
 
-const formatCurrency = (value: number) => new Intl.NumberFormat('en-KE', {
+const getCurrencyFormatter = (currency = 'KES') => new Intl.NumberFormat('en-KE', {
   style: 'currency',
-  currency: 'KES',
+  currency,
   maximumFractionDigits: 2,
-}).format(value || 0);
+});
 
 const emptyItem = () => ({
   name: '',
@@ -58,7 +58,10 @@ export default function ConstructionQuotesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<any>(createEmptyForm('quotation'));
+  const { data: settings } = useConstructionSettings();
   const { data = [], isLoading, refetch } = useQuotes({ type });
+  const currencyCode = settings?.currency || 'KES';
+  const formatCurrency = (value: number) => getCurrencyFormatter(currencyCode).format(value || 0);
 
   const filtered = useMemo(() => {
     const text = search.toLowerCase();
@@ -222,8 +225,8 @@ export default function ConstructionQuotesPage() {
             <tr><th>Item</th><th>Description</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr>
             ${safeItems.map((item) => `<tr><td>${item.name}</td><td>${item.description}</td><td>${item.qty}</td><td>${item.unit}</td><td>${item.price}</td><td>${item.total}</td></tr>`).join('')}
           </table>
-          <p><strong>Subtotal:</strong> KES ${record.subtotal || 0}</p>
-          <p><strong>Total:</strong> KES ${record.total || 0}</p>
+          <p><strong>Subtotal:</strong> ${currencyCode} ${record.subtotal || 0}</p>
+          <p><strong>Total:</strong> ${currencyCode} ${record.total || 0}</p>
         </body></html>
       `;
       downloadBlob(new Blob([html], { type: 'application/msword' }), `${record.docNumber || 'document'}.doc`);
@@ -268,13 +271,13 @@ export default function ConstructionQuotesPage() {
 
     y += 10;
     doc.setFont('helvetica', 'bold');
-    doc.text(`Subtotal: KES ${(record.subtotal || 0).toLocaleString()}`, 390, y);
+doc.text(`Subtotal: ${currencyCode} ${(record.subtotal || 0).toLocaleString()}`, 390, y);
     y += 18;
-    doc.text(`Tax: KES ${(record.tax || 0).toLocaleString()}`, 390, y);
+    doc.text(`Tax: ${currencyCode} ${(record.tax || 0).toLocaleString()}`, 390, y);
     y += 18;
-    doc.text(`Transport: KES ${(record.transport || 0).toLocaleString()}`, 390, y);
+    doc.text(`Transport: ${currencyCode} ${(record.transport || 0).toLocaleString()}`, 390, y);
     y += 18;
-    doc.text(`Total: KES ${(record.total || 0).toLocaleString()}`, 390, y);
+    doc.text(`Total: ${currencyCode} ${(record.total || 0).toLocaleString()}`, 390, y);
 
     doc.save(`${record.docNumber || 'document'}.pdf`);
   };

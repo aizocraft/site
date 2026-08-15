@@ -381,7 +381,7 @@ router.put('/:id', authMiddleware, async (req: Request, res: Response) => {
 
   // Admin-only fields
 if ((req.user as AuthUser)?.role === 'admin') {
-  if (role && ['user', 'sales', 'admin'].includes(role)) {
+  if (role && ['user', 'sales', 'admin', 'engineer'].includes(role)) {
     updateData.role = role;
   }
   if (typeof isActive === 'boolean') {

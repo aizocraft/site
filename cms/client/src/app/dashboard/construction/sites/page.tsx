@@ -338,13 +338,13 @@ function SiteModal({ site, engineers, onClose, onSaved }: {
               <Field label="Expected End Date *">
                 <input required type="date" value={form.expectedEndDate} onChange={(e) => setForm({ ...form, expectedEndDate: e.target.value })} className={inputClass} />
               </Field>
-              <Field label="Total Budget (₦) *">
+              <Field label="Total Budget (KSh) *">
                 <input required type="number" value={form.budget} onChange={(e) => setForm({ ...form, budget: e.target.value })} className={inputClass} placeholder="e.g. 5000000" />
               </Field>
               <Field label="Progress (%)">
                 <input type="number" min="0" max="100" value={form.progress} onChange={(e) => setForm({ ...form, progress: e.target.value })} className={inputClass} />
               </Field>
-              <Field label="Amount Spent (₦)">
+              <Field label="Amount Spent (KSh)">
                 <input type="number" value={form.amountSpent} onChange={(e) => setForm({ ...form, amountSpent: e.target.value })} className={inputClass} />
               </Field>
             </div>

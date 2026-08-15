@@ -275,6 +275,10 @@ router.post('/engineers', async (req: Request & { user?: any }, res: Response) =
     const { user: linkedUserId, ...rest } = req.body;
     const engineer = new ConstructionEngineerModel({
       ...rest,
+      status: rest.status || 'active',
+      specialty: rest.specialty || 'Civil Engineering',
+      monthlySalary: Number(rest.monthlySalary || 0),
+      experienceYears: Number(rest.experienceYears || 0),
       ownedBy: owner,
       createdBy: owner,
     });

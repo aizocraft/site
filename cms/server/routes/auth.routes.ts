@@ -12,9 +12,8 @@ router.post('/register', async (req: Request, res: Response) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Only allow 'user' role for public registration
-    const allowedRole = role === 'sales' ? 'user' : 'user';
-    
+    const allowedRole = role === 'engineer' ? 'engineer' : role === 'sales' ? 'sales' : 'user';
+
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });

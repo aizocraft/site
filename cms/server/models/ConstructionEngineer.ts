@@ -21,7 +21,7 @@ export interface IConstructionEngineer extends Document {
 }
 
 const constructionEngineerSchema = new Schema<IConstructionEngineer>({
-  engineerCode: { type: String, required: true },
+  engineerCode: { type: String, required: true, unique: true, trim: true },
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
   email: { type: String, required: true, lowercase: true, trim: true },
@@ -41,10 +41,12 @@ const constructionEngineerSchema = new Schema<IConstructionEngineer>({
 constructionEngineerSchema.index({ ownedBy: 1 });
 constructionEngineerSchema.index({ status: 1 });
 
-// Auto engineerCode
-constructionEngineerSchema.pre('save', function(next) {
+constructionEngineerSchema.pre('save', async function(next) {
   if (!this.engineerCode) {
-    this.engineerCode = `E${Date.now().toString().slice(-4)}`;
+    const lastEngineer = await mongoose.models.ConstructionEngineer
+      ?.findOne({}).sort({ createdAt: -1 }).lean();
+    const lastNum = lastEngineer ? Number((lastEngineer.engineerCode || 'E000').replace(/\D/g, '')) || 0 : 0;
+    this.engineerCode = `E${String(lastNum + 1).padStart(3, '0')}`;
   }
   next();
 });

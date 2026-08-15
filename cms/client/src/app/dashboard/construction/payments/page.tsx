@@ -295,7 +295,7 @@ function PaymentModal({ payment, workers, engineers, suppliers, onClose, onSaved
             </select>
           </Field>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Amount (₦) *"><input required type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={inputClass} placeholder="234000" /></Field>
+            <Field label="Amount (KSh) *"><input required type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={inputClass} placeholder="234000" /></Field>
             <Field label="Status">
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={inputClass}>
                 <option value="pending">Pending</option>

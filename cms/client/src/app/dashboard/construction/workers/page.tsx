@@ -259,7 +259,7 @@ function WorkerModal({ worker, sites, onClose, onSaved }: {
                 ))}
               </select>
             </Field>
-            <Field label="Daily Rate (₦) *"><input required type="number" value={form.dailyRate} onChange={(e) => setForm({ ...form, dailyRate: e.target.value })} className={inputClass} placeholder="8500" /></Field>
+            <Field label="Daily Rate (KSh) *"><input required type="number" value={form.dailyRate} onChange={(e) => setForm({ ...form, dailyRate: e.target.value })} className={inputClass} placeholder="8500" /></Field>
             <Field label="Status">
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={inputClass}>
                 <option value="active">Active</option>

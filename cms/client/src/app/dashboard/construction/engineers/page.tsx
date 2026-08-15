@@ -248,7 +248,7 @@ function EngineerModal({ engineer, sites, onClose, onSaved }: {
                   ))}
                 </select>
               </Field>
-              <Field label="Monthly Salary (₦)"><input type="number" value={form.monthlySalary} onChange={(e) => setForm({ ...form, monthlySalary: e.target.value })} className={inputClass} placeholder="350000" /></Field>
+              <Field label="Monthly Salary (KSh)"><input type="number" value={form.monthlySalary} onChange={(e) => setForm({ ...form, monthlySalary: e.target.value })} className={inputClass} placeholder="350000" /></Field>
               <div className="sm:col-span-2">
                 <Field label="Notes"><textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className={inputClass} rows={3} /></Field>
               </div>
