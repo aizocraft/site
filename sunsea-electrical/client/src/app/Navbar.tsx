@@ -32,6 +32,8 @@ import { useAuth } from '@/lib/auth'
 import { useTheme } from '@/context/ThemeContext'
 import Avatar from '@/components/Avatar'
 import { useProfile } from '@/lib/profile'
+import { useCompanySettings } from '@/lib/use-company-settings'
+import { getLogoUrl } from '@/lib/company'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -43,6 +45,7 @@ export default function Navbar() {
   const { totalItems, loading: cartLoading } = useCartStore()
   const { user, isLoggedIn, loading: authLoading, logout, isAdmin, isSales } = useAuth()
   const { profile } = useProfile()
+  const { data: company } = useCompanySettings()
   const { theme, toggleTheme } = useTheme()
   const router = useRouter()
   const pathname = usePathname()
@@ -145,8 +148,8 @@ export default function Navbar() {
     )
   }
 
-  const logoUrl = '/logo.png'
-  const companyName = 'SunSea Electrical'
+  const logoUrl = getLogoUrl(company) || '/logo.png'
+  const companyName = company?.companyName || 'SunSea Electrical'
 
   return (
     <>

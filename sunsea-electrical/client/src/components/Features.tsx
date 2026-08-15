@@ -14,70 +14,62 @@ import { motion } from 'framer-motion'
 
 // Partner logos configuration
 const partnerLogos = [
-  { 
-    src: "/logos/dayliff.png", 
-    alt: "Dayliff", 
-    href: "https://www.dayliff.com",
+  {
+    src: "/logos/ingco.png",
+    alt: "Ingco",
+    href: "https://ingco.com",
     width: 160,
-    height: 80
+    height: 80,
   },
-  { 
-    src: "/logos/grundfos.png", 
-    alt: "Grundfos", 
-    href: "https://www.grundfos.com",
+  {
+    src: "/logos/hager-logo.webp",
+    alt: "Hager",
+    href: "https://www.hager.com",
     width: 160,
-    height: 100
+    height: 100,
   },
-  { 
-    src: "/logos/taflo.png", 
-    alt: "Taflo", 
+  {
+    src: "/logos/taflo.png",
+    alt: "Taflo",
     href: "https://www.taflo.com",
     width: 160,
-    height: 80
+    height: 80,
   },
-  { 
-    src: "/logos/pedrollo.png", 
-    alt: "Pedrollo", 
-    href: "https://pedrollo.com",
-    width: 160,
-    height: 80
-  },
-  { 
-    src: "/logos/deye.png", 
-    alt: "Deye",
-    href: "https://www.deyeinverter.com",
-    width: 160,
-    height: 80
-  },  
-  { 
-    src: "/logos/doyin.png", 
-    alt: "Doyin",
-    href: "https://doyin.com",
-    width: 160,
-    height: 80
-  },
-  { 
-    src: "/logos/genvik.png", 
-    alt: "Genvik",
-    href: "https://genvik.com",
-    width: 160,
-    height: 80
-  },
-  { 
-    src: "/logos/megatank.png", 
-    alt: "Megatank",
-    href: "https://megatank.com",
-    width: 160,
-    height: 80
-  },
-  { 
-    src: "/logos/snre.png", 
+  {
+    src: "/logos/snre.png",
     alt: "SNRE",
     href: "https://www.snre.com",
     width: 160,
-    height: 80
+    height: 80,
   },
-
+  {
+    src: "/logos/legrand-logo-desktop.svg",
+    alt: "Legrand",
+    href: "https://www.legrand.com",
+    width: 180,
+    height: 80,
+  },
+  {
+    src: "/logos/samsung-logo.svg",
+    alt: "Samsung",
+    href: "https://www.samsung.com",
+    width: 180,
+    height: 80,
+  },
+  {
+    src: "/logos/Schneider.svg",
+    alt: "Schneider Electric",
+    href: "https://www.se.com",
+    width: 180,
+    height: 80,
+  },
+  {
+    src: "/logos/siemens.png",
+    alt: "Siemens",
+    href: "https://www.siemens.com",
+    width: 180,
+    height: 80,
+  },
 ]
 
 const features = [

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCompanySettings } from '@/lib/use-company-settings'
+import { getLogoUrl } from '@/lib/company'
 import Link from 'next/link'
 import { 
   Phone, 
@@ -20,6 +21,8 @@ import { useState, useEffect } from 'react'
 
 export default function Footer() {
   const { data: company } = useCompanySettings()
+  const companyName = company?.companyName || 'SunSea Electrical'
+  const footerLogoUrl = getLogoUrl(company) || '/logo.png'
   const currentYear = new Date().getFullYear()
   const [email, setEmail] = useState('')
   const [isHovered, setIsHovered] = useState<string | null>(null)
@@ -89,11 +92,11 @@ export default function Footer() {
                 onMouseEnter={() => setIsHovered('brand')}
                 onMouseLeave={() => setIsHovered(null)}
               >
-                {company?.logo && (
+                {footerLogoUrl && (
                   <div className="relative">
                     <img 
-                      src={company.logo.url || `/api/company/logo/${company.logo.fileId}`} 
-                      alt={company.companyName} 
+                      src={footerLogoUrl}
+                      alt={companyName}
                       className="w-10 h-10 md:w-11 md:h-11 rounded-xl object-contain bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 p-2 transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg"
                     />
                     <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 transition-opacity duration-500 ${isHovered === 'brand' ? 'opacity-100' : 'opacity-0'}`} />
@@ -101,7 +104,7 @@ export default function Footer() {
                 )}
                 <div>
                   <div className="font-bold text-lg md:text-xl bg-gradient-to-r from-gray-900 via-gray-800 to-gray-600 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent bg-300% animate-gradient">
-                    {company?.companyName || 'SunSea Electrical'}
+                    {companyName}
                   </div>
                   {company?.slogan && (
                     <div className="text-blue-600 dark:text-blue-400 text-[11px] md:text-xs font-medium tracking-wide mt-0.5 flex items-center gap-1">

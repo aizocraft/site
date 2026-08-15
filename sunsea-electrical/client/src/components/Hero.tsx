@@ -25,17 +25,16 @@ export default function Hero() {
     <>
       <section 
         ref={heroRef} 
-        className="relative min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden bg-white dark:bg-gray-950"
+        className="relative min-h-[72vh] sm:min-h-[80vh] lg:min-h-[90vh] flex items-center overflow-hidden bg-white dark:bg-gray-950"
       >
         {/* Right side image */}
-        <div className="absolute inset-y-0 right-0 w-full lg:w-1/2 z-0">
+        <div className="absolute inset-0 lg:inset-y-0 lg:right-0 lg:left-auto lg:w-1/2 z-0">
           <img 
             src="/poster.png" 
             alt="SunSea Electrical - Electrical Engineering"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-center opacity-100"
           />
-{/* Soft solid overlay for blending on mobile */}
-          <div className="absolute inset-0 bg-white/70 dark:bg-gray-950/80 lg:bg-white/40 dark:lg:bg-gray-950/40" />
+          <div className="absolute inset-0 bg-white/80 dark:bg-gray-950/75 lg:bg-white/25 dark:lg:bg-gray-950/35" />
         </div>
 
         {/* Subtle decorative orbs - solid faint colors, no gradients */}
@@ -54,7 +53,7 @@ export default function Hero() {
 
         {/* Content - Left side */}
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
-          <div className="max-w-xl lg:max-w-2xl">
+          <div className="max-w-xl lg:max-w-2xl pt-6 sm:pt-0">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

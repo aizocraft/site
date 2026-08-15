@@ -9,7 +9,7 @@ import Link from 'next/link'
 import toast, { Toaster } from 'react-hot-toast'
 import { 
   LayoutDashboard, Package, ShoppingCart, Users, Settings, Truck,
-  Menu, X, Search, Star, ChevronRight, Bell, User, LogOut, 
+  Menu, X, Search, Star, ChevronRight, ChevronLeft, Bell, User, LogOut, 
   BarChart3, AlertCircle, Moon, ClipboardList, Sun, AlertTriangle,
   Receipt, MessageSquare, Mail
 } from 'lucide-react'
@@ -29,6 +29,7 @@ export default function DashboardLayout({
   const { data: companySettings, isLoading: settingsLoading } = useCompanySettings()
   const { theme, toggleTheme } = useTheme()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   
@@ -259,14 +260,16 @@ export default function DashboardLayout({
 
         {/* Sidebar */}
         <div className={`
-          fixed inset-y-0 left-0 z-50 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/70 dark:border-gray-800/50 shadow-xl
-          transform transition-transform duration-300 ease-out
+          fixed inset-y-0 left-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-r border-gray-200/70 dark:border-gray-800/50 shadow-xl
+          transform transition-all duration-300 ease-out flex flex-col
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:relative lg:translate-x-0 flex flex-col
+          ${sidebarCollapsed ? 'lg:w-24' : 'lg:w-72'}
+          w-[85vw] sm:w-80
+          lg:relative lg:translate-x-0
         `}>
           {/* Logo Section - Using Company Settings */}
-          <div className="flex h-20 items-center justify-between px-6 border-b border-gray-200/50 dark:border-gray-800/50 shrink-0">
-            <Link href="/" className="flex items-center gap-3 group">
+          <div className={`flex h-20 items-center justify-between border-b border-gray-200/50 dark:border-gray-800/50 shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'px-3' : 'px-5'}`}>
+            <Link href="/" className={`flex items-center group transition-all duration-300 ${sidebarCollapsed ? 'justify-center w-full' : 'gap-3'}`}>
               <div className="relative">
                 <div className="h-10 w-10 rounded-xl bg-white dark:bg-gray-800 shadow-lg group-hover:scale-105 transition-transform duration-200 overflow-hidden flex items-center justify-center border border-gray-200 dark:border-gray-700">
                   {faviconUrl ? (
@@ -285,47 +288,64 @@ export default function DashboardLayout({
                   )}
                 </div>
               </div>
-              <div>
-                <span className="text-xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-200 cursor-pointer" onClick={() => router.push('/')}>
-                  {companyName}
-                </span>
-                <span className="text-xs text-gray-500 block -mt-1">{companyTagline}</span>
-              </div>
+              {!sidebarCollapsed && (
+                <div className="overflow-hidden transition-all duration-300">
+                  <span className="text-xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-200 cursor-pointer" onClick={() => router.push('/')}>
+                    {companyName}
+                  </span>
+                  <span className="text-xs text-gray-500 block -mt-1">{companyTagline}</span>
+                </div>
+              )}
             </Link>
-            <button 
-              className="lg:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSidebarCollapsed((prev) => !prev)}
+                className="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-600 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-blue-500/40 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+              </button>
+              <button 
+                className="lg:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+              </button>
+            </div>
           </div>
 
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto px-3 py-6">
-            <div className="space-y-1">
+          <nav className="flex-1 overflow-y-auto px-2 py-6">
+            <div className="space-y-1.5">
               {navigation.map((item) => {
                 const Icon = item.icon
                 const isActive = activePage === item.page
-                // Show badge on notifications icon in sidebar if unread > 0
                 const showBadge = item.page === 'notifications' && unreadCount > 0
                 return (
                   <button
                     key={item.name}
                     onClick={() => handleNavigation(item.path, item.page as any)}
                     className={`
-                      group relative flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 w-full
+                      group relative flex items-center rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200 w-full
+                      ${sidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-4'}
                       ${isActive 
                         ? 'bg-gradient-to-r from-blue-600/10 to-indigo-600/10 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-700 dark:text-blue-400 shadow-sm' 
                         : 'text-gray-700 hover:bg-gray-100/80 dark:text-gray-300 dark:hover:bg-gray-800/60'
                       }
                     `}
                   >
-                    <Icon className={`h-5 w-5 transition-all ${isActive ? item.color : 'text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300'}`} />
-                    <span>{item.name}</span>
-                    {showBadge && (
+                    <Icon className={`h-5 w-5 shrink-0 transition-all ${isActive ? item.color : 'text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300'}`} />
+                    {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
+                    {showBadge && !sidebarCollapsed && (
                       <span className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
                         {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                    {showBadge && sidebarCollapsed && (
+                      <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                        {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
                     {isActive && (
@@ -338,13 +358,13 @@ export default function DashboardLayout({
           </nav>
 
           {/* Sign Out Button */}
-          <div className="p-4 pt-0 shrink-0 border-t border-gray-200/50 dark:border-gray-800/50">
+          <div className={`shrink-0 border-t border-gray-200/50 dark:border-gray-800/50 transition-all duration-300 ${sidebarCollapsed ? 'p-2' : 'p-4 pt-0'}`}>
             <button 
               onClick={() => setShowLogoutModal(true)}
-              className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/50 text-red-600 dark:text-red-400 hover:text-red-700 font-medium transition-all group"
+              className={`flex items-center w-full rounded-xl hover:bg-red-50 dark:hover:bg-red-950/50 text-red-600 dark:text-red-400 hover:text-red-700 font-medium transition-all group ${sidebarCollapsed ? 'justify-center p-3' : 'gap-3 p-3'}`}
             >
               <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Sign Out</span>
+              {!sidebarCollapsed && <span>Sign Out</span>}
             </button>
           </div>
         </div>

@@ -10,7 +10,7 @@ import UserModel from '../models/User';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const DEFAULT_LOGO_URL = process.env.DEFAULT_LOGO_URL || 'https://res.cloudinary.com/duxnsu61a/image/upload/v1775217946/logo_upxr11.png';
+const DEFAULT_LOGO_URL = process.env.DEFAULT_LOGO_URL || 'https://res.cloudinary.com/duxnsu61a/image/upload/v1786791785/logo_y5yjxh.png';
 const router = Router();
 
 // Multer configuration
