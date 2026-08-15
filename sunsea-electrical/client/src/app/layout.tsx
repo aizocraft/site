@@ -20,13 +20,18 @@ export const metadata: Metadata = {
     default: 'SunSea Electrical | Electrical Engineering & Power Solutions in Kenya',
     template: '%s | SunSea Electrical',
   },
-description:
+  description:
     'SunSea Electrical — full-service electrical engineering and construction company in Kenya since 2010. Led by David Munene, we deliver industrial power systems, solar energy solutions, generator systems, borehole drilling & water solutions, smart building systems, CCTV & networking, and professional electrical installation (wiring, piping, sockets, switches, consumer units). Serving Nairobi, Embu, Meru, Nyeri, Tharaka-Nithi, Kirinyaga, Nakuru, Mombasa, Eldoret, Kisumu, Kiambu, Machakos and across Kenya.',
+  abstract:
+    'Electrical engineering, solar energy, power systems, generator installation, CCTV, networking, water systems, and construction services across Kenya.',
   applicationName: COMPANY.name,
   authors: [{ name: 'David Munene', url: COMPANY.url }, { name: COMPANY.name, url: COMPANY.url }],
   creator: 'David Munene',
   publisher: COMPANY.name,
   category: 'Electrical Engineering & Construction',
+  classification:
+    'Electrical contractor, solar energy, power systems, generator installation, borehole drilling, CCTV, networking and building services in Kenya',
+  referrer: 'origin-when-cross-origin',
   keywords: [
     'SunSea Electrical',
     'SunSea Electrical company',
@@ -148,6 +153,11 @@ description:
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  other: {
+    'X-Robots-Tag': 'index,follow,max-image-preview:large,max-snippet:-1',
+    'AI-Search-Index': 'index',
+    'robots': 'index,follow',
   },
   icons: {
     icon: '/icon.png',

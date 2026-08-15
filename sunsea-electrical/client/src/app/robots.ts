@@ -14,12 +14,27 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
       },
       {
+        userAgent: 'Google-Extended',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
         userAgent: 'GPTBot',
         allow: '/',
         disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
       },
       {
-        userAgent: 'Google-Extended',
+        userAgent: 'ChatGPT-User',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
+        userAgent: 'OpenAI',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
+        userAgent: 'OAI-SearchBot',
         allow: '/',
         disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
       },
@@ -29,11 +44,21 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
       },
       {
+        userAgent: 'AnthropicAI',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
         userAgent: 'PerplexityBot',
         allow: '/',
         disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
       },
-{
+      {
+        userAgent: 'Perplexity',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
         userAgent: 'Bingbot',
         allow: '/',
         disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
@@ -80,6 +105,21 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: 'Meta-ExternalAgent',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
+        userAgent: 'facebookexternalhit',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
+        userAgent: 'LinkedInBot',
+        allow: '/',
+        disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
+      },
+      {
+        userAgent: 'BraveBot',
         allow: '/',
         disallow: ['/dashboard', '/sales', '/admin', '/checkout', '/auth'],
       },
