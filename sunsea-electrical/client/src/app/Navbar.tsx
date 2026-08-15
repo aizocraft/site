@@ -210,7 +210,7 @@ export default function Navbar() {
               >
                 <div className="relative h-12 w-40 sm:h-14 sm:w-48 md:h-16 md:w-56 lg:h-20 lg:w-64">
                   <Image
-                    src={logoUrl}
+                    src='https://res.cloudinary.com/duxnsu61a/image/upload/v1786791785/logo_y5yjxh.png'
                     alt={companyName}
                     fill
                     className="object-contain"
