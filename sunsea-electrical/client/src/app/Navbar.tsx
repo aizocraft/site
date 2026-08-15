@@ -148,7 +148,8 @@ export default function Navbar() {
     )
   }
 
-  const logoUrl = getLogoUrl(company) || '/logo.png'
+  const defaultLogoUrl = 'https://res.cloudinary.com/duxnsu61a/image/upload/v1786791785/logo_y5yjxh.png'
+  const logoUrl = getLogoUrl(company) || defaultLogoUrl
   const companyName = company?.companyName || 'SunSea Electrical'
 
   return (
@@ -159,21 +160,35 @@ export default function Navbar() {
           bannerVisible ? 'max-h-12 opacity-100 translate-y-0' : 'max-h-0 opacity-0 -translate-y-full'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 h-12 flex items-center justify-between">
-          <div className="flex items-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <PhoneCall className="w-4 h-4 text-[#4a9eff]" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 h-12 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-6 text-[11px] sm:text-sm min-w-0">
+            <a
+              href="tel:+254784909466"
+              className="inline-flex items-center gap-1.5 sm:gap-2 text-white hover:text-[#4a9eff] transition-colors duration-200 shrink-0"
+              aria-label="Call SunSea Electrical"
+            >
+              <PhoneCall className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#4a9eff]" />
               <span className="font-medium">Call 0784 909 466</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-2">
+            </a>
+            <a
+              href="https://wa.me/254784909466"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 sm:gap-2 text-white hover:text-[#25D366] transition-colors duration-200 shrink-0"
+              aria-label="Chat on WhatsApp"
+            >
+              <span className="text-base sm:text-lg">✆</span>
+              <span className="font-medium">WhatsApp</span>
+            </a>
+            <div className="hidden sm:flex items-center gap-2 min-w-0">
               <span className="w-px h-4 bg-white/20" />
-              <Truck className="w-4 h-4 text-[#4a9eff]" />
-              <span>Free shipping on orders over 150K</span>
+              <Truck className="w-4 h-4 text-[#4a9eff] shrink-0" />
+              <span className="truncate">Free shipping on orders over 150K</span>
             </div>
           </div>
           <button 
             onClick={() => setBannerVisible(false)}
-            className="text-white/60 hover:text-white transition-colors duration-200 p-1"
+            className="text-white/60 hover:text-white transition-colors duration-200 p-1 shrink-0"
             aria-label="Close banner"
           >
             <X className="w-4 h-4" />
