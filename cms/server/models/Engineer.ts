@@ -14,6 +14,7 @@ export interface IEngineer extends Document {
   monthlySalary: number;
   status: 'active' | 'inactive';
   notes?: string;
+  user?: mongoose.Types.ObjectId; // Link to auth user
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -33,8 +34,33 @@ const engineerSchema = new Schema<IEngineer>({
   monthlySalary: { type: Number, default: 0 },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   notes: { type: String },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
-const EngineerModel: Model<IEngineer> = mongoose.model<IEngineer>('Engineer', engineerSchema);
+// Auto-generate engineer code
+engineerSchema.pre('save', async function(next) {
+  if (!this.engineerCode) {
+    const lastEngineer = await mongoose.models.Engineer?.findOne()
+      .sort({ createdAt: -1 })
+      .lean() as { engineerCode?: string } | null;
+    
+    const lastNum = lastEngineer?.engineerCode 
+      ? parseInt(lastEngineer.engineerCode.replace(/\D/g, ''), 10) 
+      : 100;
+    
+    this.engineerCode = `E${String(lastNum + 1).padStart(3, '0')}`;
+  }
+  next();
+});
+
+// Indexes
+engineerSchema.index({ createdBy: 1 });
+engineerSchema.index({ email: 1 });
+engineerSchema.index({ status: 1 });
+engineerSchema.index({ assignedSite: 1 });
+
+const EngineerModel: Model<IEngineer> = mongoose.models.Engineer || 
+  mongoose.model<IEngineer>('Engineer', engineerSchema);
+
 export default EngineerModel;

@@ -7,7 +7,7 @@ import {
   Users, Plus, Search, Trash2, Pencil, X, Wallet, Eye, Filter
 } from 'lucide-react';
 import { useWorkers, useSites } from '@/lib/useConstructionData';
-import { constructionApi, formatNaira, getStatusColor, getInitials } from '@/lib/construction';
+import { constructionApi, formatCurrency, getStatusColor, getInitials } from '@/lib/construction';
 
 const roles = ['Mason', 'Electrician', 'Welder', 'Plumber', 'Labourer', 'Carpenter', 'Foreman', 'Painter', 'Scaffolder', 'Site Clerk', 'Steel Fixer', 'Tiler'];
 
@@ -58,7 +58,7 @@ export default function WorkersPage() {
 
   const handlePay = async (worker: any) => {
     const amount = worker.dailyRate * 20; // approx monthly
-    if (!confirm(`Process payment of ${formatNaira(amount)} for ${worker.firstName} ${worker.lastName}?`)) return;
+    if (!confirm(`Process payment of ${formatCurrency(amount)} for ${worker.firstName} ${worker.lastName}?`)) return;
     try {
       await constructionApi.createPayment({
         recipientType: 'worker',
@@ -141,7 +141,7 @@ export default function WorkersPage() {
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{w.role}</td>
                   <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{w.siteName || '—'}</td>
-                  <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">{formatNaira(w.dailyRate)}</td>
+                  <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">{formatCurrency(w.dailyRate)}</td>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -150,7 +150,7 @@ export default function WorkersPage() {
                       <span className="text-sm text-gray-700 dark:text-gray-300">{w.attendanceRate}%</span>
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatNaira(w.totalEarned)}</td>
+                  <td className="px-4 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(w.totalEarned)}</td>
                   <td className="px-4 py-4"><span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(w.status)}`}>{w.status}</span></td>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-1">
@@ -259,7 +259,7 @@ function WorkerModal({ worker, sites, onClose, onSaved }: {
                 ))}
               </select>
             </Field>
-            <Field label="Daily Rate (KSh) *"><input required type="number" value={form.dailyRate} onChange={(e) => setForm({ ...form, dailyRate: e.target.value })} className={inputClass} placeholder="8500" /></Field>
+            <Field label="Daily Rate *"><input required type="number" value={form.dailyRate} onChange={(e) => setForm({ ...form, dailyRate: e.target.value })} className={inputClass} placeholder="8500" /></Field>
             <Field label="Status">
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={inputClass}>
                 <option value="active">Active</option>

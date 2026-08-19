@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useOverview } from '@/lib/useConstructionData';
-import { formatNaira, formatNairaCompact, getProgressColor, getInitials, getStatusColor } from '@/lib/construction';
+import { formatCurrency, getProgressColor, getInitials, getStatusColor } from '@/lib/construction';
 
 export default function ConstructionDashboard() {
   const { data, isLoading, refetch, isFetching } = useOverview();
@@ -23,10 +23,8 @@ export default function ConstructionDashboard() {
 
   const stats = data?.stats;
   const sites = data?.sites || [];
-  const workers = data?.workers || [];
   const payments = data?.payments || [];
 
-  // Monthly expenditure chart data (mock 6 months)
   const chartData = useMemo(() => {
     if (!stats) return [];
     const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'];
@@ -58,8 +56,8 @@ export default function ConstructionDashboard() {
   const statCards = [
     { name: 'Active Sites', value: stats?.activeSites ?? 0, subtitle: `${stats?.totalSites ?? 0} total sites`, icon: Building2, color: 'from-blue-500 to-indigo-600', trend: 'up', change: '+1 site' },
     { name: 'Active Workers', value: stats?.activeWorkers ?? 0, subtitle: 'Across all sites', icon: Users, color: 'from-emerald-500 to-green-600', trend: 'up', change: `+${stats?.activeWorkers ?? 0} workers` },
-    { name: 'Total Budget', value: formatNairaCompact(stats?.totalBudget ?? 0), subtitle: 'All projects combined', icon: Wallet, color: 'from-amber-500 to-orange-600', trend: 'up', change: '+5%' },
-    { name: 'Pending Payments', value: formatNairaCompact(stats?.pendingPayments ?? 0), subtitle: 'Requires action', icon: AlertTriangle, color: 'from-rose-500 to-red-600', trend: 'down', change: stats?.overdueAmount ? `KSh ${(stats.overdueAmount/1000).toFixed(0)}K` : 'KSh 0' },
+    { name: 'Total Budget', value: formatCurrency(stats?.totalBudget ?? 0), subtitle: 'All projects combined', icon: Wallet, color: 'from-amber-500 to-orange-600', trend: 'up', change: '+5%' },
+    { name: 'Pending Payments', value: formatCurrency(stats?.pendingPayments ?? 0), subtitle: 'Requires action', icon: AlertTriangle, color: 'from-rose-500 to-red-600', trend: 'down', change: stats?.overdueAmount ? `${formatCurrency(stats.overdueAmount)}` : '0' },
   ];
 
   return (
@@ -115,7 +113,6 @@ export default function ConstructionDashboard() {
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Expenditure chart */}
         <div className="bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <Boxes className="w-5 h-5 text-blue-600" />
@@ -127,15 +124,14 @@ export default function ConstructionDashboard() {
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tickFormatter={(v) => `KSh ${(v/1000000).toFixed(1)}M`} tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(v: any) => formatNaira(v)} labelStyle={{ color: '#111' }} />
+                <YAxis tickFormatter={(v) => `${(v/1000000).toFixed(1)}M`} tick={{ fontSize: 12 }} />
+                <Tooltip formatter={(v: any) => formatCurrency(v)} labelStyle={{ color: '#111' }} />
                 <Bar dataKey="amount" fill="#2563eb" radius={[6,6,0,0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Site progress */}
         <div className="bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-800 p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <HardHat className="w-5 h-5 text-emerald-600" />
@@ -163,7 +159,6 @@ export default function ConstructionDashboard() {
 
       {/* Active sites + Payment status */}
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Active sites */}
         <div className="bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
           <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Sites</h3>
@@ -180,7 +175,7 @@ export default function ConstructionDashboard() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-gray-900 dark:text-white truncate">{site.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{site.location} · {site.workers} workers</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{site.location} · {site.workerCount} workers</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
@@ -195,7 +190,6 @@ export default function ConstructionDashboard() {
           </div>
         </div>
 
-        {/* Payment status */}
         <div className="bg-white dark:bg-gray-900/50 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
           <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Payment Status</h3>
@@ -203,7 +197,6 @@ export default function ConstructionDashboard() {
               View all <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
-          {/* Summary counts */}
           <div className="grid grid-cols-3 gap-2 p-4 border-b border-gray-200 dark:border-gray-800">
             <div className="text-center p-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20">
               <CheckCircle2 className="w-4 h-4 text-emerald-500 mx-auto" />
@@ -234,7 +227,7 @@ export default function ConstructionDashboard() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="font-semibold text-gray-900 dark:text-white">{formatNaira(payment.amount)}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{formatCurrency(payment.amount)}</p>
                   <span className={`text-xs font-medium ${payment.status === 'paid' ? 'text-emerald-500' : payment.status === 'pending' ? 'text-amber-500' : 'text-red-500'}`}>
                     {payment.status}
                   </span>
@@ -264,15 +257,15 @@ export default function ConstructionDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20">
             <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">Total Budget</p>
-            <p className="text-xl font-bold text-blue-800 dark:text-blue-300 mt-1">{formatNaira(stats?.totalBudget ?? 0)}</p>
+            <p className="text-xl font-bold text-blue-800 dark:text-blue-300 mt-1">{formatCurrency(stats?.totalBudget ?? 0)}</p>
           </div>
           <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20">
             <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Amount Spent</p>
-            <p className="text-xl font-bold text-emerald-800 dark:text-emerald-300 mt-1">{formatNaira(stats?.totalSpent ?? 0)}</p>
+            <p className="text-xl font-bold text-emerald-800 dark:text-emerald-300 mt-1">{formatCurrency(stats?.totalSpent ?? 0)}</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20">
             <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">Remaining</p>
-            <p className="text-xl font-bold text-amber-800 dark:text-amber-300 mt-1">{formatNaira(stats?.remainingBudget ?? 0)}</p>
+            <p className="text-xl font-bold text-amber-800 dark:text-amber-300 mt-1">{formatCurrency(stats?.remainingBudget ?? 0)}</p>
           </div>
         </div>
         <div className="mt-4 h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">

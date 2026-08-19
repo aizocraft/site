@@ -1,3 +1,4 @@
+// app/about/page.tsx
 import type { Metadata } from 'next'
 import About from './About'
 import { makeSeo } from '../seo'

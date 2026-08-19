@@ -7,7 +7,7 @@ import {
   Wallet, Plus, Search, Trash2, X, CheckCircle2, Clock, XCircle, Filter, Eye
 } from 'lucide-react';
 import { usePayments, useWorkers, useEngineers, useSuppliers } from '@/lib/useConstructionData';
-import { constructionApi, formatNaira, getStatusColor, getInitials } from '@/lib/construction';
+import { constructionApi, formatCurrency, getStatusColor, getInitials } from '@/lib/construction';
 
 const inputClass = 'w-full px-3 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50';
 
@@ -61,7 +61,7 @@ export default function PaymentsPage() {
     }
   };
 
-const handleStatusChange = async (p: any, newStatus: 'paid' | 'pending' | 'overdue') => {
+  const handleStatusChange = async (p: any, newStatus: 'paid' | 'pending' | 'overdue') => {
     try {
       await constructionApi.updatePayment(p._id, { status: newStatus });
       toast.success(`Payment marked ${newStatus}`);
@@ -74,9 +74,9 @@ const handleStatusChange = async (p: any, newStatus: 'paid' | 'pending' | 'overd
   };
 
   const summaryCards = [
-    { name: 'Paid', value: formatNaira(summary.paid), count: summary.paidCount, icon: CheckCircle2, color: 'from-emerald-500 to-green-600' },
-    { name: 'Pending', value: formatNaira(summary.pending), count: summary.pendingCount, icon: Clock, color: 'from-amber-500 to-orange-600' },
-    { name: 'Overdue', value: formatNaira(summary.overdue), count: summary.overdueCount, icon: XCircle, color: 'from-red-500 to-rose-600' },
+    { name: 'Paid', value: formatCurrency(summary.paid), count: summary.paidCount, icon: CheckCircle2, color: 'from-emerald-500 to-green-600' },
+    { name: 'Pending', value: formatCurrency(summary.pending), count: summary.pendingCount, icon: Clock, color: 'from-amber-500 to-orange-600' },
+    { name: 'Overdue', value: formatCurrency(summary.overdue), count: summary.overdueCount, icon: XCircle, color: 'from-red-500 to-rose-600' },
   ];
 
   return (
@@ -159,11 +159,11 @@ const handleStatusChange = async (p: any, newStatus: 'paid' | 'pending' | 'overd
                   <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
                     {p.periodStart ? new Date(p.periodStart).toLocaleDateString() : '—'} – {p.periodEnd ? new Date(p.periodEnd).toLocaleDateString() : '—'}
                   </td>
-                  <td className="px-4 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatNaira(p.amount)}</td>
+                  <td className="px-4 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(p.amount)}</td>
                   <td className="px-4 py-4">
                     <select
                       value={p.status}
-onChange={(e) => handleStatusChange(p, e.target.value as 'paid' | 'pending' | 'overdue')}
+                      onChange={(e) => handleStatusChange(p, e.target.value as 'paid' | 'pending' | 'overdue')}
                       className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${getStatusColor(p.status)}`}
                     >
                       <option value="paid">paid</option>
@@ -295,7 +295,7 @@ function PaymentModal({ payment, workers, engineers, suppliers, onClose, onSaved
             </select>
           </Field>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Amount (KSh) *"><input required type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={inputClass} placeholder="234000" /></Field>
+            <Field label="Amount *"><input required type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className={inputClass} placeholder="234000" /></Field>
             <Field label="Status">
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className={inputClass}>
                 <option value="pending">Pending</option>

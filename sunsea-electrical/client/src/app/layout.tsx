@@ -8,10 +8,9 @@ const inter = Inter({ subsets: ['latin'] })
 const COMPANY = {
   name: 'SunSea Electrical',
   url: 'https://sunseaelectrical.vercel.app',
-  phone: '+254 728 749 722',
+  phone: '+254 784 909 466',
   email: 'sunseaelectrical@gmail.com',
-  address: 'Hurlingum Shopping Square, Opposite Total Energies Chokaa, Kangundo Road, Nairobi',
-  founded: '2010',
+  address: 'Kianjokoma, Embu County, Kenya',
 }
 
 export const metadata: Metadata = {
@@ -21,12 +20,12 @@ export const metadata: Metadata = {
     template: '%s | SunSea Electrical',
   },
   description:
-    'SunSea Electrical — full-service electrical engineering and construction company in Kenya since 2010. Led by David Munene, we deliver industrial power systems, solar energy solutions, generator systems, borehole drilling & water solutions, smart building systems, CCTV & networking, and professional electrical installation (wiring, piping, sockets, switches, consumer units). Serving Nairobi, Embu, Meru, Nyeri, Tharaka-Nithi, Kirinyaga, Nakuru, Mombasa, Eldoret, Kisumu, Kiambu, Machakos and across Kenya.',
+    'SunSea Electrical — electrical services in Kenya. Led by Peter Maina, we deliver industrial power systems, solar energy solutions, generator systems, borehole drilling & water solutions, smart building systems, CCTV & networking, and professional electrical installation (wiring, piping, sockets, switches, consumer units). Serving Nairobi, Embu, Meru, Nyeri, Tharaka-Nithi, Kirinyaga, Nakuru, Mombasa, Eldoret, Kisumu, Kiambu, Machakos and across Kenya.',
   abstract:
     'Electrical engineering, solar energy, power systems, generator installation, CCTV, networking, water systems, and construction services across Kenya.',
   applicationName: COMPANY.name,
-  authors: [{ name: 'David Munene', url: COMPANY.url }, { name: COMPANY.name, url: COMPANY.url }],
-  creator: 'David Munene',
+  authors: [{ name: 'Peter Maina', url: COMPANY.url }, { name: COMPANY.name, url: COMPANY.url }],
+  creator: 'Peter Maina',
   publisher: COMPANY.name,
   category: 'Electrical Engineering & Construction',
   classification:
@@ -36,7 +35,7 @@ export const metadata: Metadata = {
     'SunSea Electrical',
     'SunSea Electrical company',
     'SunSea Electrical Kenya',
-    'David Munene',
+    'Peter Maina',
     'David Munene electrical',
     'David Munene contractor',
     'David Munene Kenya',
@@ -81,16 +80,6 @@ export const metadata: Metadata = {
     'generator systems Kenya',
     'generator installation Kenya',
     'backup generator Kenya',
-    'borehole drilling Kenya',
-    'borehole drilling Nairobi',
-    'borehole drilling Embu',
-    'borehole drilling Meru',
-    'borehole drilling machakos',
-    'borehole water pump installation',
-    'hydro geological survey Kenya',
-    'water tower construction Kenya',
-    'water tank installation Kenya',
-    'elevated water tank Kenya',
     'smart building systems',
     'CCTV installation Kenya',
     'CCTV company Nairobi',
@@ -207,7 +196,7 @@ description: metadata.description,
     latitude: -1.2921,
     longitude: 36.8219,
   },
-  foundingDate: COMPANY.founded,
+
   areaServed: [
     { '@type': 'Place', name: 'Nairobi' },
     { '@type': 'Place', name: 'Embu' },

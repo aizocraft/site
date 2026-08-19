@@ -7,7 +7,7 @@ import {
   Building2, Plus, Search, MapPin, Trash2, Pencil, X, ChevronRight, Users, Wallet
 } from 'lucide-react';
 import { useSites, useEngineers } from '@/lib/useConstructionData';
-import { constructionApi, formatNaira, getProgressColor, getStatusColor, getInitials } from '@/lib/construction';
+import { constructionApi, formatCurrency, getProgressColor, getStatusColor, getInitials } from '@/lib/construction';
 
 const siteTypes = ['Residential', 'Commercial', 'Industrial', 'Infrastructure', 'Roads & Bridges', 'Renovation'];
 
@@ -167,15 +167,15 @@ export default function SitesPage() {
                 </div>
                 <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                   <p className="text-xs text-gray-400">Workers</p>
-                  <p className="font-medium text-gray-900 dark:text-white flex items-center gap-1"><Users className="w-3 h-3" /> {site.workers || 0}</p>
+                  <p className="font-medium text-gray-900 dark:text-white flex items-center gap-1"><Users className="w-3 h-3" /> {site.workerCount || 0}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                   <p className="text-xs text-gray-400">Budget</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{formatNaira(site.budget)}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{formatCurrency(site.budget?.total || 0)}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
                   <p className="text-xs text-gray-400">Spent</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{formatNaira(site.amountSpent)}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{formatCurrency(site.budget?.spent || 0)}</p>
                 </div>
               </div>
 
@@ -241,15 +241,15 @@ function SiteModal({ site, engineers, onClose, onSaved }: {
 }) {
   const [form, setForm] = useState({
     name: site?.name || '',
-    siteType: site?.siteType || siteTypes[0],
+    siteType: site?.type || siteTypes[0],
     location: site?.location || '',
     engineer: site?.engineer || '',
     status: site?.status || 'active',
     startDate: site?.startDate ? new Date(site.startDate).toISOString().split('T')[0] : '',
     expectedEndDate: site?.expectedEndDate ? new Date(site.expectedEndDate).toISOString().split('T')[0] : '',
-    budget: site?.budget || '',
+    budgetTotal: site?.budget?.total || '',
     progress: site?.progress || 0,
-    amountSpent: site?.amountSpent || '',
+    amountSpent: site?.budget?.spent || '',
     clientName: site?.clientName || '',
     clientPhone: site?.clientPhone || '',
     description: site?.description || '',
@@ -260,13 +260,29 @@ function SiteModal({ site, engineers, onClose, onSaved }: {
     e.preventDefault();
     setSaving(true);
     try {
-      const data = {
-        ...form,
-        budget: Number(form.budget) || 0,
-        amountSpent: Number(form.amountSpent) || 0,
+      const total = Number(form.budgetTotal) || 0;
+      const spent = Number(form.amountSpent) || 0;
+      
+      const data: any = {
+        name: form.name,
+        type: form.siteType.toLowerCase(),
+        location: form.location,
+        status: form.status,
         progress: Number(form.progress) || 0,
-        engineer: form.engineer || undefined,
+        budget: {
+          total: total,
+          spent: spent,
+          remaining: Math.max(0, total - spent),
+        },
+        clientName: form.clientName || undefined,
+        clientPhone: form.clientPhone || undefined,
+        description: form.description || undefined,
       };
+      
+      if (form.startDate) data.startDate = form.startDate;
+      if (form.expectedEndDate) data.expectedEndDate = form.expectedEndDate;
+      if (form.engineer) data.engineer = form.engineer;
+
       if (site?._id) {
         await constructionApi.updateSite(site._id, data);
         toast.success('Site updated');
@@ -323,6 +339,7 @@ function SiteModal({ site, engineers, onClose, onSaved }: {
                   <option value="active">Active</option>
                   <option value="paused">Paused</option>
                   <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
                 </select>
               </Field>
             </div>
@@ -332,19 +349,19 @@ function SiteModal({ site, engineers, onClose, onSaved }: {
           <div>
             <h4 className="text-sm font-semibold text-blue-600 mb-3">Timeline & Budget</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Start Date *">
-                <input required type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className={inputClass} />
+              <Field label="Start Date">
+                <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className={inputClass} />
               </Field>
-              <Field label="Expected End Date *">
-                <input required type="date" value={form.expectedEndDate} onChange={(e) => setForm({ ...form, expectedEndDate: e.target.value })} className={inputClass} />
+              <Field label="Expected End Date">
+                <input type="date" value={form.expectedEndDate} onChange={(e) => setForm({ ...form, expectedEndDate: e.target.value })} className={inputClass} />
               </Field>
-              <Field label="Total Budget (KSh) *">
-                <input required type="number" value={form.budget} onChange={(e) => setForm({ ...form, budget: e.target.value })} className={inputClass} placeholder="e.g. 5000000" />
+              <Field label="Total Budget *">
+                <input required type="number" value={form.budgetTotal} onChange={(e) => setForm({ ...form, budgetTotal: e.target.value })} className={inputClass} placeholder="e.g. 5000000" />
               </Field>
               <Field label="Progress (%)">
                 <input type="number" min="0" max="100" value={form.progress} onChange={(e) => setForm({ ...form, progress: e.target.value })} className={inputClass} />
               </Field>
-              <Field label="Amount Spent (KSh)">
+              <Field label="Amount Spent">
                 <input type="number" value={form.amountSpent} onChange={(e) => setForm({ ...form, amountSpent: e.target.value })} className={inputClass} />
               </Field>
             </div>
@@ -377,7 +394,7 @@ function SiteModal({ site, engineers, onClose, onSaved }: {
             </button>
           </div>
         </form>
-</div>
+      </div>
     </div>
   );
 }

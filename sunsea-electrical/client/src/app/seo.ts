@@ -18,53 +18,54 @@ function toCommaSeparated(keywords?: string[]) {
 }
 
 export function makeSeo(params: SeoParams): Metadata {
-  const canonical = params.canonicalPath ? `${BASE_URL}${params.canonicalPath}` : undefined
+  const canonical = params.canonicalPath ? `${BASE_URL}${params.canonicalPath}` : `${BASE_URL}`
 
-  // Next.js metadata types vary between versions.
-  // To avoid TS "openGraph.url typed as URL" issues, keep OG values fully `any`.
-  const openGraph = (() => {
-    const imagesInput = (params.openGraph as any)?.images
-    const firstImage = Array.isArray(imagesInput) ? imagesInput[0] : imagesInput
-
-    const ogUrl =
-      typeof firstImage === 'string'
-        ? firstImage
-        : (firstImage && (firstImage as any).url) || DEFAULT_OG_IMAGE
-
-    const ogImages: any = [
+  const openGraph = {
+    type: 'website',
+    locale: 'en_KE',
+    siteName: 'SunSea Electrical',
+    title: params.title,
+    description: params.description,
+    url: canonical,
+    images: [
       {
-        url: ogUrl,
+        url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
         alt: params.title,
+        type: 'image/png',
       },
-    ]
+    ],
+    ...params.openGraph,
+  }
 
-    const og: any = {
-      type: 'website',
-      locale: 'en_KE',
-      siteName: 'SunSea Electrical',
-      images: ogImages,
-      ...params.openGraph,
-    }
-
-    if (canonical) og.url = canonical
-    return og
-  })()
-
-
-
-
-return {
-    title: params.title,
+  return {
+    title: {
+      template: '%s | SunSea Electrical',
+      default: params.title,
+      absolute: params.title,
+    },
     description: params.description,
     keywords: toCommaSeparated(params.keywords),
     metadataBase: new URL(BASE_URL),
-    alternates: canonical ? { canonical } : undefined,
-    openGraph: openGraph as any,
-applicationName: 'SunSea Electrical',
-    authors: [{ name: 'David Munene', url: BASE_URL }, { name: 'SunSea Electrical', url: BASE_URL }],
-    creator: 'David Munene',
+    alternates: {
+      canonical: canonical,
+    },
+    openGraph: openGraph,
+    twitter: {
+      card: 'summary_large_image',
+      site: '@SunSeaElectrical',
+      creator: '@SunSeaElectrical',
+      title: params.title,
+      description: params.description,
+      images: [DEFAULT_OG_IMAGE],
+      ...params.twitter,
+    },
+    applicationName: 'SunSea Electrical',
+    authors: [
+      { name: 'Peter Maina', url: BASE_URL },
+    ],
+    creator: 'SunSea Electrical',
     publisher: 'SunSea Electrical',
     category: 'Electrical Engineering & Construction',
     robots: {
@@ -78,12 +79,8 @@ applicationName: 'SunSea Electrical',
         'max-snippet': -1,
       },
     },
-    twitter: {
-      card: 'summary_large_image',
-      site: '@SunSeaElectrical',
-      creator: '@SunSeaElectrical',
-      ...params.twitter,
-    } as any,
-  } as any
-
+    verification: {
+       google: 'KLUXnzTPhZ4MRk6589XFSka4ut0xElD8Koq0y8x2Paw',
+    },
+  }
 }

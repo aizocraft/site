@@ -70,7 +70,7 @@ export function useSuppliers(params?: { search?: string }) {
 export function useConstructionSettings() {
   return useQuery({
     queryKey: ['construction-settings'],
-    queryFn: () => constructionApi.getSettings(),
+    queryFn: constructionApi.getSettings,
     staleTime: 30000,
   });
 }

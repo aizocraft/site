@@ -10,13 +10,13 @@ export interface ISiteBudget {
 }
 
 export interface IConstructionSite extends Document {
-  siteCode: string; // S001, S002...
+  siteCode: string;
   name: string;
   type: SiteType;
   location: string;
   description?: string;
   status: SiteStatus;
-  progress: number; // 0-100
+  progress: number;
   startDate?: Date;
   expectedEndDate?: Date;
   completedAt?: Date;
@@ -25,8 +25,7 @@ export interface IConstructionSite extends Document {
   engineerName?: string;
   clientName?: string;
   clientPhone?: string;
-  workerCount: number; // denormalized
-  ownedBy: mongoose.Types.ObjectId;
+  workerCount: number;
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -39,7 +38,7 @@ const siteBudgetSchema = new Schema<ISiteBudget>({
 }, { _id: false });
 
 const constructionSiteSchema = new Schema<IConstructionSite>({
-  siteCode: { type: String, required: true },
+  siteCode: { type: String, required: true, unique: true },
   name: { type: String, required: true, trim: true },
   type: {
     type: String,
@@ -58,33 +57,48 @@ const constructionSiteSchema = new Schema<IConstructionSite>({
   expectedEndDate: { type: Date },
   completedAt: { type: Date },
   budget: { type: siteBudgetSchema, default: () => ({ total: 0, spent: 0, remaining: 0 }) },
-  engineer: { type: Schema.Types.ObjectId, ref: 'ConstructionEngineer' },
+  engineer: { type: Schema.Types.ObjectId, ref: 'Engineer' },
   engineerName: { type: String, trim: true },
   clientName: { type: String, trim: true },
   clientPhone: { type: String, trim: true },
   workerCount: { type: Number, default: 0, min: 0 },
-  ownedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
-constructionSiteSchema.index({ ownedBy: 1 });
+// Indexes
+constructionSiteSchema.index({ createdBy: 1 });
 constructionSiteSchema.index({ status: 1 });
 constructionSiteSchema.index({ engineer: 1 });
+constructionSiteSchema.index({ siteCode: 1 });
 
-// Pre-save: keep budget.remaining in sync + siteCode default
-constructionSiteSchema.pre('save', function(next) {
-  if (this.isModified('budget')) {
-    this.budget.remaining = Math.max(0, (this.budget.total || 0) - (this.budget.spent || 0));
-  }
+// Auto-generate site code
+constructionSiteSchema.pre('save', async function(next) {
   if (!this.siteCode) {
-    this.siteCode = `S${Date.now().toString().slice(-4)}`;
+    const lastSite = await mongoose.models.ConstructionSite?.findOne()
+      .sort({ createdAt: -1 })
+      .lean() as { siteCode?: string } | null;
+    
+    const lastNum = lastSite?.siteCode 
+      ? parseInt(lastSite.siteCode.replace(/\D/g, ''), 10) 
+      : 100;
+    
+    this.siteCode = `S${String(lastNum + 1).padStart(3, '0')}`;
   }
+  
+  // Keep budget.remaining in sync
+  this.budget.remaining = Math.max(0, (this.budget.total || 0) - (this.budget.spent || 0));
+  
+  // Auto-complete if progress reaches 100
   if (this.progress >= 100) {
     this.status = 'completed';
     if (!this.completedAt) this.completedAt = new Date();
   }
+  
   next();
 });
 
-const ConstructionSiteModel: Model<IConstructionSite> = mongoose.models.ConstructionSite || mongoose.model<IConstructionSite>('ConstructionSite', constructionSiteSchema);
+const ConstructionSiteModel: Model<IConstructionSite> = 
+  mongoose.models.ConstructionSite || 
+  mongoose.model<IConstructionSite>('ConstructionSite', constructionSiteSchema);
+
 export default ConstructionSiteModel;
