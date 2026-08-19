@@ -7,7 +7,7 @@ import {
   Package2, Plus, Search, Trash2, Pencil, X, AlertTriangle, Boxes, Truck, Layers
 } from 'lucide-react';
 import { useMaterials, useSites, useSuppliers } from '@/lib/useConstructionData';
-import { constructionApi, formatNaira, getStatusColor } from '@/lib/construction';
+import { constructionApi, formatCurrency, getStatusColor } from '@/lib/construction';
 
 const categories = ['Concrete', 'Steel', 'Aggregate', 'Masonry', 'Plumbing', 'Electrical', 'Formwork', 'Roofing', 'Finishing', 'General'];
 const units = ['Bags', 'Tonnes', 'Lengths', 'Metres', 'Sheets', 'Pieces', 'Units', 'Litres', 'Kg'];
@@ -62,7 +62,7 @@ export default function MaterialsPage() {
 
   const statCards = [
     { name: 'Total Materials', value: stats.total, icon: Package2, color: 'from-blue-500 to-indigo-600' },
-    { name: 'Total Inventory Value', value: formatNaira(stats.totalValue), icon: Boxes, color: 'from-emerald-500 to-green-600' },
+    { name: 'Total Inventory Value', value: formatCurrency(stats.totalValue), icon: Boxes, color: 'from-emerald-500 to-green-600' },
     { name: 'Low Stock Alerts', value: stats.lowStock, icon: AlertTriangle, color: 'from-amber-500 to-orange-600' },
     { name: 'Suppliers', value: stats.suppliers, icon: Truck, color: 'from-purple-500 to-pink-600' },
   ];
@@ -147,8 +147,8 @@ export default function MaterialsPage() {
                   <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{m.siteName || '—'}</td>
                   <td className="px-4 py-4 text-sm font-medium text-gray-900 dark:text-white">{m.stock} {m.unit}</td>
                   <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{m.reorderLevel} {m.unit}</td>
-                  <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{formatNaira(m.unitCost)}</td>
-                  <td className="px-4 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatNaira(m.totalValue)}</td>
+                  <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{formatCurrency(m.unitCost)}</td>
+                  <td className="px-4 py-4 text-sm font-semibold text-gray-900 dark:text-white">{formatCurrency(m.totalValue)}</td>
                   <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">{m.lastDelivery ? new Date(m.lastDelivery).toLocaleDateString() : '—'}</td>
                   <td className="px-4 py-4 text-sm text-gray-700 dark:text-gray-300">{m.supplier || '—'}</td>
                   <td className="px-4 py-4"><span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(m.status)}`}>{m.status.replace('_', ' ')}</span></td>
@@ -268,7 +268,7 @@ function MaterialModal({ material, sites, suppliers, onClose, onSaved }: {
               </select>
             </Field>
             <Field label="Reorder Level"><input type="number" value={form.reorderLevel} onChange={(e) => setForm({ ...form, reorderLevel: e.target.value })} className={inputClass} placeholder="200" /></Field>
-            <Field label="Unit Cost (KSh) *"><input required type="number" value={form.unitCost} onChange={(e) => setForm({ ...form, unitCost: e.target.value })} className={inputClass} placeholder="4200" /></Field>
+            <Field label="Unit Cost *"><input required type="number" value={form.unitCost} onChange={(e) => setForm({ ...form, unitCost: e.target.value })} className={inputClass} placeholder="4200" /></Field>
             <Field label="Last Delivery Date"><input type="date" value={form.lastDelivery} onChange={(e) => setForm({ ...form, lastDelivery: e.target.value })} className={inputClass} /></Field>
             <Field label="Supplier">
               <select value={form.supplier} onChange={(e) => setForm({ ...form, supplier: e.target.value })} className={inputClass}>

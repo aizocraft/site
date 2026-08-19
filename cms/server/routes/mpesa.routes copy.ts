@@ -1,4 +1,4 @@
-// src/routes/mpesa.routes.ts - COMPLETE REWRITE FOR PAYHEROCO KE
+// src/routes/mpesa.routes.ts - COMPLETE FIXED VERSION
 
 import { Router, Request, Response } from 'express';
 import axios from 'axios';
@@ -10,56 +10,100 @@ import { createNotification, NOTIFICATION_TEMPLATES } from '../services/notifica
 import UserModel from '../models/User';
 import { sendPaymentConfirmation, sendPaymentFailedNotification } from '../services/email.service';
 
+
+
 const router = Router();
 
 // ==================== CONFIGURATION ====================
 
-// Get PayHeroCo KE API configuration
-const getPayHeroConfig = () => {
+// Get M-PESA API URLs based on environment
+const getMpesaUrls = () => {
   const isProduction = process.env.NODE_ENV === 'production';
-  const isSandbox = process.env.PAYHERO_ENVIRONMENT === 'sandbox' || !isProduction;
+  const isSandbox = process.env.MPESA_ENVIRONMENT === 'sandbox' || !isProduction;
   
-  return {
-    baseUrl: isSandbox 
-      ? 'https://backend.sandbox.payhero.co.ke/api/v2'
-      : 'https://backend.payhero.co.ke/api/v2',
-    lipwaLink: process.env.PAYHERO_LIPWA_LINK || 'https://lipwa.link/11566'
-  };
+  if (isSandbox) {
+    return {
+      auth: 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
+      stkPush: 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+      query: 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query',
+      register: 'https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl'
+    };
+  } else {
+    return {
+      auth: 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
+      stkPush: 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+      query: 'https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query',
+      register: 'https://api.safaricom.co.ke/mpesa/c2b/v1/registerurl'
+    };
+  }
 };
 
-// Validate PayHeroCo KE configuration
-function validatePayHeroConfig(): boolean {
+// Validate M-PESA configuration
+function validateMpesaConfig(): boolean {
   const required = [
-    'PAYHERO_API_USERNAME',
-    'PAYHERO_API_PASSWORD',
-    'PAYHERO_CHANNEL_ID'
+    'MPESA_CONSUMER_KEY',
+    'MPESA_CONSUMER_SECRET',
+    'MPESA_SHORTCODE',
+    'MPESA_PASSKEY'
   ];
   
   const missing = required.filter(key => !process.env[key]);
   
   if (missing.length > 0) {
-    console.error(`❌ Missing PayHeroCo KE environment variables: ${missing.join(', ')}`);
+    console.error(`❌ Missing M-PESA environment variables: ${missing.join(', ')}`);
     return false;
   }
   
-  const env = process.env.PAYHERO_ENVIRONMENT || 'sandbox';
-  console.log(`✅ PayHeroCo KE running in ${env.toUpperCase()} mode`);
-  console.log(`✅ Channel ID: ${process.env.PAYHERO_CHANNEL_ID}`);
+  const env = process.env.MPESA_ENVIRONMENT || 'sandbox';
+  console.log(`✅ M-PESA running in ${env.toUpperCase()} mode`);
   
   return true;
 }
 
-// Generate Basic Auth token for PayHeroCo KE
-function generatePayHeroAuthToken(): string {
-  const username = process.env.PAYHERO_API_USERNAME;
-  const password = process.env.PAYHERO_API_PASSWORD;
+// Get M-PESA Access Token with retry logic
+async function getMpesaToken(retryCount = 0): Promise<string> {
+  const consumerKey = process.env.MPESA_CONSUMER_KEY;
+  const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
   
-  if (!username || !password) {
-    throw new Error('PayHeroCo KE credentials not configured');
+  if (!consumerKey || !consumerSecret) {
+    throw new Error('M-PESA credentials not configured');
+  }
+
+  const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
+  const urls = getMpesaUrls();
+  
+  try {
+    const response = await axios.get(urls.auth, {
+      headers: {
+        Authorization: `Basic ${auth}`
+      },
+      timeout: 10000
+    });
+    return response.data.access_token;
+  } catch (error: any) {
+    if (retryCount < 3 && error.response?.status === 429) {
+      console.log(`Rate limited on token, retrying in ${(retryCount + 1) * 1000}ms...`);
+      await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 1000));
+      return getMpesaToken(retryCount + 1);
+    }
+    console.error('Failed to get M-PESA token:', error.response?.data || error.message);
+    throw new Error('Failed to authenticate with M-PESA');
+  }
+}
+
+// Generate M-PESA Password
+function generateMpesaPassword(): { password: string; timestamp: string } {
+  const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+  const shortcode = process.env.MPESA_SHORTCODE;
+  const passkey = process.env.MPESA_PASSKEY;
+  
+  if (!shortcode || !passkey) {
+    throw new Error('M-PESA shortcode or passkey not configured');
   }
   
-  const auth = Buffer.from(`${username}:${password}`).toString('base64');
-  return `Basic ${auth}`;
+  const str = `${shortcode}${passkey}${timestamp}`;
+  const password = Buffer.from(str).toString('base64');
+  return { password, timestamp };
 }
 
 // Validate Kenyan phone number
@@ -67,14 +111,14 @@ function validateKenyanPhone(phone: string): string | null {
   let cleaned = phone.replace(/\D/g, '');
   
   if (cleaned.startsWith('0')) {
-    cleaned = cleaned.substring(1);
-  } else if (cleaned.startsWith('254')) {
-    cleaned = cleaned.substring(3);
+    cleaned = '254' + cleaned.substring(1);
   } else if (cleaned.startsWith('+254')) {
-    cleaned = cleaned.substring(4);
+    cleaned = cleaned.substring(1);
+  } else if (!cleaned.startsWith('254')) {
+    cleaned = '254' + cleaned;
   }
   
-  if (/^[17]\d{8}$/.test(cleaned)) {
+  if (/^254[17]\d{8}$/.test(cleaned)) {
     return cleaned;
   }
   
@@ -86,15 +130,18 @@ function formatAmount(amount: number): number {
   return Math.round(amount);
 }
 
+// Delay helper for rate limiting
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // ==================== ROUTES ====================
 
 /**
  * POST /api/mpesa/stk-push
- * Initiate STK Push payment via PayHeroCo KE
+ * Initiate STK Push payment
  */
 router.post('/stk-push', optionalAuthMiddleware, async (req: Request & { user?: any }, res: Response) => {
   try {
-    if (!validatePayHeroConfig()) {
+    if (!validateMpesaConfig()) {
       return res.status(500).json({ 
         error: 'Payment system not configured',
         code: 'CONFIG_ERROR'
@@ -141,49 +188,42 @@ router.post('/stk-push', optionalAuthMiddleware, async (req: Request & { user?: 
       });
     }
 
-    const config = getPayHeroConfig();
-    const authToken = generatePayHeroAuthToken();
-    const channelId = process.env.PAYHERO_CHANNEL_ID;
+    const token = await getMpesaToken();
+    const { password, timestamp } = generateMpesaPassword();
+    const urls = getMpesaUrls();
     
-    // Generate a unique external reference
-    const externalReference = `${order.orderNumber}-${Date.now().toString().slice(-6)}`;
-    
-    const callbackUrl = process.env.PAYHERO_CALLBACK_URL || 
+    const callbackUrl = process.env.MPESA_CALLBACK_URL || 
                        `${process.env.BASE_URL || 'http://localhost:4000'}/api/mpesa/callback`;
 
-    const paymentRequest = {
-      amount: formatAmount(order.total),
-      phone_number: normalizedPhone,
-      channel_id: parseInt(channelId || '0'),
-      provider: 'm-pesa',
-      external_reference: externalReference,
-      customer_name: order.shippingAddress?.fullName || 'Customer',
-      callback_url: callbackUrl
+    const stkPushRequest = {
+      BusinessShortCode: process.env.MPESA_SHORTCODE,
+      Password: password,
+      Timestamp: timestamp,
+      TransactionType: 'CustomerPayBillOnline',
+      Amount: formatAmount(order.total),
+      PartyA: normalizedPhone,
+      PartyB: process.env.MPESA_SHORTCODE,
+      PhoneNumber: normalizedPhone,
+      CallBackURL: callbackUrl,
+      AccountReference: order.orderNumber.slice(-12),
+      TransactionDesc: `Payment for ${order.orderNumber.slice(-10)}`
     };
 
-    console.log(`🔄 Initiating PayHero STK Push for order ${order.orderNumber}`);
-    console.log(`📱 Phone: ${normalizedPhone}, Amount: ${order.total}`);
-    console.log(`🔗 External Reference: ${externalReference}`);
+    console.log(`🔄 Initiating STK Push for order ${order.orderNumber} in ${process.env.MPESA_ENVIRONMENT || 'sandbox'} mode`);
 
-    const response = await axios.post(
-      `${config.baseUrl}/payments`,
-      paymentRequest,
-      {
-        headers: {
-          'Authorization': authToken,
-          'Content-Type': 'application/json'
-        },
-        timeout: 15000
-      }
-    );
+    const response = await axios.post(urls.stkPush, stkPushRequest, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 15000
+    });
 
-    const { success, status, reference, CheckoutRequestID } = response.data;
+    const { CheckoutRequestID, ResponseCode, ResponseDescription, CustomerMessage } = response.data;
 
-    if (!success || status !== 'QUEUED') {
-      throw new Error(`Payment initiation failed: ${response.data.message || 'Unknown error'}`);
+    if (ResponseCode !== '0') {
+      throw new Error(`STK Push failed: ${ResponseDescription}`);
     }
-
-    const transactionId = CheckoutRequestID || reference;
 
     const transaction = new TransactionModel({
       orderId: order._id,
@@ -195,9 +235,8 @@ router.post('/stk-push', optionalAuthMiddleware, async (req: Request & { user?: 
       currency: 'KES',
       paymentMethod: 'mpesa',
       status: 'pending',
-      transactionId: transactionId,
-      // Store external reference in notes since model doesn't have externalReference field
-      notes: `STK Push via PayHeroCo KE | ExternalRef: ${externalReference} | Phone: ${normalizedPhone}`,
+      transactionId: CheckoutRequestID,
+      notes: `STK Push initiated to ${normalizedPhone}`,
       source: 'checkout'
     });
 
@@ -205,11 +244,9 @@ router.post('/stk-push', optionalAuthMiddleware, async (req: Request & { user?: 
 
     res.json({
       success: true,
-      checkoutRequestId: transactionId,
-      externalReference: externalReference,
-      message: 'STK Push initiated. Check your phone for M-PESA PIN prompt.',
-      phoneNumber: normalizedPhone,
-      provider: 'PayHeroCo KE'
+      checkoutRequestId: CheckoutRequestID,
+      message: CustomerMessage || 'STK Push initiated. Check your phone for M-PESA PIN prompt.',
+      phoneNumber: normalizedPhone
     });
 
   } catch (error: any) {
@@ -217,9 +254,9 @@ router.post('/stk-push', optionalAuthMiddleware, async (req: Request & { user?: 
     
     if (error.response?.data) {
       return res.status(400).json({
-        error: 'PayHeroCo KE service error',
-        details: error.response.data,
-        code: 'PAYHERO_ERROR'
+        error: 'M-PESA service error',
+        details: error.response.data.errorMessage || error.response.data,
+        code: 'MPESA_ERROR'
       });
     }
 
@@ -231,75 +268,61 @@ router.post('/stk-push', optionalAuthMiddleware, async (req: Request & { user?: 
   }
 });
 
-// ==================== CALLBACK ENDPOINT ====================
+// ==================== CALLBACK & QUERY ENDPOINTS ====================
 router.post('/callback', async (req: Request, res: Response) => {
   const startTime = Date.now();
-  console.log('📞 PayHero Callback received:', JSON.stringify(req.body).substring(0, 300));
+  console.log('📞 Callback received:', JSON.stringify(req.body).substring(0, 200));
   
   try {
-    const { forward_url, response, status } = req.body;
-    
-    if (!response || typeof status === 'undefined') {
+    const { Body } = req.body;
+    if (!Body?.stkCallback) {
       console.error('❌ Invalid callback structure');
-      return res.status(200).json({ status: true, message: 'Received' });
+      return res.status(400).json({ ResultCode: 1, ResultDesc: 'Invalid data' });
     }
-
-    const {
-      Amount,
-      CheckoutRequestID,
-      ExternalReference,
-      MerchantRequestID,
-      MpesaReceiptNumber,
-      Phone,
-      ResultCode,
-      ResultDesc,
-      Status
-    } = response;
-
-    // Find transaction by CheckoutRequestID
-    let transaction = await TransactionModel.findOne({ 
+    
+    const { ResultCode, CheckoutRequestID, ResultDesc, CallbackMetadata } = Body.stkCallback;
+    
+    // Find transaction
+    const transaction = await TransactionModel.findOne({ 
       transactionId: CheckoutRequestID 
     });
-
-    // If not found, try to find by ExternalReference in notes
-    if (!transaction && ExternalReference) {
-      transaction = await TransactionModel.findOne({ 
-        notes: { $regex: `ExternalRef: ${ExternalReference}` } 
-      });
-    }
-
+    
     if (!transaction) {
-      console.error(`❌ Transaction not found: ${CheckoutRequestID} or ${ExternalReference}`);
-      return res.status(200).json({ status: true, message: 'Transaction not found but acknowledged' });
+      console.error(`❌ Transaction not found: ${CheckoutRequestID}`);
+      return res.status(200).json({ ResultCode: 0, ResultDesc: 'Transaction not found but acknowledged' });
     }
-
+    
     // ✅ Idempotency check
     if (transaction.status === 'completed') {
       console.log(`⚠️ Duplicate callback for ${CheckoutRequestID}`);
-      return res.status(200).json({ status: true, message: 'Already processed' });
+      return res.status(200).json({ ResultCode: 0, ResultDesc: 'Already processed' });
     }
-
+    
     // Process based on result code
-    if (ResultCode === 0 && Status === 'Success') {
+    if (ResultCode === 0 && CallbackMetadata) {
+      // Success
       transaction.status = 'completed';
-      transaction.mpesaReceipt = MpesaReceiptNumber;
+      transaction.mpesaReceipt = CallbackMetadata.Item.find((i: any) => i.Name === 'MpesaReceiptNumber')?.Value;
       transaction.paidAt = new Date();
-      transaction.notes = `Payment completed via PayHero. Receipt: ${MpesaReceiptNumber}`;
       await transaction.save();
 
+      // Update order
       const order = await OrderModel.findById(transaction.orderId);
       if (order) {
+        // ensure amountPaid doesn't double add on duplicate callbacks
         const previousOrderAmountPaid = order.amountPaid || 0;
         order.paymentStatus = 'paid';
         order.amountPaid = previousOrderAmountPaid + (transaction.amount || 0);
         await order.save();
 
+        // ✅ Notifications: both customer + admins
         try {
           const { title: payTitle, message: payMessage, actionUrl } = NOTIFICATION_TEMPLATES.paymentReceived(
             order.orderNumber,
             transaction.amount || order.total || 0
           );
 
+          // customer notification
           if (order.userId) {
             await createNotification({
               userId: order.userId.toString(),
@@ -312,12 +335,12 @@ router.post('/callback', async (req: Request, res: Response) => {
                 orderNumber: order.orderNumber,
                 amount: transaction.amount,
                 mpesaReceipt: transaction.mpesaReceipt,
-                paidAt: transaction.paidAt?.toISOString(),
-                provider: 'PayHeroCo KE'
+                paidAt: transaction.paidAt?.toISOString()
               }
             });
           }
 
+          // admin notifications (broadcast to all active admins)
           const adminUsers = await UserModel.find({ role: 'admin', isActive: true });
           if (adminUsers?.length) {
             const notifications = adminUsers.map((admin: any) =>
@@ -332,8 +355,7 @@ router.post('/callback', async (req: Request, res: Response) => {
                   orderNumber: order.orderNumber,
                   amount: transaction.amount,
                   mpesaReceipt: transaction.mpesaReceipt,
-                  paidAt: transaction.paidAt?.toISOString(),
-                  provider: 'PayHeroCo KE'
+                  paidAt: transaction.paidAt?.toISOString()
                 }
               })
             );
@@ -341,22 +363,25 @@ router.post('/callback', async (req: Request, res: Response) => {
           }
 
         } catch (notificationErr) {
-          console.error('Failed to create payment notifications (callback):', notificationErr);
+          console.error('Failed to create payment notifications (mpesa callback):', notificationErr);
         }
       }
 
-      console.log(`✅ Payment completed: ${CheckoutRequestID}, Receipt: ${MpesaReceiptNumber}`);
+      console.log(`✅ Payment completed: ${CheckoutRequestID}, Receipt: ${transaction.mpesaReceipt}`);
 
-    } else if (ResultCode === 1037 || Status === 'QUEUED') {
-      console.log(`⏳ Payment queued/timeout: ${CheckoutRequestID} - ${ResultDesc}`);
-      transaction.notes = `Queued/Timeout: ${ResultDesc}`;
+    } else if (ResultCode === 1037) {
+      // Timeout - keep pending
+      console.log(`⏳ Payment timeout: ${CheckoutRequestID} - ${ResultDesc}`);
+      transaction.notes = `Timeout: ${ResultDesc}`;
       await transaction.save();
       
-    } else if (ResultCode !== 0 || Status === 'Failed') {
+    } else if (ResultCode !== 0) {
+      // Failed
       transaction.status = 'failed';
-      transaction.notes = `Failed: ${ResultDesc || 'Payment failed'}`;
+      transaction.notes = `Failed: ${ResultDesc}`;
       await transaction.save();
 
+      // ✅ Notifications for failure: both customer + admins
       try {
         const order = await OrderModel.findById(transaction.orderId);
         if (order) {
@@ -377,13 +402,12 @@ router.post('/callback', async (req: Request, res: Response) => {
                 orderNumber: order.orderNumber,
                 amount: transaction.amount,
                 failedAt: new Date().toISOString(),
-                provider: 'PayHeroCo KE',
-                resultDesc: ResultDesc
+                mpesaResultDesc: ResultDesc
               }
             });
           }
 
-          const adminUsers = await UserModel.find({ role: 'admin', isActive: true });
+          const adminUsers = await (await import('../models/User')).default.find({ role: 'admin', isActive: true });
           if (adminUsers?.length) {
             const notifications = adminUsers.map((admin: any) =>
               createNotification({
@@ -397,8 +421,7 @@ router.post('/callback', async (req: Request, res: Response) => {
                   orderNumber: order.orderNumber,
                   amount: transaction.amount,
                   failedAt: new Date().toISOString(),
-                  provider: 'PayHeroCo KE',
-                  resultDesc: ResultDesc
+                  mpesaResultDesc: ResultDesc
                 }
               })
             );
@@ -406,47 +429,47 @@ router.post('/callback', async (req: Request, res: Response) => {
           }
         }
       } catch (notificationErr) {
-        console.error('Failed to create payment failure notifications (callback):', notificationErr);
+        console.error('Failed to create payment failure notifications (mpesa callback):', notificationErr);
       }
 
       console.log(`❌ Payment failed: ${CheckoutRequestID} - ${ResultDesc}`);
     }
 
+    
     const duration = Date.now() - startTime;
     console.log(`✅ Callback processed in ${duration}ms`);
     
-    return res.status(200).json({ status: true, message: 'Callback processed successfully' });
+    return res.status(200).json({ ResultCode: 0, ResultDesc: 'Success' });
     
   } catch (error) {
     console.error('❌ Callback error:', error);
-    return res.status(200).json({ status: true, message: 'Error but acknowledged' });
+    // Return 200 anyway to stop M-PESA retries
+    return res.status(200).json({ ResultCode: 0, ResultDesc: 'Error but acknowledged' });
   }
 });
-
 /**
  * POST /api/mpesa/query
- * Query STK Push status via PayHeroCo KE
+ * Query STK Push status - FIXED: Handle rate limiting and never mark as failed prematurely
  */
 router.post('/query', optionalAuthMiddleware, async (req: Request & { user?: any }, res: Response) => {
   try {
     const { checkoutRequestId } = req.body;
 
     if (!checkoutRequestId) {
-      return res.status(400).json({ error: 'CheckoutRequestID or reference required', code: 'MISSING_ID' });
+      return res.status(400).json({ error: 'CheckoutRequestID required', code: 'MISSING_ID' });
     }
 
-    const transaction = await TransactionModel.findOne({ 
-      transactionId: checkoutRequestId 
-    });
+    const transaction = await TransactionModel.findOne({ transactionId: checkoutRequestId });
     
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found', code: 'NOT_FOUND' });
     }
 
+    // If already completed or failed, return current status
     if (transaction.status !== 'pending') {
       return res.json({
         success: true,
-        checkoutRequestId: transaction.transactionId,
+        checkoutRequestId,
         status: transaction.status,
         resultCode: transaction.status === 'completed' ? '0' : '1',
         resultDesc: transaction.status === 'completed' ? 'Payment completed' : 'Payment failed',
@@ -459,31 +482,36 @@ router.post('/query', optionalAuthMiddleware, async (req: Request & { user?: any
       });
     }
 
+    // Only query M-PESA if still pending
     try {
-      const config = getPayHeroConfig();
-      const authToken = generatePayHeroAuthToken();
+      const token = await getMpesaToken();
+      const { password, timestamp } = generateMpesaPassword();
+      const urls = getMpesaUrls();
 
-      const response = await axios.get(
-        `${config.baseUrl}/transaction-status`,
-        {
-          headers: {
-            'Authorization': authToken
-          },
-          params: {
-            reference: checkoutRequestId
-          },
-          timeout: 10000
-        }
-      );
+      const queryRequest = {
+        BusinessShortCode: process.env.MPESA_SHORTCODE,
+        Password: password,
+        Timestamp: timestamp,
+        CheckoutRequestID: checkoutRequestId
+      };
 
-      const { status: txStatus, success, provider_reference, provider } = response.data;
+      const response = await axios.post(urls.query, queryRequest, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000
+      });
+
+      const { ResultCode, ResultDesc } = response.data;
       
-      console.log(`Query result for ${checkoutRequestId}: status=${txStatus}, success=${success}`);
+      console.log(`Query result for ${checkoutRequestId}: ResultCode=${ResultCode}, ResultDesc=${ResultDesc}`);
 
-      if (txStatus === 'SUCCESS' && success) {
+      // Handle different ResultCodes
+      if (ResultCode === '0') {
+        // Payment completed successfully
         transaction.status = 'completed';
-        transaction.mpesaReceipt = provider_reference;
-        transaction.notes = `Payment completed via query. Provider: ${provider}`;
+        transaction.notes = `Payment completed via query. Result: ${ResultDesc}`;
         transaction.paidAt = new Date();
         await transaction.save();
         
@@ -492,37 +520,39 @@ router.post('/query', optionalAuthMiddleware, async (req: Request & { user?: any
           order.paymentStatus = 'paid';
           order.status = 'processing';
           order.paymentDetails = {
-            transactionId: transaction.transactionId,
-            mpesaReceipt: provider_reference,
+            transactionId: checkoutRequestId,
             paidAt: new Date(),
             phoneNumber: transaction.guestPhone || ''
           };
           await order.save();
         }
         
-      } else if (txStatus === 'QUEUED') {
-        console.log(`⏳ Transaction ${checkoutRequestId} still queued`);
-        
-      } else if (txStatus === 'FAILED' || !success) {
-        transaction.status = 'failed';
-        transaction.notes = `Payment failed via query. Status: ${txStatus}`;
-        await transaction.save();
+      } else if (ResultCode === '1037' || ResultCode === '4999' || ResultCode === '500') {
+        // Still processing - DO NOTHING, keep as pending
+        console.log(`⏳ Transaction ${checkoutRequestId} still pending (${ResultCode})`);
+        // Don't change status!
         
       } else {
-        console.log(`⚠️ Unknown status: ${txStatus} - keeping as pending`);
+        // Only log other codes, don't mark as failed - let callback handle it
+        console.log(`⚠️ Query returned code ${ResultCode}: ${ResultDesc} - keeping as pending`);
+        // Still don't mark as failed - callback might still come
       }
       
     } catch (queryError: any) {
-      console.error('PayHeroCo KE query error:', queryError.message);
+      console.error('M-PESA query error:', queryError.message);
       
+      // Handle rate limiting specifically
       if (queryError.response?.status === 429) {
-        console.log(`⏳ Rate limited by PayHeroCo KE, will retry later`);
+        console.log(`⏳ Rate limited by M-PESA, will retry later`);
+        // Keep as pending, don't change status
       }
+      // Don't change status on any error
     }
 
+    // Return current status (still pending unless callback updated it)
     res.json({
       success: true,
-      checkoutRequestId: transaction.transactionId,
+      checkoutRequestId,
       status: transaction.status,
       resultCode: transaction.status === 'completed' ? '0' : 'pending',
       resultDesc: transaction.status === 'completed' ? 'Payment completed' : 'Processing payment',
@@ -536,6 +566,7 @@ router.post('/query', optionalAuthMiddleware, async (req: Request & { user?: any
 
   } catch (error: any) {
     console.error('Query endpoint error:', error);
+    // Don't throw error - return pending status
     res.status(200).json({ 
       success: false,
       status: 'pending',
@@ -593,35 +624,11 @@ router.get('/payment-status/:orderId', optionalAuthMiddleware, async (req: Reque
 });
 
 /**
- * GET /api/mpesa/lipwa-link
- * Get the Lipwa link for this merchant
- */
-router.get('/lipwa-link', async (req: Request, res: Response) => {
-  try {
-    const config = getPayHeroConfig();
-    const lipwaLink = config.lipwaLink;
-    const channelId = process.env.PAYHERO_CHANNEL_ID;
-    const baseLink = lipwaLink.split('?')[0];
-    
-    res.json({
-      success: true,
-      lipwaLink: lipwaLink,
-      customizedLink: `${baseLink}?channel_id=${channelId}`,
-      channelId: channelId,
-      note: 'You can add amount, phone, name, reference, success_url, failed_url parameters to customize the link'
-    });
-  } catch (error: any) {
-    console.error('Lipwa link error:', error);
-    res.status(500).json({ error: 'Failed to get Lipwa link' });
-  }
-});
-
-/**
  * POST /api/mpesa/simulate
  * Simulate payment (Sandbox only)
  */
 router.post('/simulate', async (req: Request, res: Response) => {
-  const isSandbox = process.env.PAYHERO_ENVIRONMENT === 'sandbox' || process.env.NODE_ENV !== 'production';
+  const isSandbox = process.env.MPESA_ENVIRONMENT === 'sandbox' || process.env.NODE_ENV !== 'production';
   
   if (!isSandbox) {
     return res.status(403).json({ error: 'Simulation only available in sandbox', code: 'NOT_IN_SANDBOX' });
@@ -634,9 +641,7 @@ router.post('/simulate', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'checkoutRequestId required' });
     }
 
-    const transaction = await TransactionModel.findOne({ 
-      transactionId: checkoutRequestId 
-    });
+    const transaction = await TransactionModel.findOne({ transactionId: checkoutRequestId });
     
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
@@ -651,16 +656,17 @@ router.post('/simulate', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Order not found' });
     }
 
+    // Simulate successful payment
     transaction.status = 'completed';
     transaction.mpesaReceipt = mpesaReceipt || `SIM${Date.now()}`;
-    transaction.notes = 'Simulated payment via PayHeroCo KE';
+    transaction.notes = 'Simulated payment';
     transaction.paidAt = new Date();
     await transaction.save();
 
     order.paymentStatus = 'paid';
     order.status = 'processing';
     order.paymentDetails = {
-      transactionId: transaction.transactionId,
+      transactionId: checkoutRequestId,
       mpesaReceipt: transaction.mpesaReceipt,
       paidAt: new Date(),
       phoneNumber: transaction.guestPhone || ''

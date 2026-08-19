@@ -43,7 +43,8 @@ const partnerLogos = [
     height: 80,
   },
   {
-    src: "/logos/legrand-logo-desktop.svg",
+    src: "/logos/legrandlight.jpg",
+    darkSrc: "/logos/legrand-logo-desktop.svg",
     alt: "Legrand",
     href: "https://www.legrand.com",
     width: 180,
@@ -281,8 +282,16 @@ const InfiniteScrollingLogos = ({
                     src={logo.src}
                     alt={logo.alt}
                     fill
-                    className="object-contain filter grayscale-[50%] hover:grayscale-0 transition-all duration-300"
+                    className={`object-contain filter grayscale-[50%] hover:grayscale-0 transition-all duration-300 ${logo.darkSrc ? 'dark:hidden' : ''}`}
                   />
+                  {logo.darkSrc && (
+                    <Image
+                      src={logo.darkSrc}
+                      alt={logo.alt}
+                      fill
+                      className="hidden object-contain filter grayscale-[50%] hover:grayscale-0 transition-all duration-300 dark:block"
+                    />
+                  )}
                 </div>
               </Link>
             ))}
