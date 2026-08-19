@@ -177,7 +177,13 @@ export default function Navbar() {
               className="inline-flex items-center gap-1.5 sm:gap-2 text-white hover:text-[#25D366] transition-colors duration-200 shrink-0"
               aria-label="Chat on WhatsApp"
             >
-              <span className="text-base sm:text-lg">✆</span>
+              <Image
+                src="/whatsapp-logo.png"
+                alt=""
+                width={20}
+                height={20}
+                className="w-4 h-4 sm:w-5 sm:h-5 object-contain"
+              />
               <span className="font-medium">WhatsApp</span>
             </a>
             <div className="hidden sm:flex items-center gap-2 min-w-0">
