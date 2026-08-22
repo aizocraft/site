@@ -169,6 +169,54 @@ const GALLERY: GalleryItem[] = [
     title: "Construction Project 21",
     caption: "Project handover",
   },
+    {
+    id: "23",
+    src: "/gallery/IMG20250725173839.jpg",
+    title: "Construction",
+    caption: "Early morning site overview showing foundation work",
+  },
+  {
+    id: "24",
+    src: "/gallery/IMG20250729174007.jpg",
+    title: "Construction",
+    caption: "Steel frame installation in progress",
+  },
+  {
+    id: "25",
+    src: "/gallery/IMG20250801074653.jpg",
+    title: "Construction",
+    caption: "Concrete pouring for the ground floor slab",
+  },
+  {
+    id: "26",
+    src: "/gallery/IMG20250801173643.jpg",
+    title: "Construction",
+    caption: "Evening progress shot showing wall construction",
+  },
+  {
+    id: "27",
+    src: "/gallery/IMG20260113080520.jpg",
+    title: "Construction",
+    caption: "Residential housing development progress",
+  },
+  {
+    id: "28",
+    src: "/gallery/IMG20260205140522.jpg",
+    title: "Construction",
+    caption: "Commercial building structural work",
+  },
+  {
+    id: "29",
+    src: "/gallery/IMG20260227084608.jpg",
+    title: "Construction",
+    caption: "Site preparation and excavation work",
+  },
+  {
+    id: "30",
+    src: "/gallery/IMG20260614082111.jpg",
+    title: "Construction",
+    caption: "Completed construction project - final inspection",
+  },
 ];
 
 // Helper

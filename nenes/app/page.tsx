@@ -524,7 +524,7 @@ return (
         </div>
       </section>
 
-      {/* Featured Projects */}
+      {/* Featured Projects 
       <section id="gallery" className="section-padding section-alt">
         <div className="container-custom">
           <div className="text-center max-w-2xl mx-auto mb-12 reveal">
@@ -573,7 +573,7 @@ return (
           </div>
         </div>
       </section>
-
+*/}
       {/* Testimonials Component */}
       <Testimonials />
 

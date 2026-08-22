@@ -117,7 +117,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#16a34a] dark:text-[#22c55e] flex-shrink-0" />
-                <span className="text-gray-400">nenesconstruction@gmail.com</span>
+                <span className="text-gray-400">davidmunene134@gmail.com</span>
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-[#16a34a] dark:text-[#22c55e] flex-shrink-0 mt-0.5" />

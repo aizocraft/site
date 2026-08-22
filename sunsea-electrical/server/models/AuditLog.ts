@@ -31,7 +31,38 @@ const AuditLogSchema: Schema<IAuditLog> = new Schema({
   action: {
     type: String,
     required: true,
-    enum: ['create', 'update', 'delete', 'login', 'logout', 'view', 'export', 'import', 'approve', 'reject', 'assign', 'revoke']
+   enum: [
+  // Standard CRUD
+  'create', 
+  'update', 
+  'delete', 
+  'view',
+  
+  // Authentication
+  'login', 
+  'logout', 
+  
+  // Data operations
+  'export', 
+  'import', 
+  
+  // Approvals
+  'approve', 
+  'reject', 
+  'assign', 
+  'revoke',
+  
+  // Inventory-specific 
+  'bulk_import',
+  'bulk_update', 
+  'bulk_delete',
+  'bulk_stock_adjustment',
+  'restock',
+  
+  // Optional: Add any others you might use
+  'bulk_export',
+  'stock_adjustment'
+]
   },
   resource: {
     type: String,
